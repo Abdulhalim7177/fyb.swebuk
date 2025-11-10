@@ -1,4 +1,6 @@
 {
+  "name": "swebuk",
+  "description": "Swebuk - Software Engineering Student Club",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
