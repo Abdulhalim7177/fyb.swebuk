@@ -19,16 +19,18 @@ import {
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 interface DashboardNavProps {
-  user: User;
+  userId: string; // Pass userId instead of full user object
+  userProfileRole: string; // Pass role from profile
   isSidebarOpen: boolean;
   setIsSidebarOpen: (isOpen: boolean) => void;
 }
 
-export function DashboardNav({ user, isSidebarOpen, setIsSidebarOpen }: DashboardNavProps) {
+export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSidebarOpen }: DashboardNavProps) {
   const pathname = usePathname();
-  const userRole = user.user_metadata?.role || "student";
+  const userRole = userProfileRole || "student";
 
   const getNavSections = () => {
     const studentNav = {
@@ -74,7 +76,23 @@ export function DashboardNav({ user, isSidebarOpen, setIsSidebarOpen }: Dashboar
         // Assuming staff has a similar but perhaps reduced set of admin-like privileges
         return { "Content": adminNav.Content, "System": adminNav.System };
       case "lead":
+        // Lead-specific navigation can be added here
+        return { 
+          "Content": adminNav.Content,
+          "My Teams": [
+            { href: "/dashboard/leads/teams", label: "My Teams", icon: Users2 },
+            { href: "/dashboard/leads/projects", label: "My Projects", icon: FolderCheck },
+          ]
+        };
       case "deputy":
+        // Deputy-specific navigation can be added here
+        return { 
+          "Content": adminNav.Content,
+          "My Responsibilities": [
+            { href: "/dashboard/deputies/tasks", label: "My Tasks", icon: FolderCheck },
+            { href: "/dashboard/deputies/teams", label: "My Teams", icon: Users2 },
+          ]
+        };
       case "student":
       default:
         return studentNav;

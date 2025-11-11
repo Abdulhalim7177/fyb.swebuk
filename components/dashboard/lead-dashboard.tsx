@@ -4,9 +4,10 @@ import { Users, UserCheck, FileText, Calendar } from "lucide-react";
 
 interface LeadDashboardProps {
   user: User;
+  fullName?: string; // Pass full name from profile
 }
 
-export function LeadDashboard({ user }: LeadDashboardProps) {
+export function LeadDashboard({ user, fullName }: LeadDashboardProps) {
   const leadMetrics = {
     clusterMembers: 15,
     pendingApplications: 3,
@@ -25,7 +26,7 @@ export function LeadDashboard({ user }: LeadDashboardProps) {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-3xl font-semibold text-foreground">Welcome back, Lead {user.user_metadata.full_name || user.email}!</h1>
+        <h1 className="text-3xl font-semibold text-foreground">Welcome back, Lead {fullName || user.email}!</h1>
         <p className="mt-1 text-muted-foreground">Here's what's happening in your cluster today.</p>
       </div>
 

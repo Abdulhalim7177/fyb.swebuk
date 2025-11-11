@@ -6,9 +6,10 @@ import Link from "next/link";
 
 interface StaffDashboardProps {
   user: User;
+  fullName?: string; // Pass full name from profile
 }
 
-export function StaffDashboard({ user }: StaffDashboardProps) {
+export function StaffDashboard({ user, fullName }: StaffDashboardProps) {
   const staffMetrics = {
     supervisedStudents: 8,
     assignedClusters: 2,

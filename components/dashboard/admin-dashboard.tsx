@@ -6,9 +6,10 @@ import Link from "next/link";
 
 interface AdminDashboardProps {
   user: User;
+  fullName?: string; // Pass full name from profile
 }
 
-export function AdminDashboard({ user }: AdminDashboardProps) {
+export function AdminDashboard({ user, fullName }: AdminDashboardProps) {
   const systemMetrics = {
     totalUsers: 245,
     activeUsers: 189,

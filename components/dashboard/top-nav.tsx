@@ -23,11 +23,11 @@ import { createClient } from "@/lib/supabase/client";
 
 interface TopNavProps {
   user: User;
+  userRole: string; // Pass role from profile instead of user metadata
   onMenuClick: () => void;
 }
 
-export function TopNav({ user, onMenuClick }: TopNavProps) {
-  const userRole = user.user_metadata?.role || "student";
+export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
   const router = useRouter();
   const supabase = createClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -54,13 +54,21 @@ export function TopNav({ user, onMenuClick }: TopNavProps) {
           </Button>
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {["admin", "staff"].includes(userRole.toLowerCase()) ? (
+            {["admin", "staff", "lead", "deputy"].includes(userRole.toLowerCase()) ? (
               <>
                 <Link href="/dashboard" className="rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-hover">Dashboard</Link>
-                <Link href="/dashboard/admin/users" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Users</Link>
-                <Link href="/dashboard/admin/staff" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Staff</Link>
-                <Link href="/dashboard/clusters" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Clusters</Link>
-                <Link href="/dashboard/projects" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Projects</Link>
+                {(userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "staff") && (
+                  <>
+                    <Link href="/dashboard/admin/users" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Users</Link>
+                    <Link href="/dashboard/admin/staff" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Staff</Link>
+                  </>
+                )}
+                {["admin", "staff", "lead", "deputy"].includes(userRole.toLowerCase()) && (
+                  <>
+                    <Link href="/dashboard/clusters" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Clusters</Link>
+                    <Link href="/dashboard/projects" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Projects</Link>
+                  </>
+                )}
               </>
             ) : (
               <>

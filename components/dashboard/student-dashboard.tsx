@@ -6,9 +6,10 @@ import Link from "next/link";
 
 interface StudentDashboardProps {
   user: User;
+  fullName?: string; // Pass full name from profile
 }
 
-export function StudentDashboard({ user }: StudentDashboardProps) {
+export function StudentDashboard({ user, fullName }: StudentDashboardProps) {
   const stats = [
     { title: "My Clubs", value: "3", icon: Users2, iconBg: "bg-primary/10 text-primary" },
     { title: "Active Projects", value: "5", icon: Code2, iconBg: "bg-green-500/10 text-green-500" },
@@ -41,7 +42,7 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
       <Card className="bg-gradient-to-r from-primary/80 to-primary text-primary-foreground p-6">
         <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <h1 className="text-xl md:text-2xl font-semibold">Welcome back, {user.user_metadata.full_name || user.email}!</h1>
+            <h1 className="text-xl md:text-2xl font-semibold">Welcome back, {fullName || user.email}!</h1>
             <p className="text-sm text-primary-foreground/80">Here's what's happening in your development community today.</p>
           </div>
           <Button variant="secondary" asChild className="self-start md:self-auto">

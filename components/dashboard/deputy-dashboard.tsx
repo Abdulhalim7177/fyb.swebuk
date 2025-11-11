@@ -4,9 +4,10 @@ import { Users, UserPlus, BookOpen, FileText } from "lucide-react";
 
 interface DeputyDashboardProps {
   user: User;
+  fullName?: string; // Pass full name from profile
 }
 
-export function DeputyDashboard({ user }: DeputyDashboardProps) {
+export function DeputyDashboard({ user, fullName }: DeputyDashboardProps) {
   const deputyMetrics = {
     clusterMembers: 15,
     pendingApplications: 3,
@@ -25,7 +26,7 @@ export function DeputyDashboard({ user }: DeputyDashboardProps) {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-3xl font-semibold text-foreground">Welcome back, Deputy {user.user_metadata.full_name || user.email}!</h1>
+        <h1 className="text-3xl font-semibold text-foreground">Welcome back, Deputy {fullName || user.email}!</h1>
         <p className="mt-1 text-muted-foreground">Here's what's happening in your cluster today.</p>
       </div>
 
