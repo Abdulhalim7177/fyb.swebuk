@@ -69,7 +69,7 @@ export function DashboardWrapper({ children }: DashboardWrapperProps) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-[oklch(92.2% 0 0)]">
       {/* Desktop Sidebar */}
       <DashboardNav 
         userId={user.id} 
