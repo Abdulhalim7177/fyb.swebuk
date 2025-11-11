@@ -36,7 +36,7 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
     const studentNav = {
       "Main": [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/profile", label: "My Profile", icon: Users },
+        { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
         { href: "/dashboard/portfolio", label: "Portfolio", icon: FileText },
       ],
       "Community": [

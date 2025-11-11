@@ -106,7 +106,7 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="focus:bg-hover">
-                <Link href="/profile">
+                <Link href={`/dashboard/${userRole}/profile`}>
                   <Settings className="w-5 h-5 mr-2" />
                   Profile
                 </Link>

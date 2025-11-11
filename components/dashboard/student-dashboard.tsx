@@ -46,7 +46,7 @@ export function StudentDashboard({ user, fullName }: StudentDashboardProps) {
             <p className="text-sm text-primary-foreground/80">Here's what's happening in your development community today.</p>
           </div>
           <Button variant="secondary" asChild className="self-start md:self-auto">
-            <Link href="/profile">View Profile</Link>
+            <Link href="/dashboard/student/profile">View Profile</Link>
           </Button>
         </div>
       </Card>

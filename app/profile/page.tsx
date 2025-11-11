@@ -1,13 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import UpdateProfileForm from "@/components/update-profile-form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -20,39 +12,20 @@ export default async function ProfilePage() {
     return redirect("/auth/login");
   }
 
-  const { data: profile } = await supabase
+  // Fetch role from profiles table to determine where to redirect
+  const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("*")
+    .select("role")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
-    return <div>User profile not found.</div>;
+  if (profileError || !profileData) {
+    console.error('Error fetching profile or profile not found:', profileError);
+    return redirect("/auth/login");
   }
 
-  return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      <div className="w-full">
-        <div className="py-6 font-bold bg-purple-950 text-center">
-          Manage Your Profile
-        </div>
-      </div>
-
-      <div className="flex-1 flex flex-col gap-20 max-w-4xl px-3">
-        <main className="flex-1 flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Edit Profile</CardTitle>
-              <CardDescription>
-                Update your profile information below.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <UpdateProfileForm user={user} profile={profile} />
-            </CardContent>
-          </Card>
-        </main>
-      </div>
-    </div>
-  );
+  const userRole = profileData.role?.toLowerCase() || "student";
+  
+  // Redirect to the role-specific profile page
+  redirect(`/dashboard/${userRole}/profile`);
 }
