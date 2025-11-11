@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { LeadDashboard } from "@/components/dashboard/lead-dashboard";
+import { DeputyDashboard } from "@/components/dashboard/deputy-dashboard";
 
-export default async function LeadDashboardPage() {
+export default async function DeputyDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -12,12 +12,12 @@ export default async function LeadDashboardPage() {
 
   const userRole = user.user_metadata?.role || "student";
 
-  // Redirect if user is not lead
-  if (userRole.toLowerCase() !== "lead") {
+  // Redirect if user is not deputy
+  if (userRole.toLowerCase() !== "deputy") {
     redirect(`/dashboard/${userRole.toLowerCase()}`);
   }
 
   return (
-    <LeadDashboard user={user} />
+    <DeputyDashboard user={user} />
   );
 }

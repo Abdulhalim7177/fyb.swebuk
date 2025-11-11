@@ -47,22 +47,21 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    const userRole = user.user_metadata?.role?.toLowerCase() || "student"; // Use user_metadata instead of profiles
 
-    const userRole = profile?.role?.toLowerCase() || "student"; // Default to 'student' if role is not found
+    // Protect role-based dashboard main pages (not sub-routes)
+    if (request.nextUrl.pathname.startsWith('/dashboard/')) {
+      const pathSegments = request.nextUrl.pathname.split('/');
+      const userRoleSegment = pathSegments[2]; // Get the role from /dashboard/{role}
 
-    // Protect admin routes
-    if (
-      request.nextUrl.pathname.startsWith('/admin') &&
-      userRole !== 'admin'
-    ) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/';
-      return NextResponse.redirect(url);
+      // Only check main dashboard pages, not sub-routes like /dashboard/admin/users
+      if (userRoleSegment &&
+          userRoleSegment !== userRole &&
+          pathSegments.length === 3) { // Only apply to /dashboard/{role}, not /dashboard/{role}/*
+        const url = request.nextUrl.clone();
+        url.pathname = `/dashboard/${userRole}`;
+        return NextResponse.redirect(url);
+      }
     }
 
     // Redirect authenticated users away from auth pages
@@ -71,7 +70,7 @@ export async function updateSession(request: NextRequest) {
       request.nextUrl.pathname.startsWith("/auth/sign-up")
     ) {
       const url = request.nextUrl.clone();
-      url.pathname = userRole === 'admin' ? '/admin' : `/${userRole}`;
+      url.pathname = `/dashboard/${userRole}`;
       return NextResponse.redirect(url);
     }
   }

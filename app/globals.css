@@ -74,3 +74,23 @@
     background-size: 20px 20px;
   }
 }
+
+/* Theme-specific styles */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Theme selector animation */
+[data-theme-selector-bg] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  z-index: -1;
+}

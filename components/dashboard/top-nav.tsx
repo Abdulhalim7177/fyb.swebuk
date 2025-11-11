@@ -57,8 +57,10 @@ export function TopNav({ user, onMenuClick }: TopNavProps) {
             {["admin", "staff"].includes(userRole.toLowerCase()) ? (
               <>
                 <Link href="/dashboard" className="rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-hover">Dashboard</Link>
-                <Link href="#" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Clubs</Link>
-                <Link href="#" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Events</Link>
+                <Link href="/dashboard/admin/users" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Users</Link>
+                <Link href="/dashboard/admin/staff" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Staff</Link>
+                <Link href="/dashboard/clusters" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Clusters</Link>
+                <Link href="/dashboard/projects" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Projects</Link>
               </>
             ) : (
               <>

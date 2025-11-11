@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/contexts/theme-context";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -27,10 +27,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
+          defaultTheme="system"
+          storageKey="ui-theme"
         >
           {children}
         </ThemeProvider>
