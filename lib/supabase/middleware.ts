@@ -47,7 +47,21 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (user) {
-    const userRole = user.user_metadata?.role?.toLowerCase() || "student"; // Use user_metadata instead of profiles
+    // Fetch role from profiles table instead of user metadata
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    let userRole = 'student'; // default role
+    if (profileError || !profileData) {
+      console.error('Error fetching profile or profile not found:', profileError);
+      // Fallback to user metadata if profile is not found
+      userRole = user.user_metadata?.role?.toLowerCase() || "student";
+    } else {
+      userRole = profileData.role?.toLowerCase() || 'student';
+    }
 
     // Protect role-based dashboard main pages (not sub-routes)
     if (request.nextUrl.pathname.startsWith('/dashboard/')) {

@@ -95,3 +95,25 @@ export async function createUser(email: string, password: string, fullName: stri
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }
+
+export async function getUserRole(userId: string) {
+  const supabase = await createClient();
+
+  try {
+    const { data: profileData, error } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user role:", error);
+      return null;
+    }
+
+    return profileData?.role || "student";
+  } catch (error) {
+    console.error("Unexpected error getting user role:", error);
+    return null;
+  }
+}
