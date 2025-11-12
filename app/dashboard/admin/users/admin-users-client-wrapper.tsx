@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { UserTable } from "./user-table";
 import { CreateUserDialog } from "./create-user-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -13,16 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Users, UserCheck, UserX } from "lucide-react";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string;
-  role: string;
-  created_at: string;
-  email_confirmed_at: string | null;
-}
+import { Users, UserCheck, UserX, ShieldCheck, UserSquare } from "lucide-react";
+import { UserProfile } from "./page"; // Import the shared interface from page.tsx
 
 interface AdminUsersClientWrapperProps {
   initialProfiles: UserProfile[];
@@ -33,32 +26,25 @@ export default function AdminUsersClientWrapper({
   initialProfiles,
   currentUserRole,
 }: AdminUsersClientWrapperProps) {
+  const router = useRouter();
   const [profiles, setProfiles] = useState<UserProfile[]>(initialProfiles);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  useEffect(() => {
-    const fetchProfiles = async () => {
-      const supabase = createClient();
-      const { data: newProfiles } = await supabase.from("profiles").select("*");
-      if (newProfiles) {
-        setProfiles(newProfiles);
-      }
-    };
-
-    if (refreshTrigger > 0) {
-      fetchProfiles();
-    }
-  }, [refreshTrigger]);
-
   const handleUpdate = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    // Re-fetches server component data
+    router.refresh();
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setRoleFilter("all");
+    setStatusFilter("all");
   };
 
   const filteredProfiles = useMemo(() => {
-    return profiles
+    return initialProfiles // Filter the original list, not the state one
       .filter((profile) => {
         if (roleFilter === "all") return true;
         return profile.role === roleFilter;
@@ -78,19 +64,23 @@ export default function AdminUsersClientWrapper({
           email.toLowerCase().includes(searchTerm.toLowerCase())
         );
       });
-  }, [profiles, searchTerm, roleFilter, statusFilter]);
+  }, [initialProfiles, searchTerm, roleFilter, statusFilter]);
 
   const stats = useMemo(() => {
-    const totalUsers = profiles.length;
-    const activeUsers = profiles.filter((p) => !!p.email_confirmed_at).length;
+    const totalUsers = initialProfiles.length;
+    const activeUsers = initialProfiles.filter((p) => !!p.email_confirmed_at).length;
     const pendingUsers = totalUsers - activeUsers;
-    return { totalUsers, activeUsers, pendingUsers };
-  }, [profiles]);
+    const roleCounts = initialProfiles.reduce((acc, profile) => {
+      acc[profile.role] = (acc[profile.role] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return { totalUsers, activeUsers, pendingUsers, roleCounts };
+  }, [initialProfiles]);
 
   const uniqueRoles = useMemo(() => {
-    const roles = new Set(profiles.map(p => p.role));
+    const roles = new Set(initialProfiles.map(p => p.role));
     return Array.from(roles);
-  }, [profiles]);
+  }, [initialProfiles]);
 
   return (
     <div className="space-y-6">
@@ -104,11 +94,11 @@ export default function AdminUsersClientWrapper({
       </div>
 
       {/* Stat Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalUsers}</div>
@@ -117,7 +107,7 @@ export default function AdminUsersClientWrapper({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
+            <UserCheck className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeUsers}</div>
@@ -126,16 +116,30 @@ export default function AdminUsersClientWrapper({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Users</CardTitle>
-            <UserX className="h-4 w-4 text-muted-foreground" />
+            <UserX className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.pendingUsers}</div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Roles</CardTitle>
+            <ShieldCheck className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent className="text-xs text-muted-foreground">
+            {Object.entries(stats.roleCounts).map(([role, count]) => (
+              <div key={role} className="flex justify-between">
+                <span>{role.charAt(0).toUpperCase() + role.slice(1)}:</span>
+                <span className="font-bold">{count}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filter and Action Bar */}
-      <div className="flex flex-col md:flex-row items-center gap-4">
+      <div className="flex flex-col md:flex-row items-center gap-2">
         <div className="flex-1 w-full">
           <Input
             placeholder="Filter by name or email..."
@@ -144,9 +148,9 @@ export default function AdminUsersClientWrapper({
             className="w-full"
           />
         </div>
-        <div className="flex gap-4 w-full md:w-auto">
+        <div className="flex gap-2 w-full md:w-auto">
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="w-full md:w-[160px]">
               <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
@@ -157,7 +161,7 @@ export default function AdminUsersClientWrapper({
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="w-full md:w-[160px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -166,6 +170,7 @@ export default function AdminUsersClientWrapper({
               <SelectItem value="pending">Pending</SelectItem>
             </SelectContent>
           </Select>
+          <Button variant="outline" onClick={handleResetFilters}>Reset</Button>
         </div>
         <CreateUserDialog
           onCreate={handleUpdate}

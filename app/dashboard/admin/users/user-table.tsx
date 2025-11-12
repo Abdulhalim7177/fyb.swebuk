@@ -9,8 +9,14 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,16 +34,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string;
-  role: string;
-  created_at: string;
-  email_confirmed_at: string | null;
-}
+import { MoreHorizontal, User as UserIcon } from "lucide-react";
+import { UserProfile } from "./page"; // Import the shared interface
 
 interface UserTableProps {
   profiles: UserProfile[];
@@ -48,6 +48,7 @@ interface UserTableProps {
 export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProps) {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null);
+  const [viewingUser, setViewingUser] = useState<UserProfile | null>(null);
   const [editFormData, setEditFormData] = useState({
     fullName: "",
     role: "student",
@@ -65,6 +66,10 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
 
   const handleDelete = (user: UserProfile) => {
     setDeletingUser(user);
+  };
+  
+  const handleView = (user: UserProfile) => {
+    setViewingUser(user);
   };
 
   const handleSaveEdit = async () => {
@@ -129,14 +134,19 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {profiles?.map((profile) => (
               <TableRow key={profile.id}>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium flex items-center gap-2">
+                  <Avatar>
+                    <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || ""} />
+                    <AvatarFallback>
+                      {profile.full_name ? profile.full_name.charAt(0).toUpperCase() : <UserIcon size={16} />}
+                    </AvatarFallback>
+                  </Avatar>
                   {profile.full_name || "N/A"}
                 </TableCell>
                 <TableCell>{profile.email || "N/A"}</TableCell>
@@ -149,8 +159,6 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
                         ? "default"
                         : profile.role === "lead"
                         ? "secondary"
-                        : profile.role === "deputy"
-                        ? "outline"
                         : "outline"
                     }
                   >
@@ -158,38 +166,66 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">
+                  <Badge variant={profile.email_confirmed_at ? "default" : "outline"}>
                     {profile.email_confirmed_at ? "Active" : "Pending"}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  {new Date(profile.created_at).toLocaleDateString()}
-                </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(profile)}
-                    >
-                      Edit
-                    </Button>
-                    {(currentUserRole === "admin" || profile.role !== "admin") && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(profile)}
-                      >
-                        Delete
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
                       </Button>
-                    )}
-                  </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => handleView(profile)}>View</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleEdit(profile)}>Edit</DropdownMenuItem>
+                      {(currentUserRole === "admin" || profile.role !== "admin") && (
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(profile)}
+                          className="text-red-500"
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      {/* View User Dialog */}
+      <Dialog open={!!viewingUser} onOpenChange={(open) => !open && setViewingUser(null)}>
+        <DialogContent className="sm:max-w-[450px]">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 flex flex-col items-center gap-4">
+            <Avatar className="h-24 w-24">
+              <AvatarImage src={viewingUser?.avatar_url || undefined} alt={viewingUser?.full_name || ""} />
+              <AvatarFallback className="text-3xl">
+                {viewingUser?.full_name ? viewingUser.full_name.charAt(0).toUpperCase() : <UserIcon />}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center">
+              <p className="text-xl font-bold">{viewingUser?.full_name}</p>
+              <p className="text-sm text-muted-foreground">{viewingUser?.email}</p>
+            </div>
+            <div className="flex gap-2">
+              <Badge variant="secondary">{viewingUser?.role}</Badge>
+              <Badge variant={viewingUser?.email_confirmed_at ? "default" : "outline"}>
+                {viewingUser?.email_confirmed_at ? "Active" : "Pending"}
+              </Badge>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Edit User Dialog */}
       <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
         <DialogContent className="sm:max-w-[500px]">
@@ -277,7 +313,6 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
               Are you sure you want to delete this user? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-
           <div className="py-2">
             <div className="bg-muted p-4 rounded-lg">
               <p className="font-medium">{deletingUser?.full_name || "N/A"}</p>
@@ -290,9 +325,7 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
               )}
             </div>
           </div>
-
           {error && <p className="text-sm text-red-500">{error}</p>}
-
           <div className="flex justify-end gap-2 pt-4">
             <Button
               variant="outline"
