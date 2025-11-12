@@ -19,9 +19,9 @@ interface AdminUsersClientWrapperProps {
   currentUserRole: string;
 }
 
-export default function AdminUsersClientWrapper({ 
-  initialProfiles, 
-  currentUserRole 
+export default function AdminUsersClientWrapper({
+  initialProfiles,
+  currentUserRole
 }: AdminUsersClientWrapperProps) {
   const [profiles, setProfiles] = useState<UserProfile[]>(initialProfiles);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -35,7 +35,7 @@ export default function AdminUsersClientWrapper({
         setProfiles(newProfiles);
       }
     };
-    
+
     fetchProfiles();
   }, [refreshTrigger]);
 
@@ -47,9 +47,9 @@ export default function AdminUsersClientWrapper({
     <div className="flex-1 flex flex-col gap-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-bold text-4xl">Users</h2>
-        <CreateUserDialog 
-          onCreate={handleUpdate} 
-          currentUserRole={currentUserRole} 
+        <CreateUserDialog
+          onCreate={handleUpdate}
+          currentUserRole={currentUserRole}
         />
       </div>
       <UserTable
