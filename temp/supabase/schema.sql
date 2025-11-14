@@ -1,3 +1,0 @@
--- This file is maintained for reference only.
--- The actual schema is managed through migration files in the migrations/ directory.
--- The main schema can be found in: 20251109035442_init.sql
