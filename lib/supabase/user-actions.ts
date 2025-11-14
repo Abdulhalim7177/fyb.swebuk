@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin-actions";
 
 export async function updateUserProfile(userId: string, fullName: string, role: string) {
   // Using createClient from server which should have proper permissions for admin operations
@@ -13,7 +14,6 @@ export async function updateUserProfile(userId: string, fullName: string, role: 
       .update({
         full_name: fullName,
         role: role,
-        updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
 
@@ -50,8 +50,8 @@ export async function deleteUser(userId: string) {
 }
 
 export async function createUser(email: string, password: string, fullName: string, role: string) {
-  // Using createClient from server which should have proper permissions for admin operations
-  const supabase = await createClient();
+  // Use the admin client with service role key for admin operations
+  const supabase = await createAdminClient();
 
   try {
     // Create user in auth using admin client
@@ -70,15 +70,13 @@ export async function createUser(email: string, password: string, fullName: stri
     }
 
     if (authData.user) {
-      // Create profile record
+      // Create or update profile record using upsert
       const { error: profileError } = await supabase
         .from("profiles")
-        .insert({
+        .upsert({
           id: authData.user.id,
-          email: email,
           full_name: fullName,
           role: role,
-          updated_at: new Date().toISOString(),
         });
 
       if (profileError) {
@@ -115,5 +113,88 @@ export async function getUserRole(userId: string) {
   } catch (error) {
     console.error("Unexpected error getting user role:", error);
     return null;
+  }
+}
+
+export async function createStaffMember(email: string, password: string, fullName: string, role: string) {
+  // Check permissions using a user client first
+  const userClient = await createClient();
+
+  try {
+    // Check if the current user has permission to create staff members
+    const {
+      data: { user },
+    } = await userClient.auth.getUser();
+
+    if (!user) {
+      throw new Error("No authenticated user found");
+    }
+
+    // Verify the current user's role
+    const { data: profileData, error: profileError } = await userClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError) {
+      console.error("Error fetching current user role:", profileError);
+      throw new Error("Could not verify your permissions");
+    }
+
+    const currentUserRole = profileData.role;
+
+    // Determine if user has permission based on their role
+    // Admins can create any staff role, staff can create other staff
+    const hasPermission =
+      currentUserRole === "admin" ||
+      (currentUserRole === "staff" && role === "staff");
+
+    if (!hasPermission) {
+      throw new Error("You don't have permission to create users with this role");
+    }
+
+    // Use the admin client for actual creation (with service role key)
+    const adminClient = await createAdminClient();
+
+    // Create user in auth using admin client
+    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
+      email: email,
+      password: password,
+      emailConfirm: true, // Automatically confirm email
+      user_metadata: {
+        full_name: fullName,
+      },
+    });
+
+    if (authError) {
+      console.error("Error creating auth user:", authError);
+      throw new Error(`Failed to create auth user: ${authError.message}`);
+    }
+
+    if (authData.user) {
+      // Create or update profile record using upsert
+      const { error: profileError } = await adminClient
+        .from("profiles")
+        .upsert({
+          id: authData.user.id,
+          full_name: fullName,
+          role: role,
+        });
+
+      if (profileError) {
+        console.error("Error creating profile:", profileError);
+        // Clean up by deleting the auth user if profile creation fails
+        await adminClient.auth.admin.deleteUser(authData.user.id);
+        throw new Error(`Failed to create user profile: ${profileError.message}`);
+      }
+
+      return { success: true, userId: authData.user.id };
+    } else {
+      throw new Error("No user data returned from auth creation");
+    }
+  } catch (error) {
+    console.error("Unexpected error creating staff member:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }

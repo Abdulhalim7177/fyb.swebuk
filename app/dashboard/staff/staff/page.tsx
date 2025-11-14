@@ -32,8 +32,8 @@ export default async function StaffManagementPage() {
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.role !== "admin") {
-    // Only admins can manage staff
+  // Only staff and admin roles can manage staff members
+  if (!profile || (profile.role !== "staff" && profile.role !== "admin")) {
     return redirect("/");
   }
 

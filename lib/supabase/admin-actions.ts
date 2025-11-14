@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 // Create a separate client for admin operations using the service role key
 export async function createAdminClient() {
@@ -14,7 +14,7 @@ export async function createAdminClient() {
     throw new Error("Missing environment variable: SUPABASE_SERVICE_ROLE_KEY");
   }
 
-  return createClient(supabaseUrl, supabaseKey);
+  return createSupabaseClient(supabaseUrl, supabaseKey);
 }
 
 export async function updateUserProfile(userId: string, fullName: string, role: string) {

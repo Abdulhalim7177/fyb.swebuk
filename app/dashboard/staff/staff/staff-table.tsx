@@ -72,7 +72,7 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
 
   const handleView = (user: UserProfile) => {
     setViewingUser(user);
-
+    
     // Fetch the signed URL for the user's avatar if it exists
     if (user.avatar_url) {
       const fetchAvatarUrl = async () => {

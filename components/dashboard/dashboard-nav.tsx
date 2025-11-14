@@ -73,8 +73,15 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
       case "admin":
         return adminNav;
       case "staff":
-        // Assuming staff has a similar but perhaps reduced set of admin-like privileges
-        return { "Content": adminNav.Content, "System": adminNav.System };
+        // Staff can have access to manage users and staff members
+        return {
+          "Content": adminNav.Content,
+          "Management": [
+            { href: "/dashboard/staff/users", label: "User Management", icon: Users },
+            { href: "/dashboard/staff/staff", label: "Staff Management", icon: UserCog },
+          ],
+          "System": adminNav.System
+        };
       case "lead":
         // Lead-specific navigation can be added here
         return { 
