@@ -3,18 +3,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin-actions";
 
-export async function updateUserProfile(userId: string, fullName: string, role: string) {
+export async function updateUserProfile(userId: string, fullName: string, role: string, academicLevel?: string, department?: string, faculty?: string, institution?: string, linkedinUrl?: string, githubUrl?: string) {
   // Using createClient from server which should have proper permissions for admin operations
   const supabase = await createClient();
 
   try {
+    // Prepare update object with only provided values
+    const updateObj: any = {
+      full_name: fullName,
+      role: role,
+    };
+
+    // Add academic fields if they are provided
+    if (academicLevel !== undefined) updateObj.academic_level = academicLevel;
+    if (department !== undefined) updateObj.department = department;
+    if (faculty !== undefined) updateObj.faculty = faculty;
+    if (institution !== undefined) updateObj.institution = institution;
+    if (linkedinUrl !== undefined) updateObj.linkedin_url = linkedinUrl;
+    if (githubUrl !== undefined) updateObj.github_url = githubUrl;
+
     // Update the profile table with new information
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({
-        full_name: fullName,
-        role: role,
-      })
+      .update(updateObj)
       .eq("id", userId);
 
     if (profileError) {
@@ -49,7 +60,18 @@ export async function deleteUser(userId: string) {
   }
 }
 
-export async function createUser(email: string, password: string, fullName: string, role: string) {
+export async function createUser(
+  email: string,
+  password: string,
+  fullName: string,
+  role: string,
+  academicLevel?: string,
+  department?: string,
+  faculty?: string,
+  institution?: string,
+  linkedinUrl?: string,
+  githubUrl?: string
+) {
   // Use the admin client with service role key for admin operations
   const supabase = await createAdminClient();
 
@@ -70,14 +92,25 @@ export async function createUser(email: string, password: string, fullName: stri
     }
 
     if (authData.user) {
+      // Prepare profile object with all fields
+      const profileObj: any = {
+        id: authData.user.id,
+        full_name: fullName,
+        role: role,
+      };
+
+      // Add academic fields if they are provided
+      if (academicLevel !== undefined) profileObj.academic_level = academicLevel;
+      if (department !== undefined) profileObj.department = department;
+      if (faculty !== undefined) profileObj.faculty = faculty;
+      if (institution !== undefined) profileObj.institution = institution;
+      if (linkedinUrl !== undefined) profileObj.linkedin_url = linkedinUrl;
+      if (githubUrl !== undefined) profileObj.github_url = githubUrl;
+
       // Create or update profile record using upsert
       const { error: profileError } = await supabase
         .from("profiles")
-        .upsert({
-          id: authData.user.id,
-          full_name: fullName,
-          role: role,
-        });
+        .upsert(profileObj);
 
       if (profileError) {
         console.error("Error creating profile:", profileError);

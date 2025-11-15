@@ -15,7 +15,7 @@ export default async function ProfilePage() {
   // Fetch role from profiles table to determine where to redirect
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, academic_level")
     .eq("id", user.id)
     .single();
 
@@ -25,7 +25,7 @@ export default async function ProfilePage() {
   }
 
   const userRole = profileData.role?.toLowerCase() || "student";
-  
+
   // Redirect to the role-specific profile page
   redirect(`/dashboard/${userRole}/profile`);
 }

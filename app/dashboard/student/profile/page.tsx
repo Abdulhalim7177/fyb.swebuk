@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import UpdateProfileForm from "@/components/update-profile-form";
+import AcademicProfileDisplay from "@/components/academic-profile-display";
 import {
   Card,
   CardContent,
@@ -59,10 +60,15 @@ export default async function StudentProfilePage() {
         console.warn('Storage timeout or server error - using fallback avatar');
       }
       // Fallback to public URL
-      const { data: publicData } = await supabase.storage
-        .from("avatars")
-        .getPublicUrl(profileData.avatar_url);
-      avatarPublicUrl = publicData?.publicUrl || null;
+      try {
+        const { data: publicData } = await supabase.storage
+          .from("avatars")
+          .getPublicUrl(profileData.avatar_url);
+        avatarPublicUrl = publicData?.publicUrl || null;
+      } catch (publicUrlError: any) {
+        console.error("Error getting public URL:", publicUrlError);
+        avatarPublicUrl = null; // If both methods fail, set to null
+      }
     }
   }
 
@@ -83,13 +89,14 @@ export default async function StudentProfilePage() {
   return (
     <div className="flex-1 w-full flex flex-col gap-12 items-center">
       <div className="w-full max-w-4xl mx-auto">
-        <div className="py-6 font-bold text-center bg-[oklch(92.2% 0 0)]/[0.7] backdrop-blur-sm border-b border-border">
+        <div className="py-6 font-bold text-center bg-background backdrop-blur-sm border-b border-border">
           Student Profile Settings
         </div>
       </div>
 
       <div className="flex-1 flex flex-col gap-8 max-w-4xl px-3 w-full">
         <main className="flex-1 flex flex-col gap-6 w-full">
+          <AcademicProfileDisplay />
           <Card className="w-full">
             <CardHeader>
               <CardTitle className="text-2xl">Edit Profile</CardTitle>

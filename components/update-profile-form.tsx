@@ -13,6 +13,12 @@ type Profile = {
   id: string;
   full_name: string;
   avatar_url: string;
+  academic_level?: string;
+  department?: string;
+  faculty?: string;
+  institution?: string;
+  linkedin_url?: string;
+  github_url?: string;
 };
 
 export default function UpdateProfileForm({
@@ -26,6 +32,12 @@ export default function UpdateProfileForm({
   const router = useRouter();
   const [fullName, setFullName] = useState(profile.full_name || "");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [academicLevel, setAcademicLevel] = useState(profile.academic_level || "student");
+  const [department, setDepartment] = useState(profile.department || "Software Engineering");
+  const [faculty, setFaculty] = useState(profile.faculty || "Faculty of Computing");
+  const [institution, setInstitution] = useState(profile.institution || "Bayero University");
+  const [linkedinUrl, setLinkedinUrl] = useState(profile.linkedin_url || "");
+  const [githubUrl, setGithubUrl] = useState(profile.github_url || "");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -52,18 +64,23 @@ export default function UpdateProfileForm({
             console.error("Error getting signed avatar URL:", error);
             // Fallback to getPublicUrl if createSignedUrl fails
             // For local development, sometimes we need to construct the URL manually
-            const { data: publicData } = await supabase.storage
-              .from("avatars")
-              .getPublicUrl(profile.avatar_url);
+            try {
+              const { data: publicData } = await supabase.storage
+                .from("avatars")
+                .getPublicUrl(profile.avatar_url);
 
-            if (publicData?.publicUrl) {
-              // Normalize hostname to ensure consistency with what works in other components
-              const normalizedPublicUrl = publicData.publicUrl.replace('localhost', '127.0.0.1');
-              setAvatarUrl(normalizedPublicUrl);
-            } else {
-              // Fallback for local development - manually construct URL if needed
-              console.warn("Could not generate public URL, image may not display properly in local development");
-              setAvatarUrl(null);
+              if (publicData?.publicUrl) {
+                // Normalize hostname to ensure consistency with what works in other components
+                const normalizedPublicUrl = publicData.publicUrl.replace('localhost', '127.0.0.1');
+                setAvatarUrl(normalizedPublicUrl);
+              } else {
+                // Fallback for local development - manually construct URL if needed
+                console.warn("Could not generate public URL, image may not display properly in local development");
+                setAvatarUrl(null);
+              }
+            } catch (publicUrlError: any) {
+              console.error("Error getting public avatar URL:", publicUrlError);
+              setAvatarUrl(null); // Set to null if both methods fail
             }
           } else if (data?.signedUrl) {
             // Normalize hostname to ensure consistency with what works in other components
@@ -71,12 +88,17 @@ export default function UpdateProfileForm({
             setAvatarUrl(normalizedSignedUrl);
           } else {
             // Fallback to getPublicUrl if signed URL doesn't exist
-            const { data: publicData } = await supabase.storage
-              .from("avatars")
-              .getPublicUrl(profile.avatar_url);
-            // Normalize hostname to ensure consistency
-            const normalizedPublicUrl = publicData?.publicUrl?.replace('localhost', '127.0.0.1') || null;
-            setAvatarUrl(normalizedPublicUrl);
+            try {
+              const { data: publicData } = await supabase.storage
+                .from("avatars")
+                .getPublicUrl(profile.avatar_url);
+              // Normalize hostname to ensure consistency
+              const normalizedPublicUrl = publicData?.publicUrl?.replace('localhost', '127.0.0.1') || null;
+              setAvatarUrl(normalizedPublicUrl);
+            } catch (publicUrlError: any) {
+              console.error("Error getting public avatar URL:", publicUrlError);
+              setAvatarUrl(null);
+            }
           }
         } catch (err: any) {
           console.error("Unexpected error getting avatar URL:", err);
@@ -84,19 +106,37 @@ export default function UpdateProfileForm({
           if (err?.message?.includes('timeout') || err?.status === 500) {
             console.warn('Storage timeout or server error - using fallback avatar');
           }
-          // Fallback to getPublicUrl if createSignedUrl fails
-          const { data: publicData } = await supabase.storage
-            .from("avatars")
-            .getPublicUrl(profile.avatar_url);
-          // Normalize hostname to ensure consistency
-          const normalizedPublicUrl = publicData?.publicUrl?.replace('localhost', '127.0.0.1') || null;
-          setAvatarUrl(normalizedPublicUrl);
+          try {
+            // Fallback to getPublicUrl if createSignedUrl fails
+            const { data: publicData } = await supabase.storage
+              .from("avatars")
+              .getPublicUrl(profile.avatar_url);
+            // Normalize hostname to ensure consistency
+            const normalizedPublicUrl = publicData?.publicUrl?.replace('localhost', '127.0.0.1') || null;
+            setAvatarUrl(normalizedPublicUrl);
+          } catch (publicUrlError: any) {
+            console.error("Error getting public avatar URL:", publicUrlError);
+            setAvatarUrl(null); // Set to null if both methods fail
+          }
         }
       };
 
       fetchAvatarUrl();
+    } else {
+      // If no avatar_url is provided, set to null
+      setAvatarUrl(null);
     }
   }, [profile.avatar_url, supabase]);
+
+  // Set academic fields from profile
+  useEffect(() => {
+    setAcademicLevel(profile.academic_level || "student");
+    setDepartment(profile.department || "Software Engineering");
+    setFaculty(profile.faculty || "Faculty of Computing");
+    setInstitution(profile.institution || "Bayero University");
+    setLinkedinUrl(profile.linkedin_url || "");
+    setGithubUrl(profile.github_url || "");
+  }, [profile.academic_level, profile.department, profile.faculty, profile.institution, profile.linkedin_url, profile.github_url]);
 
   const handleUpload: React.ChangeEventHandler<HTMLInputElement> = async (
     event
@@ -149,7 +189,16 @@ export default function UpdateProfileForm({
 
       await supabase
         .from("profiles")
-        .update({ full_name: fullName, avatar_url })
+        .update({
+          full_name: fullName,
+          avatar_url,
+          academic_level: academicLevel,
+          department: department,
+          faculty: faculty,
+          institution: institution,
+          linkedin_url: linkedinUrl,
+          github_url: githubUrl
+        })
         .eq("id", user.id);
 
       // Update avatar URL after successful save by generating a new signed URL
@@ -258,6 +307,75 @@ export default function UpdateProfileForm({
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="academicLevel">Academic Level</Label>
+          <select
+            id="academicLevel"
+            value={academicLevel}
+            onChange={(e) => setAcademicLevel(e.target.value)}
+            className="border rounded-md px-3 py-2 w-full bg-background"
+          >
+            <option value="student">Student</option>
+            <option value="level_100">Level 100</option>
+            <option value="level_200">Level 200</option>
+            <option value="level_300">Level 300</option>
+            <option value="level_400">Level 400</option>
+            <option value="alumni">Alumni</option>
+          </select>
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="department">Department</Label>
+          <Input
+            id="department"
+            type="text"
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="faculty">Faculty</Label>
+          <Input
+            id="faculty"
+            type="text"
+            value={faculty}
+            onChange={(e) => setFaculty(e.target.value)}
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="institution">Institution</Label>
+          <Input
+            id="institution"
+            type="text"
+            value={institution}
+            onChange={(e) => setInstitution(e.target.value)}
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="linkedinUrl">LinkedIn Profile URL</Label>
+          <Input
+            id="linkedinUrl"
+            type="url"
+            value={linkedinUrl}
+            onChange={(e) => setLinkedinUrl(e.target.value)}
+            placeholder="https://linkedin.com/in/your-profile"
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="githubUrl">GitHub Profile URL</Label>
+          <Input
+            id="githubUrl"
+            type="url"
+            value={githubUrl}
+            onChange={(e) => setGithubUrl(e.target.value)}
+            placeholder="https://github.com/your-profile"
           />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}

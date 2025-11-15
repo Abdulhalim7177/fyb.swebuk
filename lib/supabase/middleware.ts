@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
+import { isEligibleForFYP } from "./level-access-utils";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -50,28 +51,40 @@ export async function updateSession(request: NextRequest) {
     // Fetch role from profiles table instead of user metadata
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, academic_level')
       .eq('id', user.id)
       .single();
 
     let userRole = 'student'; // default role
+    let userAcademicLevel = 'student'; // default academic level
     if (profileError || !profileData) {
       console.error('Error fetching profile or profile not found:', profileError);
       // Fallback to user metadata if profile is not found
       userRole = user.user_metadata?.role?.toLowerCase() || "student";
+      userAcademicLevel = user.user_metadata?.academic_level?.toLowerCase() || "student";
     } else {
       userRole = profileData.role?.toLowerCase() || 'student';
+      userAcademicLevel = profileData.academic_level?.toLowerCase() || 'student';
     }
 
-    // Protect role-based dashboard main pages (not sub-routes)
+    // Check if the request is for FYP access and user is not eligible
+    if (request.nextUrl.pathname.startsWith('/dashboard/student/fyp') ||
+        request.nextUrl.pathname.startsWith('/dashboard/student/final-year-project')) {
+      if (!isEligibleForFYP(userAcademicLevel)) {
+        // Redirect to dashboard if not eligible for FYP
+        const url = request.nextUrl.clone();
+        url.pathname = `/dashboard/${userRole}`;
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // Protect role-based dashboard main pages and sub-pages
     if (request.nextUrl.pathname.startsWith('/dashboard/')) {
       const pathSegments = request.nextUrl.pathname.split('/');
       const userRoleSegment = pathSegments[2]; // Get the role from /dashboard/{role}
 
-      // Only check main dashboard pages, not sub-routes like /dashboard/admin/users
-      if (userRoleSegment &&
-          userRoleSegment !== userRole &&
-          pathSegments.length === 3) { // Only apply to /dashboard/{role}, not /dashboard/{role}/*
+      // Check if user is trying to access another role's dashboard section (main or sub-pages)
+      if (userRoleSegment && userRoleSegment !== userRole) {
         const url = request.nextUrl.clone();
         url.pathname = `/dashboard/${userRole}`;
         return NextResponse.redirect(url);

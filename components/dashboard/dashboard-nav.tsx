@@ -55,6 +55,7 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/dashboard/admin/users", label: "Student Management", icon: Users },
         { href: "/dashboard/admin/staff", label: "Staff Management", icon: UserCog },
+        { href: "/dashboard/admin/academic-sessions", label: "Academic Sessions", icon: CalendarCog },
       ],
       "Content": [
         { href: "/dashboard/clusters", label: "Club Management", icon: Users2 },
@@ -73,31 +74,55 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
       case "admin":
         return adminNav;
       case "staff":
-        // Staff can have access to manage users and staff members
+        // Staff should have specific navigation, not the same as admin
         return {
-          "Content": adminNav.Content,
+          "Main": [
+            { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+            { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
+          ],
           "Management": [
             { href: "/dashboard/staff/users", label: "Student Management", icon: Users },
             { href: "/dashboard/staff/staff", label: "Staff Management", icon: UserCog },
+            { href: "/dashboard/staff/academic-sessions", label: "Academic Sessions", icon: CalendarCog },
           ],
-          "System": adminNav.System
+          "Content": [
+            { href: "/dashboard/clusters", label: "Club Management", icon: Users2 },
+            { href: "/dashboard/events", label: "Event Management", icon: CalendarCog },
+            { href: "/dashboard/projects", label: "Project Oversight", icon: FolderCheck },
+          ],
         };
       case "lead":
-        // Lead-specific navigation can be added here
-        return { 
-          "Content": adminNav.Content,
+        // Lead-specific navigation
+        return {
+          "Main": [
+            { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+            { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
+          ],
           "My Teams": [
             { href: "/dashboard/leads/teams", label: "My Teams", icon: Users2 },
             { href: "/dashboard/leads/projects", label: "My Projects", icon: FolderCheck },
+          ],
+          "Community": [
+            { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
+            { href: "/dashboard/events", label: "Events", icon: Calendar },
+            { href: "/dashboard/projects", label: "Projects", icon: FolderCheck },
           ]
         };
       case "deputy":
-        // Deputy-specific navigation can be added here
-        return { 
-          "Content": adminNav.Content,
+        // Deputy-specific navigation
+        return {
+          "Main": [
+            { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+            { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
+          ],
           "My Responsibilities": [
             { href: "/dashboard/deputies/tasks", label: "My Tasks", icon: FolderCheck },
             { href: "/dashboard/deputies/teams", label: "My Teams", icon: Users2 },
+          ],
+          "Community": [
+            { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
+            { href: "/dashboard/events", label: "Events", icon: Calendar },
+            { href: "/dashboard/projects", label: "Projects", icon: FolderCheck },
           ]
         };
       case "student":

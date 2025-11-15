@@ -10,6 +10,12 @@ export interface UserProfile {
   email: string;
   full_name: string | null;
   role: string;
+  academic_level: string | null;
+  department: string | null;
+  faculty: string | null;
+  institution: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
   created_at: string;
   email_confirmed_at: string | null;
   avatar_url?: string | null;
@@ -71,6 +77,12 @@ export default async function UsersPage() {
         email: authUser.email || "No email",
         full_name: userProfile?.full_name || authUser.user_metadata?.full_name || "No name",
         role: userProfile?.role || "student",
+        academic_level: userProfile?.academic_level || "student",
+        department: userProfile?.department || "Software Engineering",
+        faculty: userProfile?.faculty || "Faculty of Computing",
+        institution: userProfile?.institution || "Bayero University",
+        linkedin_url: userProfile?.linkedin_url || null,
+        github_url: userProfile?.github_url || null,
         created_at: authUser.created_at,
         email_confirmed_at: authUser.email_confirmed_at,
         avatar_url: userProfile?.avatar_url || null,

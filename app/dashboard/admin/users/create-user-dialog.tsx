@@ -35,6 +35,12 @@ export function CreateUserDialog({ onCreate, currentUserRole }: CreateUserDialog
     password: "",
     fullName: "",
     role: "student",
+    academicLevel: "student",
+    department: "Software Engineering",
+    faculty: "Faculty of Computing",
+    institution: "Bayero University",
+    linkedinUrl: "",
+    githubUrl: "",
   });
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -47,7 +53,13 @@ export function CreateUserDialog({ onCreate, currentUserRole }: CreateUserDialog
         formData.email,
         formData.password,
         formData.fullName,
-        formData.role
+        formData.role,
+        formData.academicLevel,
+        formData.department,
+        formData.faculty,
+        formData.institution,
+        formData.linkedinUrl,
+        formData.githubUrl
       );
 
       if (result.success) {
@@ -57,6 +69,12 @@ export function CreateUserDialog({ onCreate, currentUserRole }: CreateUserDialog
           password: "",
           fullName: "",
           role: "student",
+          academicLevel: "student",
+          department: "Software Engineering",
+          faculty: "Faculty of Computing",
+          institution: "Bayero University",
+          linkedinUrl: "",
+          githubUrl: "",
         });
         setIsDialogOpen(false);
         onCreate();
@@ -150,6 +168,92 @@ export function CreateUserDialog({ onCreate, currentUserRole }: CreateUserDialog
                   )}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="academicLevel" className="text-right">
+                Academic Level
+              </Label>
+              <Select
+                value={formData.academicLevel}
+                onValueChange={(value) => setFormData({ ...formData, academicLevel: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select academic level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="level_100">Level 100</SelectItem>
+                  <SelectItem value="level_200">Level 200</SelectItem>
+                  <SelectItem value="level_300">Level 300</SelectItem>
+                  <SelectItem value="level_400">Level 400</SelectItem>
+                  <SelectItem value="alumni">Alumni</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="department" className="text-right">
+                Department
+              </Label>
+              <Input
+                id="department"
+                type="text"
+                placeholder="e.g. Software Engineering"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="faculty" className="text-right">
+                Faculty
+              </Label>
+              <Input
+                id="faculty"
+                type="text"
+                placeholder="e.g. Faculty of Computing"
+                value={formData.faculty}
+                onChange={(e) => setFormData({ ...formData, faculty: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="institution" className="text-right">
+                Institution
+              </Label>
+              <Input
+                id="institution"
+                type="text"
+                placeholder="e.g. Bayero University"
+                value={formData.institution}
+                onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="linkedinUrl" className="text-right">
+                LinkedIn URL
+              </Label>
+              <Input
+                id="linkedinUrl"
+                type="url"
+                placeholder="https://linkedin.com/in/username"
+                value={formData.linkedinUrl}
+                onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="githubUrl" className="text-right">
+                GitHub URL
+              </Label>
+              <Input
+                id="githubUrl"
+                type="url"
+                placeholder="https://github.com/username"
+                value={formData.githubUrl}
+                onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
+                className="col-span-3"
+              />
             </div>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}

@@ -54,6 +54,12 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
   const [editFormData, setEditFormData] = useState({
     fullName: "",
     role: "staff",
+    academicLevel: "student",
+    department: "Software Engineering",
+    faculty: "Faculty of Computing",
+    institution: "Bayero University",
+    linkedinUrl: "",
+    githubUrl: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +69,12 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
     setEditFormData({
       fullName: user.full_name || "",
       role: user.role || "staff",
+      academicLevel: user.academic_level || "student",
+      department: user.department || "Software Engineering",
+      faculty: user.faculty || "Faculty of Computing",
+      institution: user.institution || "Bayero University",
+      linkedinUrl: user.linkedin_url || "",
+      githubUrl: user.github_url || "",
     });
   };
 
@@ -121,7 +133,13 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
       const result = await updateUserProfile(
         editingUser.id,
         editFormData.fullName,
-        editFormData.role
+        editFormData.role,
+        editFormData.academicLevel,
+        editFormData.department,
+        editFormData.faculty,
+        editFormData.institution,
+        editFormData.linkedinUrl,
+        editFormData.githubUrl
       );
 
       if (!result.success) {
@@ -242,11 +260,47 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
               <p className="text-xl font-bold">{viewingUser?.full_name}</p>
               <p className="text-sm text-muted-foreground">{viewingUser?.email}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 justify-center">
               <Badge variant="secondary">Staff</Badge>
+              <Badge variant={
+                viewingUser?.academic_level === 'level_400' || viewingUser?.academic_level === 'alumni'
+                  ? 'destructive'
+                  : 'default'
+              }>
+                {viewingUser?.academic_level === 'level_100' && 'Level 100'}
+                {viewingUser?.academic_level === 'level_200' && 'Level 200'}
+                {viewingUser?.academic_level === 'level_300' && 'Level 300'}
+                {viewingUser?.academic_level === 'level_400' && 'Level 400'}
+                {viewingUser?.academic_level === 'alumni' && 'Alumni'}
+                {(viewingUser?.academic_level === 'student' || !viewingUser?.academic_level) && 'Student'}
+              </Badge>
               <Badge variant={viewingUser?.email_confirmed_at ? "default" : "outline"}>
                 {viewingUser?.email_confirmed_at ? "Active" : "Pending"}
               </Badge>
+            </div>
+            <div className="w-full space-y-2 text-sm">
+              <div className="grid grid-cols-2 gap-2">
+                <p className="font-medium">Department:</p>
+                <p>{viewingUser?.department || "Not specified"}</p>
+                <p className="font-medium">Faculty:</p>
+                <p>{viewingUser?.faculty || "Not specified"}</p>
+                <p className="font-medium">Institution:</p>
+                <p>{viewingUser?.institution || "Not specified"}</p>
+                <p className="font-medium">LinkedIn:</p>
+                <p className="truncate">
+                  {viewingUser?.linkedin_url ?
+                    <a href={viewingUser.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      {viewingUser.linkedin_url.replace('https://', '')}
+                    </a> : "Not specified"}
+                </p>
+                <p className="font-medium">GitHub:</p>
+                <p className="truncate">
+                  {viewingUser?.github_url ?
+                    <a href={viewingUser.github_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      {viewingUser.github_url.replace('https://', '')}
+                    </a> : "Not specified"}
+                </p>
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -313,6 +367,87 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
                     )}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editAcademicLevel" className="text-right">
+                  Academic Level
+                </Label>
+                <Select
+                  value={editFormData.academicLevel}
+                  onValueChange={(value) => setEditFormData({ ...editFormData, academicLevel: value })}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select academic level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="level_100">Level 100</SelectItem>
+                    <SelectItem value="level_200">Level 200</SelectItem>
+                    <SelectItem value="level_300">Level 300</SelectItem>
+                    <SelectItem value="level_400">Level 400</SelectItem>
+                    <SelectItem value="alumni">Alumni</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editDepartment" className="text-right">
+                  Department
+                </Label>
+                <Input
+                  id="editDepartment"
+                  value={editFormData.department}
+                  onChange={(e) => setEditFormData({ ...editFormData, department: e.target.value })}
+                  className="col-span-3"
+                  placeholder="e.g. Software Engineering"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editFaculty" className="text-right">
+                  Faculty
+                </Label>
+                <Input
+                  id="editFaculty"
+                  value={editFormData.faculty}
+                  onChange={(e) => setEditFormData({ ...editFormData, faculty: e.target.value })}
+                  className="col-span-3"
+                  placeholder="e.g. Faculty of Computing"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editInstitution" className="text-right">
+                  Institution
+                </Label>
+                <Input
+                  id="editInstitution"
+                  value={editFormData.institution}
+                  onChange={(e) => setEditFormData({ ...editFormData, institution: e.target.value })}
+                  className="col-span-3"
+                  placeholder="e.g. Bayero University"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editLinkedinUrl" className="text-right">
+                  LinkedIn URL
+                </Label>
+                <Input
+                  id="editLinkedinUrl"
+                  value={editFormData.linkedinUrl}
+                  onChange={(e) => setEditFormData({ ...editFormData, linkedinUrl: e.target.value })}
+                  className="col-span-3"
+                  placeholder="https://linkedin.com/in/username"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editGithubUrl" className="text-right">
+                  GitHub URL
+                </Label>
+                <Input
+                  id="editGithubUrl"
+                  value={editFormData.githubUrl}
+                  onChange={(e) => setEditFormData({ ...editFormData, githubUrl: e.target.value })}
+                  className="col-span-3"
+                  placeholder="https://github.com/username"
+                />
               </div>
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
