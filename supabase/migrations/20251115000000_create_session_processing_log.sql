@@ -11,13 +11,13 @@ CREATE TABLE IF NOT EXISTS session_processing_log (
 ALTER TABLE session_processing_log ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for session_processing_log
-CREATE POLICY "Admins can view session processing logs." ON session_processing_log
+CREATE POLICY "Admin and staff can view session processing logs." ON session_processing_log
   FOR SELECT USING (
     auth.role() = 'service_role' OR
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('admin')
+      AND profiles.role IN ('admin', 'staff')
     )
   );
 
