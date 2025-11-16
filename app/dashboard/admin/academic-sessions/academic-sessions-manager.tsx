@@ -59,7 +59,7 @@ export default function AcademicSessionsManager() {
     try {
       const result = await getAcademicSessions();
       if (result.success) {
-        setSessions(result.sessions);
+        setSessions(result.sessions || []);
       } else {
         setError(result.error || "Failed to load academic sessions");
       }
