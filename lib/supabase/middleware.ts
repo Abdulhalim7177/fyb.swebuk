@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
+import { isEligibleForFYP } from "./level-access-utils";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -39,13 +40,73 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
+  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
+  // IMPORTANT: If you remove getUser() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    // Fetch role from profiles table instead of user metadata
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('role, academic_level')
+      .eq('id', user.id)
+      .single();
+
+    let userRole = 'student'; // default role
+    let userAcademicLevel = 'student'; // default academic level
+    if (profileError || !profileData) {
+      console.error('Error fetching profile or profile not found:', profileError);
+      // Fallback to user metadata if profile is not found
+      userRole = user.user_metadata?.role?.toLowerCase() || "student";
+      userAcademicLevel = user.user_metadata?.academic_level?.toLowerCase() || "student";
+    } else {
+      userRole = profileData.role?.toLowerCase() || 'student';
+      userAcademicLevel = profileData.academic_level?.toLowerCase() || 'student';
+    }
+
+    // Check if the request is for FYP access and user is not eligible
+    if (request.nextUrl.pathname.startsWith('/dashboard/student/fyp') ||
+        request.nextUrl.pathname.startsWith('/dashboard/student/final-year-project')) {
+      if (!isEligibleForFYP(userAcademicLevel)) {
+        // Redirect to dashboard if not eligible for FYP
+        const url = request.nextUrl.clone();
+        url.pathname = `/dashboard/${userRole}`;
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // Protect role-based dashboard main pages and sub-pages
+    if (request.nextUrl.pathname.startsWith('/dashboard/')) {
+      const pathSegments = request.nextUrl.pathname.split('/');
+      const userRoleSegment = pathSegments[2]; // Get the role from /dashboard/{role}
+
+      // Define known role segments
+      const knownRoleSegments = ['student', 'admin', 'staff', 'lead', 'deputy'];
+
+      // Check if the segment after /dashboard/ is a known role segment
+      if (userRoleSegment && knownRoleSegments.includes(userRoleSegment)) {
+        // If user is trying to access another role's dashboard section (main or sub-pages)
+        if (userRoleSegment !== userRole) {
+          const url = request.nextUrl.clone();
+          url.pathname = `/dashboard/${userRole}`;
+          return NextResponse.redirect(url);
+        }
+      }
+    }
+
+    // Redirect authenticated users away from auth pages
+    if (
+      request.nextUrl.pathname.startsWith("/auth/login") ||
+      request.nextUrl.pathname.startsWith("/auth/sign-up")
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/dashboard/${userRole}`;
+      return NextResponse.redirect(url);
+    }
+  }
 
   if (
     request.nextUrl.pathname !== "/" &&

@@ -1,0 +1,81 @@
+SWEBUK SYSTEM DESCRIPTION AND ARCHITECTURE
+
+Swebuk (Software Engineering Student Club) is an online tech community designed to connect software engineering students across various academic levels. It provides a digital environment for collaboration, project management, club (cluster) participation, event registration, blogging, and professional portfolio building. The system also offers administrative tools for staff to manage students, clusters, events, and projects efficiently.
+1. Major Features Overview
+Swebuk allows students to:
+- Join different clusters (clubs)
+- Collaborate on projects
+- Register for events
+- Receive notifications for cluster-related activities
+- Maintain a professional student profile and portfolio
+Staff members have administrative privileges, including:
+- Student management
+- Staff management
+- Cluster management
+- Event management
+- Project oversight
+- Repository control
+- System analysis
+- Reports and audit trails
+- Request approval and notifications
+2. User Roles and Permissions
+The system is based on role-based access control (RBAC), which defines permissions as follows:
+- Students: Access clusters, projects, chatrooms, portfolios, and blogs.
+- Lead Students: Manage cluster projects and approve member participation.
+- Staff (Managers): Oversee assigned clusters, approve projects, create posts, and manage notifications.
+- Administrators: Manage the overall system, user roles, analytics, and audit trails.
+3. Communication and Collaboration
+Each cluster and project includes a dedicated chatroom for collaboration. Students working on the same project can communicate directly, share resources, and receive updates in real-time. Staff and leads can moderate discussions and post important announcements.
+4. Blog and Notifications
+Staff members can create and publish blog posts related to academic and technical topics. Blog posts can be tagged to specific clusters, making them visible to members of those clusters. Students can comment and engage in discussions, promoting peer learning.
+Staff can also send notifications to students about events, cluster updates, or project milestones.
+5. Clusters and Project Management
+Each cluster has a lead student and a staff manager. Both can create and assign projects within their clusters. Students can request to join projects, but participation requires approval from either the lead or the staff manager.
+
+
+Student Levels and Final Year Project (FYP) Management
+To enhance academic relevance, Swebuk introduces academic levels and a dedicated Final Year Project (FYP) management module for Level 400 students.
+1. Student Levels
+Swebuk recognizes the following academic levels:
+- Level 100
+- Level 200
+- Level 300
+- Level 400: Final-year students (eligible for Final Year Project)
+
+Only Level 400 students can access the Final Year Project (FYP) module.
+2. Final Year Project Management
+The FYP module ensures that every final-year student completes a compulsory project under staff supervision. It facilitates project proposal submission, approval workflows, supervisor assignments, and progress tracking.
+Core Features
+For Level 400 Students:
+- Submit project topic proposals
+- Upload reports and documentation
+- View supervisor feedback and project status
+- Engage in project-specific chatrooms
+
+For Supervisors:
+- Review and approve project proposals
+- Provide feedback and grades
+- Monitor student progress
+
+For Administrators:
+- Assign supervisors
+- Track project completion and performance metrics
+
+System Architecture
+The Swebuk system follows a modular architecture with a Next.js frontend and a Supabase backend. It ensures real-time communication, secure authentication, and scalable data management.
+Frontend
+- Built using Next.js + Tailwind CSS for a modern, responsive, and intuitive UI.
+- Pages include dashboards for Students, Staff, Leads, and Administrators.
+- Chat and notifications implemented with Supabase Realtime.
+- Uses React Query for data fetching and caching.
+Backend
+- Powered by Supabase for authentication, database, and storage.
+- Implements role-based access using policies.
+- Includes Realtime features for chat, notifications, and updates.
+- Storage used for project documentation and reports.
+System Flow
+1. Students sign up and select their academic level.
+2. Students join clusters and participate in discussions.
+3. Final-year students access the FYP module to propose and track their projects.
+4. Supervisors review and provide feedback.
+5. Administrators oversee the full system through analytics dashboards.

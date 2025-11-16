@@ -40,7 +40,10 @@ export function SignUpForm({
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -48,7 +51,8 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      if (!user) throw new Error("No user found");
+      router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
