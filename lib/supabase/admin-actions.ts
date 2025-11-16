@@ -17,6 +17,25 @@ export async function createAdminClient() {
   return createSupabaseClient(supabaseUrl, supabaseKey);
 }
 
+export async function getDetailedClusters() {
+  const supabase = await createAdminClient();
+  try {
+    const { data, error } = await supabase
+      .from("detailed_clusters")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching detailed clusters:", error);
+      throw new Error(`Failed to fetch detailed clusters: ${error.message}`);
+    }
+    return { success: true, clusters: data };
+  } catch (error) {
+    console.error("Unexpected error fetching detailed clusters:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+  }
+}
+
 export async function updateUserProfile(
   userId: string,
   fullName: string,
@@ -147,6 +166,31 @@ export async function deleteUser(userId: string) {
     console.error("Unexpected error deleting user:", error);
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
+}
+
+export async function getAdminDashboardMetrics() {
+  const supabase = await createAdminClient();
+
+  const { count: totalUsers, error: usersError } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
+
+  const { count: totalClusters, error: clustersError } = await supabase
+    .from("clusters")
+    .select("*", { count: "exact", head: true });
+
+  if (usersError) {
+    console.error("Error fetching total users:", usersError);
+  }
+
+  if (clustersError) {
+    console.error("Error fetching total clusters:", clustersError);
+  }
+
+  return {
+    totalUsers: totalUsers ?? 0,
+    totalClusters: totalClusters ?? 0,
+  };
 }
 
 export async function createUser(

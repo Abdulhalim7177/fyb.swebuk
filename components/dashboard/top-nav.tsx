@@ -151,8 +151,8 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
                 <Link href="/dashboard" className="rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-hover">Dashboard</Link>
                 <Link href="/dashboard/portfolio" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Portfolio</Link>
                 <Link href="/dashboard/projects" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Projects</Link>
-                <Link href="#" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Clubs</Link>
-                <Link href="#" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Events</Link>
+                <Link href="/dashboard/clusters" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Clubs</Link>
+                <Link href="/dashboard/events" className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-hover hover:text-foreground">Events</Link>
               </>
             )}
           </nav>

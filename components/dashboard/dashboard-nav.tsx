@@ -36,7 +36,7 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
     const studentNav = {
       "Main": [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
+        { href: `/dashboard/student/profile`, label: "My Profile", icon: Users },
         { href: "/dashboard/portfolio", label: "Portfolio", icon: FileText },
       ],
       "Community": [
@@ -58,7 +58,7 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
         { href: "/dashboard/admin/academic-sessions", label: "Academic Sessions", icon: CalendarCog },
       ],
       "Content": [
-        { href: "/dashboard/clusters", label: "Club Management", icon: Users2 },
+        { href: "/dashboard/admin/clusters", label: "Club Management", icon: Users2 },
         { href: "/dashboard/events", label: "Event Management", icon: CalendarCog },
         { href: "/dashboard/projects", label: "Project Oversight", icon: FolderCheck },
         { href: "/dashboard/repository", label: "Repository Control", icon: GitPullRequest },
@@ -86,7 +86,7 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
             { href: "/dashboard/staff/academic-sessions", label: "Academic Sessions", icon: CalendarCog },
           ],
           "Content": [
-            { href: "/dashboard/clusters", label: "Club Management", icon: Users2 },
+            { href: "/dashboard/staff/clusters", label: "Cluster Management", icon: Users2 },
             { href: "/dashboard/events", label: "Event Management", icon: CalendarCog },
             { href: "/dashboard/projects", label: "Project Oversight", icon: FolderCheck },
           ],
@@ -95,34 +95,34 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
         // Lead-specific navigation
         return {
           "Main": [
-            { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-            { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
+            { href: "/dashboard/lead", label: "Dashboard", icon: LayoutDashboard },
+            { href: `/dashboard/lead/profile`, label: "My Profile", icon: Users },
           ],
-          "My Teams": [
-            { href: "/dashboard/leads/teams", label: "My Teams", icon: Users2 },
-            { href: "/dashboard/leads/projects", label: "My Projects", icon: FolderCheck },
-          ],
+          // "My Teams": [
+          //   { href: "/dashboard/leads/teams", label: "My Teams", icon: Users2 }, // TODO: Create this page
+          //   { href: "/dashboard/leads/projects", label: "My Projects", icon: FolderCheck }, // TODO: Create this page
+          // ],
           "Community": [
             { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
-            { href: "/dashboard/events", label: "Events", icon: Calendar },
-            { href: "/dashboard/projects", label: "Projects", icon: FolderCheck },
+            // { href: "/dashboard/events", label: "Events", icon: Calendar }, // TODO: Create this page
+            // { href: "/dashboard/projects", label: "Projects", icon: FolderCheck }, // TODO: Create this page
           ]
         };
       case "deputy":
         // Deputy-specific navigation
         return {
           "Main": [
-            { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-            { href: `/dashboard/${userRole}/profile`, label: "My Profile", icon: Users },
+            { href: "/dashboard/deputy", label: "Dashboard", icon: LayoutDashboard },
+            { href: `/dashboard/deputy/profile`, label: "My Profile", icon: Users },
           ],
-          "My Responsibilities": [
-            { href: "/dashboard/deputies/tasks", label: "My Tasks", icon: FolderCheck },
-            { href: "/dashboard/deputies/teams", label: "My Teams", icon: Users2 },
-          ],
+          // "My Responsibilities": [
+          //   { href: "/dashboard/deputies/tasks", label: "My Tasks", icon: FolderCheck }, // TODO: Create this page
+          //   { href: "/dashboard/deputies/teams", label: "My Teams", icon: Users2 }, // TODO: Create this page
+          // ],
           "Community": [
             { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
-            { href: "/dashboard/events", label: "Events", icon: Calendar },
-            { href: "/dashboard/projects", label: "Projects", icon: FolderCheck },
+            // { href: "/dashboard/events", label: "Events", icon: Calendar }, // TODO: Create this page
+            // { href: "/dashboard/projects", label: "Projects", icon: FolderCheck }, // TODO: Create this page
           ]
         };
       case "student":

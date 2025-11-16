@@ -1,5 +1,6 @@
 -- Update policy to allow both admin and staff to manage academic sessions
 DROP POLICY IF EXISTS "Admins can manage academic sessions." ON academic_sessions;
+DROP POLICY IF EXISTS "Admin and staff can manage academic sessions." ON academic_sessions;
 
 CREATE POLICY "Admin and staff can manage academic sessions." ON academic_sessions
   FOR ALL USING (

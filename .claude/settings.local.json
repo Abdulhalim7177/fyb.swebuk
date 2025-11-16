@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx supabase db reset)",
+      "Bash(npm install sonner)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

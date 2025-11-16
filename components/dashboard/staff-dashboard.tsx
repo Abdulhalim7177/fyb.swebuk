@@ -27,11 +27,18 @@ export function StaffDashboard({ user, fullName }: StaffDashboardProps) {
       badge: staffMetrics.pendingFyps,
     },
     {
+      title: "Cluster Management",
+      description: "Manage clusters and communities",
+      icon: Users,
+      href: "/dashboard/staff/clusters",
+      color: "bg-green-500",
+    },
+    {
       title: "Student Management",
       description: "Manage students in your clusters",
       icon: Users,
       href: "/dashboard/staff/users",
-      color: "bg-green-500",
+      color: "bg-purple-500",
     },
     {
       title: "Student Assessment",
