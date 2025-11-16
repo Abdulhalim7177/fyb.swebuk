@@ -214,9 +214,8 @@ export default function AcademicSessionsManager() {
                   <Select 
                     value={selectedSessionForPromotion || ""} 
                     onValueChange={setSelectedSessionForPromotion}
-                    className="col-span-3"
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full col-span-3">
                       <SelectValue placeholder="Select a session" />
                     </SelectTrigger>
                     <SelectContent>
@@ -303,9 +302,8 @@ export default function AcademicSessionsManager() {
                   <Select 
                     value={formData.semester} 
                     onValueChange={(value) => setFormData({...formData, semester: value})}
-                    className="col-span-3"
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="col-span-3">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
