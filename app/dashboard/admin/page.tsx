@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
+import { getAdminDashboardMetrics } from "@/lib/supabase/admin-actions";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
@@ -33,7 +34,9 @@ export default async function AdminDashboardPage() {
     redirect(`/dashboard/${userRole}`);
   }
 
+  const metrics = await getAdminDashboardMetrics();
+
   return (
-    <AdminDashboard user={user} fullName={fullName} />
+    <AdminDashboard user={user} fullName={fullName} metrics={metrics} />
   );
 }

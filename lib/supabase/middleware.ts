@@ -83,11 +83,17 @@ export async function updateSession(request: NextRequest) {
       const pathSegments = request.nextUrl.pathname.split('/');
       const userRoleSegment = pathSegments[2]; // Get the role from /dashboard/{role}
 
-      // Check if user is trying to access another role's dashboard section (main or sub-pages)
-      if (userRoleSegment && userRoleSegment !== userRole) {
-        const url = request.nextUrl.clone();
-        url.pathname = `/dashboard/${userRole}`;
-        return NextResponse.redirect(url);
+      // Define known role segments
+      const knownRoleSegments = ['student', 'admin', 'staff', 'lead', 'deputy'];
+
+      // Check if the segment after /dashboard/ is a known role segment
+      if (userRoleSegment && knownRoleSegments.includes(userRoleSegment)) {
+        // If user is trying to access another role's dashboard section (main or sub-pages)
+        if (userRoleSegment !== userRole) {
+          const url = request.nextUrl.clone();
+          url.pathname = `/dashboard/${userRole}`;
+          return NextResponse.redirect(url);
+        }
       }
     }
 

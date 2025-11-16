@@ -39,13 +39,15 @@ interface DetailedCluster {
 
 interface ClusterGridProps {
   userRole: string;
+  userId?: string;
   searchTerm: string;
   filterStatus: string;
-  onClusterUpdated?: () => void;
+  showJoinButton?: boolean;
 }
 
-export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdated }: ClusterGridProps) {
+export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJoinButton }: ClusterGridProps) {
   const [clusters, setClusters] = useState<DetailedCluster[]>([]);
+  const [userClusterIds, setUserClusterIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
@@ -53,13 +55,11 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
 
   const supabase = createClient(); // For client-side operations like delete
 
-  useEffect(() => {
-    fetchClusters();
-  }, [searchTerm, filterStatus, onClusterUpdated]); // Refetch when search/filter changes or cluster is updated
-
   const fetchClusters = async () => {
     setLoading(true);
+    console.log("Fetching clusters...");
     const { success, clusters: fetchedClusters, error } = await getDetailedClusters();
+    console.log("Fetched clusters:", { success, fetchedClusters, error });
     if (success && fetchedClusters) {
       const filtered = fetchedClusters.filter(cluster => {
         const matchesSearch = searchTerm === "" ||
@@ -80,6 +80,28 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
     setLoading(false);
   };
 
+  const fetchUserClusters = async () => {
+    if (userId) {
+      const { data, error } = await supabase
+        .from("cluster_members")
+        .select("cluster_id")
+        .eq("user_id", userId);
+
+      if (error) {
+        console.error("Error fetching user clusters:", error);
+      } else {
+        setUserClusterIds(data.map(item => item.cluster_id));
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchClusters();
+    if (showJoinButton) {
+      fetchUserClusters();
+    }
+  }, [searchTerm, filterStatus, showJoinButton, userId]);
+
   const handleDeleteCluster = async (clusterId: string) => {
     if (!confirm("Are you sure you want to delete this cluster? This action cannot be undone.")) {
       return;
@@ -95,7 +117,6 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
 
       toast.success("Cluster deleted successfully");
       fetchClusters(); // Re-fetch clusters after deletion
-      onClusterUpdated?.();
     } catch (error: any) {
       console.error("Error deleting cluster:", error);
       toast.error(error.message || "Failed to delete cluster");
@@ -110,6 +131,37 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
   const handleViewMembers = (cluster: DetailedCluster) => {
     setSelectedCluster(cluster);
     setMembersDialogOpen(true);
+  };
+
+  const handleJoinCluster = async (clusterId: string) => {
+    if (!userId) {
+      toast.error("You must be logged in to join a cluster.");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("cluster_members")
+        .insert({
+          cluster_id: clusterId,
+          user_id: userId,
+          status: "pending",
+        });
+
+      if (error) {
+        if (error.code === "23505") { // Unique constraint violation
+          toast.error("You have already requested to join this cluster.");
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success("Request to join cluster sent!");
+        fetchUserClusters(); // Re-fetch user clusters to update button state
+      }
+    } catch (error: any) {
+      console.error("Error joining cluster:", error);
+      toast.error(error.message || "Failed to join cluster.");
+    }
   };
 
   const getStatusVariant = (status: string) => {
@@ -140,53 +192,66 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
   return (
     <>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {clusters.map((cluster) => (
-          <Card key={cluster.id} className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="truncate">{cluster.name}</span>
-                <Badge variant={getStatusVariant(cluster.status)}>{cluster.status}</Badge>
-              </CardTitle>
-              <CardDescription className="line-clamp-2">{cluster.description || "No description"}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-muted-foreground" />
-                <span>Staff Manager: {cluster.staff_manager_name || <Badge variant="outline">N/A</Badge>}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-muted-foreground" />
-                <span>Lead Student: {cluster.lead_name || <Badge variant="outline">N/A</Badge>}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span>Deputy Lead: {cluster.deputy_name || <Badge variant="outline">N/A</Badge>}</span>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between items-center">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span>{cluster.members_count} Members</span>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <MoreHorizontal className="h-4 w-4" />
+        {clusters.map((cluster) => {
+          const canManage = userRole === 'admin' || userRole === 'staff';
+          return (
+            <Card key={cluster.id} className="flex flex-col">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="truncate">{cluster.name}</span>
+                  <Badge variant={getStatusVariant(cluster.status)}>{cluster.status}</Badge>
+                </CardTitle>
+                <CardDescription className="line-clamp-2">{cluster.description || "No description"}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-muted-foreground" />
+                  <span>Staff Manager: {cluster.staff_manager_name || <Badge variant="outline">N/A</Badge>}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Crown className="h-4 w-4 text-muted-foreground" />
+                  <span>Lead Student: {cluster.lead_name || <Badge variant="outline">N/A</Badge>}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span>Deputy Lead: {cluster.deputy_name || <Badge variant="outline">N/A</Badge>}</span>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Users className="h-4 w-4" />
+                  <span>{cluster.members_count} Members</span>
+                </div>
+                {showJoinButton && userRole === 'student' ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleJoinCluster(cluster.id)}
+                    disabled={userClusterIds.includes(cluster.id)}
+                  >
+                    {userClusterIds.includes(cluster.id) ? "Request Sent" : "Join"}
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => handleViewMembers(cluster)}>
-                    <Users className="mr-2 h-4 w-4" />
-                    Manage Members
-                  </DropdownMenuItem>
-                  {(userRole === "admin" || userRole === "staff") && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleEditCluster(cluster)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit Cluster
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => handleViewMembers(cluster)}>
+                        <Users className="mr-2 h-4 w-4" />
+                        Manage Members
                       </DropdownMenuItem>
+                      {canManage && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEditCluster(cluster)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Cluster
+                          </DropdownMenuItem>
+                        </>
+                      )}
                       {userRole === "admin" && (
                         <DropdownMenuItem
                           onClick={() => handleDeleteCluster(cluster.id)}
@@ -196,13 +261,13 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
                           Delete Cluster
                         </DropdownMenuItem>
                       )}
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </CardFooter>
-          </Card>
-        ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </CardFooter>
+            </Card>
+          )
+        })}
       </div>
 
       {selectedCluster && (
@@ -211,19 +276,15 @@ export function ClusterGrid({ userRole, searchTerm, filterStatus, onClusterUpdat
             cluster={selectedCluster}
             open={editDialogOpen}
             onOpenChange={setEditDialogOpen}
-            onClusterUpdated={() => {
-              fetchClusters();
-              onClusterUpdated?.();
-            }}
+            onClusterUpdated={fetchClusters}
           />
           <ClusterMembersDialog
             cluster={selectedCluster}
             open={membersDialogOpen}
             onOpenChange={setMembersDialogOpen}
-            onMembersUpdated={() => {
-              fetchClusters();
-              onClusterUpdated?.();
-            }}
+            onMembersUpdated={fetchClusters}
+            userId={userId}
+            userRole={userRole}
           />
         </>
       )}

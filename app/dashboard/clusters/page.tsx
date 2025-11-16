@@ -2,9 +2,6 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
-import { CreateClusterDialog } from "@/components/clusters/create-cluster-dialog";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClusterGrid } from "@/components/clusters/cluster-grid";
+import { Search } from "lucide-react";
 
 async function getUser() {
   const supabase = createClient();
@@ -38,12 +36,11 @@ async function getUser() {
   return { user, role: profileData.role || 'student' };
 }
 
-export default function StaffClustersPage() {
+export default function AllClustersPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -53,11 +50,6 @@ export default function StaffClustersPage() {
         const { user, role } = await getUser();
         setUser(user);
         setUserRole(role);
-        if (role === "staff") {
-          setAuthorized(true);
-        } else {
-          router.push("/dashboard");
-        }
       } catch (error) {
         console.error("Auth error:", error);
         router.push("/auth/login");
@@ -77,29 +69,15 @@ export default function StaffClustersPage() {
     );
   }
 
-  if (!authorized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">Access denied</div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Cluster Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">All Clusters</h1>
           <p className="text-muted-foreground">
-            Manage clusters you are assigned to and view all other clusters.
+            Browse and join clusters to get involved in the community.
           </p>
         </div>
-        <CreateClusterDialog onClusterCreated={() => window.location.reload()}>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Cluster
-          </Button>
-        </CreateClusterDialog>
       </div>
 
       <div className="flex items-center gap-4">
@@ -120,17 +98,17 @@ export default function StaffClustersPage() {
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="inactive">Inactive</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <Suspense fallback="Loading clusters...">
         <ClusterGrid
-          userRole={userRole || "staff"}
+          userRole={userRole || "student"}
           userId={user?.id}
           searchTerm={searchTerm}
           filterStatus={filterStatus}
+          showJoinButton={true}
         />
       </Suspense>
     </div>

@@ -149,6 +149,28 @@ export async function getUserRole(userId: string) {
   }
 }
 
+export async function getUserClusters(userId: string) {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("cluster_members")
+      .select("clusters(*)")
+      .eq("user_id", userId)
+      .eq("status", "approved");
+
+    if (error) {
+      console.error("Error fetching user clusters:", error);
+      return [];
+    }
+
+    return data.map((item: any) => item.clusters).filter(Boolean);
+  } catch (error) {
+    console.error("Unexpected error getting user clusters:", error);
+    return [];
+  }
+}
+
 export async function createStaffMember(email: string, password: string, fullName: string, role: string) {
   // Check permissions using a user client first
   const userClient = await createClient();

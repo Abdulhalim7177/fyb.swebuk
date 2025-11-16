@@ -7,13 +7,18 @@ import Link from "next/link";
 interface AdminDashboardProps {
   user: User;
   fullName?: string; // Pass full name from profile
+  metrics: {
+    totalStudents: number;
+    totalStaff: number;
+    totalClusters: number;
+  };
 }
 
-export function AdminDashboard({ user, fullName }: AdminDashboardProps) {
+export function AdminDashboard({ user, fullName, metrics }: AdminDashboardProps) {
   const systemMetrics = {
-    totalUsers: 245,
-    activeUsers: 189,
-    totalClusters: 8,
+    totalStudents: metrics.totalStudents,
+    totalStaff: metrics.totalStaff,
+    totalClusters: metrics.totalClusters,
     activeProjects: 23,
     pendingApprovals: 5,
     systemHealth: 98,
@@ -90,23 +95,23 @@ export function AdminDashboard({ user, fullName }: AdminDashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
             <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.totalUsers}</div>
-            <p className="text-xs text-gray-600">Registered users</p>
+            <div className="text-2xl font-bold">{systemMetrics.totalStudents}</div>
+            <p className="text-xs text-gray-600">Registered students</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Staff</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.activeUsers}</div>
-            <p className="text-xs text-gray-600">Last 30 days</p>
+            <div className="text-2xl font-bold">{systemMetrics.totalStaff}</div>
+            <p className="text-xs text-gray-600">Registered staff</p>
           </CardContent>
         </Card>
 

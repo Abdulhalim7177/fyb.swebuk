@@ -171,16 +171,26 @@ export async function deleteUser(userId: string) {
 export async function getAdminDashboardMetrics() {
   const supabase = await createAdminClient();
 
-  const { count: totalUsers, error: usersError } = await supabase
+  const { count: totalStudents, error: studentsError } = await supabase
     .from("profiles")
-    .select("*", { count: "exact", head: true });
+    .select("*", { count: "exact", head: true })
+    .eq("role", "student");
+
+  const { count: totalStaff, error: staffError } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true })
+    .in("role", ["staff", "admin"]); // Assuming admin is also considered staff for this metric
 
   const { count: totalClusters, error: clustersError } = await supabase
     .from("clusters")
     .select("*", { count: "exact", head: true });
 
-  if (usersError) {
-    console.error("Error fetching total users:", usersError);
+  if (studentsError) {
+    console.error("Error fetching total students:", studentsError);
+  }
+
+  if (staffError) {
+    console.error("Error fetching total staff:", staffError);
   }
 
   if (clustersError) {
@@ -188,7 +198,8 @@ export async function getAdminDashboardMetrics() {
   }
 
   return {
-    totalUsers: totalUsers ?? 0,
+    totalStudents: totalStudents ?? 0,
+    totalStaff: totalStaff ?? 0,
     totalClusters: totalClusters ?? 0,
   };
 }

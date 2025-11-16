@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { getUserClusters } from "@/lib/supabase/user-actions";
 
 interface DashboardNavProps {
   userId: string; // Pass userId instead of full user object
@@ -31,6 +33,17 @@ interface DashboardNavProps {
 export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSidebarOpen }: DashboardNavProps) {
   const pathname = usePathname();
   const userRole = userProfileRole || "student";
+  const [userClusters, setUserClusters] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (userRole === "student" && userId) {
+      const fetchClusters = async () => {
+        const clusters = await getUserClusters(userId);
+        setUserClusters(clusters);
+      };
+      fetchClusters();
+    }
+  }, [userId, userRole]);
 
   const getNavSections = () => {
     const studentNav = {
@@ -44,10 +57,11 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
         { href: "/dashboard/events", label: "Events", icon: Calendar },
         { href: "/dashboard/projects", label: "Projects", icon: FolderCheck },
       ],
-      "My Clubs": [
-        { href: "/dashboard/clusters/frontend", label: "Frontend Club", icon: () => <span className="h-2 w-2 rounded-full bg-blue-500" /> },
-        { href: "/dashboard/clusters/ai-ml", label: "AI/ML Club", icon: () => <span className="h-2 w-2 rounded-full bg-green-500" /> },
-      ],
+      "My Clubs": userClusters.map(cluster => ({
+        href: `/dashboard/clusters/${cluster.id}`,
+        label: cluster.name,
+        icon: () => <span className="h-2 w-2 rounded-full bg-blue-500" />,
+      })),
     };
 
     const adminNav = {

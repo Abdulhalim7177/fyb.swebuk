@@ -246,21 +246,31 @@ export default function AdminClustersPage() {
 
 
 
-      <Suspense fallback="Loading clusters...">
+            <Suspense fallback="Loading clusters...">
 
-        <ClusterGrid
 
-          userRole={userRole || "admin"}
 
-          searchTerm={searchTerm}
+              <ClusterGrid
 
-          filterStatus={filterStatus}
 
-          onClusterUpdated={() => window.location.reload()}
 
-        />
+                userRole={userRole || "admin"}
 
-      </Suspense>
+
+
+                searchTerm={searchTerm}
+
+
+
+                filterStatus={filterStatus}
+
+
+
+              />
+
+
+
+            </Suspense>
 
     </div>
 
