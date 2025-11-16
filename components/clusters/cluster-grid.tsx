@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 interface DetailedCluster {
   id: string;
@@ -195,77 +196,97 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
         {clusters.map((cluster) => {
           const canManage = userRole === 'admin' || userRole === 'staff';
           return (
-            <Card key={cluster.id} className="flex flex-col">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="truncate">{cluster.name}</span>
-                  <Badge variant={getStatusVariant(cluster.status)}>{cluster.status}</Badge>
-                </CardTitle>
-                <CardDescription className="line-clamp-2">{cluster.description || "No description"}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                  <span>Staff Manager: {cluster.staff_manager_name || <Badge variant="outline">N/A</Badge>}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Crown className="h-4 w-4 text-muted-foreground" />
-                  <span>Lead Student: {cluster.lead_name || <Badge variant="outline">N/A</Badge>}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>Deputy Lead: {cluster.deputy_name || <Badge variant="outline">N/A</Badge>}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between items-center">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  <span>{cluster.members_count} Members</span>
-                </div>
-                {showJoinButton && userRole === 'student' ? (
-                  <Button
-                    size="sm"
-                    onClick={() => handleJoinCluster(cluster.id)}
-                    disabled={userClusterIds.includes(cluster.id)}
-                  >
-                    {userClusterIds.includes(cluster.id) ? "Request Sent" : "Join"}
-                  </Button>
-                ) : (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleViewMembers(cluster)}>
-                        <Users className="mr-2 h-4 w-4" />
-                        Manage Members
-                      </DropdownMenuItem>
-                      {canManage && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleEditCluster(cluster)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Cluster
-                          </DropdownMenuItem>
-                        </>
-                      )}
-                      {userRole === "admin" && (
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteCluster(cluster.id)}
-                          className="text-destructive"
+            <Link href={`/dashboard/clusters/${cluster.id}`} key={cluster.id}>
+              <Card className="flex flex-col hover:shadow-md transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="truncate hover:underline">
+                      {cluster.name}
+                    </span>
+                    <Badge variant={getStatusVariant(cluster.status)}>{cluster.status}</Badge>
+                  </CardTitle>
+                  <CardDescription className="line-clamp-2">{cluster.description || "No description"}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-muted-foreground" />
+                    <span>Staff Manager: {cluster.staff_manager_name || <Badge variant="outline">N/A</Badge>}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Crown className="h-4 w-4 text-muted-foreground" />
+                    <span>Lead Student: {cluster.lead_name || <Badge variant="outline">N/A</Badge>}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>Deputy Lead: {cluster.deputy_name || <Badge variant="outline">N/A</Badge>}</span>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span>{cluster.members_count} Members</span>
+                  </div>
+                  {showJoinButton && userRole === 'student' ? (
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent navigation when clicking the join button
+                        handleJoinCluster(cluster.id);
+                      }}
+                      disabled={userClusterIds.includes(cluster.id)}
+                    >
+                      {userClusterIds.includes(cluster.id) ? "Request Sent" : "Join"}
+                    </Button>
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => e.preventDefault()} // Prevent navigation when clicking the dropdown
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Cluster
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.preventDefault(); // Prevent navigation when clicking menu items
+                          handleViewMembers(cluster);
+                        }}>
+                          <Users className="mr-2 h-4 w-4" />
+                          Manage Members
                         </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </CardFooter>
-            </Card>
+                        {canManage && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={(e) => {
+                              e.preventDefault(); // Prevent navigation when clicking menu items
+                              handleEditCluster(cluster);
+                            }}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Cluster
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        {userRole === "admin" && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent navigation when clicking menu items
+                              handleDeleteCluster(cluster.id);
+                            }}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Cluster
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </CardFooter>
+              </Card>
+            </Link>
           )
         })}
       </div>
