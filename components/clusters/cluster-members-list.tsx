@@ -46,10 +46,12 @@ export function ClusterMembersList({ clusterId, userRole, canManage }: ClusterMe
         setLoading(true);
 
         // Fetch cluster members using the detailed_cluster_members view (similar to cluster-members-dialog.tsx)
+        // Only show approved members since pending members are handled in the Requests tab
         const { data, error } = await supabase
           .from("detailed_cluster_members")
           .select("*")
           .eq("cluster_id", clusterId)
+          .eq("status", "approved")  // Only show approved members
           .order("joined_at", { ascending: false });
 
         if (error) {
@@ -88,50 +90,6 @@ export function ClusterMembersList({ clusterId, userRole, canManage }: ClusterMe
     }
   }, [clusterId]);
 
-  const handleApproveMember = async (memberId: string) => {
-    try {
-      const { error } = await supabase
-        .from("cluster_members")
-        .update({
-          status: "approved",
-          approved_at: new Date().toISOString()
-        })
-        .eq("id", memberId);
-
-      if (error) throw error;
-
-      toast.success("Member approved successfully");
-      // Refresh the members list
-      const updatedMembers = members.map(member =>
-        member.id === memberId ? { ...member, status: "approved", approved_at: new Date().toISOString() } : member
-      );
-      setMembers(updatedMembers);
-    } catch (error: any) {
-      console.error("Error approving member:", error);
-      toast.error("Failed to approve member");
-    }
-  };
-
-  const handleRejectMember = async (memberId: string) => {
-    try {
-      const { error } = await supabase
-        .from("cluster_members")
-        .update({ status: "rejected" })
-        .eq("id", memberId);
-
-      if (error) throw error;
-
-      toast.success("Member request rejected");
-      // Refresh the members list
-      const updatedMembers = members.map(member =>
-        member.id === memberId ? { ...member, status: "rejected" } : member
-      );
-      setMembers(updatedMembers);
-    } catch (error: any) {
-      console.error("Error rejecting member:", error);
-      toast.error("Failed to reject member");
-    }
-  };
 
   if (loading) {
     return (
@@ -174,24 +132,6 @@ export function ClusterMembersList({ clusterId, userRole, canManage }: ClusterMe
                 </div>
               </div>
 
-              {canManage && member.status === "pending" && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleApproveMember(member.id)}
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleRejectMember(member.id)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
 
               {canManage && member.status === "approved" && (
                 <Badge variant="default">{member.role.charAt(0).toUpperCase() + member.role.slice(1)}</Badge>

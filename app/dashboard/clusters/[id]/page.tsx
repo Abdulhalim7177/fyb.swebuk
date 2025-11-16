@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClusterMembersList } from "@/components/clusters/cluster-members-list";
 import { ClusterProjectsList } from "@/components/clusters/cluster-projects-list";
 import { ClusterEventsList } from "@/components/clusters/cluster-events-list";
+import { ClusterRequestsList } from "@/components/clusters/cluster-requests-list";
 
 interface DetailedCluster {
   id: string;
@@ -369,7 +370,7 @@ export default function ClusterInfoPage({ params }: { params: { id: string } }) 
         </div>
 
         <Tabs defaultValue="members" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="members" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Members ({cluster.members_count})
@@ -382,6 +383,10 @@ export default function ClusterInfoPage({ params }: { params: { id: string } }) 
               <Calendar className="h-4 w-4" />
               Events
             </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              Requests
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="members" className="mt-4">
             <ClusterMembersList clusterId={cluster.id} userRole={userRole || "student"} canManage={canManage} />
@@ -391,6 +396,9 @@ export default function ClusterInfoPage({ params }: { params: { id: string } }) 
           </TabsContent>
           <TabsContent value="events" className="mt-4">
             <ClusterEventsList clusterId={cluster.id} userRole={userRole || "student"} />
+          </TabsContent>
+          <TabsContent value="requests" className="mt-4">
+            <ClusterRequestsList clusterId={cluster.id} userRole={userRole || "student"} canManage={canManage} />
           </TabsContent>
         </Tabs>
       </div>
