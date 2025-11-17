@@ -276,10 +276,15 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    if (!cluster) {
+      toast.error("Cluster data not available");
+      return;
+    }
+
     try {
       const supabase = createClient();
-      
+
       const { error } = await supabase
         .from("clusters")
         .update({

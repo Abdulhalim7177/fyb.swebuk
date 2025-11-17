@@ -70,7 +70,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
             .eq("status", "pending")
             .order("joined_at", { ascending: false });
 
-          clusterMembersData = response.data;
+          clusterMembersData = response.data || [];
           clusterMembersError = response.error;
         } catch (err) {
           console.error("Exception during cluster members fetch:", err);
@@ -102,7 +102,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
               .select("id, full_name, email, academic_level")
               .in("id", userIds);
 
-            profileData = profileResponse.data;
+            profileData = profileResponse.data || [];
             profileError = profileResponse.error;
           } catch (err) {
             console.error("Exception during profile fetch:", err);
@@ -128,7 +128,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
                 full_name: 'User Not Found',
                 email: 'N/A',
                 academic_level: 'N/A',
-                type: 'member'
+                type: 'member' as const
               }))
             );
             return;
@@ -147,7 +147,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
               full_name: profile?.full_name || 'User Not Found',
               email: profile?.email || 'N/A',
               academic_level: profile?.academic_level || 'N/A',
-              type: 'member'
+              type: 'member' as const
             };
           });
 

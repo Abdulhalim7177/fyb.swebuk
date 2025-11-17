@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView, animate } from 'framer-motion';
+import { motion, useInView, useAnimation } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { Users, Code, Calendar, BookOpen, TrendingUp, Award } from 'lucide-react';
 
@@ -55,18 +55,14 @@ const stats = [
   }
 ];
 
-function AnimatedNumber({ value, suffix }) {
-  const ref = useRef(null);
+function AnimatedNumber({ value, suffix }: { value: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
 
+
   useEffect(() => {
-    if (isInView) {
-      animate(0, value, {
-        duration: 2,
-        onUpdate(latest) {
-          ref.current.textContent = `${Math.round(latest)}${suffix}`;
-        }
-      });
+    if (isInView && ref.current) {
+      ref.current.textContent = `${Math.round(value)}${suffix}`;
     }
   }, [isInView, value, suffix]);
 

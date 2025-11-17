@@ -277,7 +277,7 @@ export async function promoteStudentsToNextLevel(sessionId: string) {
         .from("profiles")
         .upsert(updates, {
           onConflict: 'id',
-          returning: 'minimal'
+          ignoreDuplicates: false
         });
 
       if (updateError) {

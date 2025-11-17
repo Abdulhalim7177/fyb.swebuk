@@ -35,32 +35,23 @@ import { toast } from "sonner";
 import { EditClusterDialog } from "./edit-cluster-dialog";
 import { ClusterMembersDialog } from "./cluster-members-dialog";
 
-interface Cluster {
+interface DetailedCluster {
   id: string;
   name: string;
   description: string;
-  lead_id: string | null;
-  deputy_id: string | null;
-  staff_manager_id: string | null;
   created_at: string;
-  updated_at: string;
-  created_by: string;
-  lead?: {
-    full_name: string;
-    email: string;
-  };
-  deputy?: {
-    full_name: string;
-    email: string;
-  };
-  staff_manager?: {
-    full_name: string;
-    email: string;
-  };
-  _count?: {
-    members: number;
-  };
+  lead_id: string | null;
+  lead_name: string | null;
+  lead_email: string | null;
+  deputy_id: string | null;
+  deputy_name: string | null;
+  deputy_email: string | null;
+  staff_manager_id: string | null;
+  staff_manager_name: string | null;
+  staff_manager_email: string | null;
+  members_count: number;
 }
+
 
 interface ClusterTableProps {
   userRole: string;
@@ -68,12 +59,12 @@ interface ClusterTableProps {
 }
 
 export function ClusterTable({ userRole, onClusterUpdated }: ClusterTableProps) {
-  const [clusters, setClusters] = useState<Cluster[]>([]);
+  const [clusters, setClusters] = useState<DetailedCluster[]>([]);
   const [loading, setLoading] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedCluster, setSelectedCluster] = useState<Cluster | null>(null);
+  const [selectedCluster, setSelectedCluster] = useState<DetailedCluster | null>(null);
   const [clusterToDelete, setClusterToDelete] = useState<string | null>(null);
 
   const supabase = createClient();
@@ -130,7 +121,7 @@ export function ClusterTable({ userRole, onClusterUpdated }: ClusterTableProps) 
             deputy,
             staff_manager: staffManager,
             _count: {
-              members: memberCount[0]?.count || 0,
+              members: memberCount?.count || 0,
             },
           };
         })
@@ -174,18 +165,18 @@ export function ClusterTable({ userRole, onClusterUpdated }: ClusterTableProps) 
     }
   };
 
-  const handleEditCluster = (cluster: Cluster) => {
+  const handleEditCluster = (cluster: DetailedCluster) => {
     setSelectedCluster(cluster);
     setEditDialogOpen(true);
   };
 
-  const handleViewMembers = (cluster: Cluster) => {
+  const handleViewMembers = (cluster: DetailedCluster) => {
     setSelectedCluster(cluster);
     setMembersDialogOpen(true);
   };
 
-  const getMemberCount = (cluster: Cluster) => {
-    return cluster.cluster_members?.length || 0;
+  const getMemberCount = (cluster: DetailedCluster) => {
+    return cluster.members_count || 0;
   };
 
   if (loading) {
@@ -223,11 +214,11 @@ export function ClusterTable({ userRole, onClusterUpdated }: ClusterTableProps) 
                   {cluster.description || "No description"}
                 </TableCell>
                 <TableCell>
-                  {cluster.staff_manager ? (
+                  {cluster.staff_manager_name ? (
                     <div>
-                      <div className="font-medium">{cluster.staff_manager.full_name}</div>
+                      <div className="font-medium">{cluster.staff_manager_name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {cluster.staff_manager.email}
+                        {cluster.staff_manager_email}
                       </div>
                     </div>
                   ) : (
@@ -235,11 +226,11 @@ export function ClusterTable({ userRole, onClusterUpdated }: ClusterTableProps) 
                   )}
                 </TableCell>
                 <TableCell>
-                  {cluster.lead ? (
+                  {cluster.lead_name ? (
                     <div>
-                      <div className="font-medium">{cluster.lead.full_name}</div>
+                      <div className="font-medium">{cluster.lead_name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {cluster.lead.email}
+                        {cluster.lead_email}
                       </div>
                     </div>
                   ) : (
@@ -247,11 +238,11 @@ export function ClusterTable({ userRole, onClusterUpdated }: ClusterTableProps) 
                   )}
                 </TableCell>
                 <TableCell>
-                  {cluster.deputy ? (
+                  {cluster.deputy_name ? (
                     <div>
-                      <div className="font-medium">{cluster.deputy.full_name}</div>
+                      <div className="font-medium">{cluster.deputy_name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {cluster.deputy.email}
+                        {cluster.deputy_email}
                       </div>
                     </div>
                   ) : (

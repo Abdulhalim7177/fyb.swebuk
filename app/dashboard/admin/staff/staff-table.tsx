@@ -92,14 +92,14 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
           const supabase = createClient();
           const { data, error } = await supabase.storage
             .from('avatars')
-            .createSignedUrl(user.avatar_url, 3600); // 1 hour expiry
+            .createSignedUrl(user.avatar_url!, 3600); // 1 hour expiry
 
           if (error) {
             console.error('Error creating signed URL for avatar:', error);
             // Fallback to getPublicUrl if createSignedUrl fails
             const { data: publicData } = await supabase.storage
               .from('avatars')
-              .getPublicUrl(user.avatar_url);
+              .getPublicUrl(user.avatar_url!);
             // Normalize hostname for consistency
             setViewingUserAvatarUrl(publicData?.publicUrl?.replace('localhost', '127.0.0.1') || null);
           } else {

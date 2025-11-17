@@ -29,21 +29,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Trash2, Plus, RotateCcw } from "lucide-react";
-import {
-  getAcademicSessions,
-  createAcademicSession,
-  updateAcademicSession,
-  deleteAcademicSession,
-  promoteStudentsToNextLevel,
-} from "@/lib/supabase/academic-actions";
+import { createClient } from "@/lib/supabase/client";
+import { getAcademicSessions, createAcademicSession, updateAcademicSession, deleteAcademicSession, promoteStudentsToNextLevel } from "@/lib/supabase/academic-actions";
 
 export default function AcademicSessionsManager() {
   const [sessions, setSessions] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPromotionModalOpen, setIsPromotionModalOpen] = useState(false);
-  const [selectedSessionForPromotion, setSelectedSessionForPromotion] =
-    useState<string>("");
-
+  const [selectedSessionForPromotion, setSelectedSessionForPromotion] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     sessionName: "",
     startDate: "",
@@ -51,7 +44,6 @@ export default function AcademicSessionsManager() {
     semester: "Semester I",
     isActive: false,
   });
-
   const [editingSession, setEditingSession] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,11 +55,11 @@ export default function AcademicSessionsManager() {
   const loadAcademicSessions = async () => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const result = await getAcademicSessions();
       if (result.success) {
-        setSessions(result.sessions ?? []);
+        setSessions(result.sessions || []);
       } else {
         setError(result.error || "Failed to load academic sessions");
       }
@@ -86,6 +78,7 @@ export default function AcademicSessionsManager() {
 
     try {
       if (editingSession) {
+        // Update existing session
         const result = await updateAcademicSession(
           editingSession.id,
           formData.sessionName,
@@ -94,7 +87,7 @@ export default function AcademicSessionsManager() {
           formData.semester,
           formData.isActive
         );
-
+        
         if (result.success) {
           setEditingSession(null);
           setIsModalOpen(false);
@@ -110,6 +103,7 @@ export default function AcademicSessionsManager() {
           setError(result.error || "Failed to update session");
         }
       } else {
+        // Create new session
         const result = await createAcademicSession(
           formData.sessionName,
           formData.startDate,
@@ -149,14 +143,10 @@ export default function AcademicSessionsManager() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (sessionId: string | number) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this academic session? This action cannot be undone."
-      )
-    ) {
+  const handleDelete = async (sessionId: string) => {
+    if (window.confirm("Are you sure you want to delete this academic session? This action cannot be undone.")) {
       try {
-        const result = await deleteAcademicSession(Number(sessionId));
+        const result = await deleteAcademicSession(sessionId);
         if (result.success) {
           loadAcademicSessions();
         } else {
@@ -172,12 +162,10 @@ export default function AcademicSessionsManager() {
     if (!selectedSessionForPromotion) return;
 
     try {
-      const result = await promoteStudentsToNextLevel(
-        Number(selectedSessionForPromotion)
-      );
+      const result = await promoteStudentsToNextLevel(selectedSessionForPromotion);
       if (result.success) {
         setIsPromotionModalOpen(false);
-        setSelectedSessionForPromotion("");
+        setSelectedSessionForPromotion(null);
         alert(`Successfully promoted ${result.count} students!`);
       } else {
         setError(result.error || "Failed to promote students");
@@ -202,44 +190,37 @@ export default function AcademicSessionsManager() {
             Create and manage academic sessions for the university.
           </p>
         </div>
-
-        {/* PROMOTION MODAL */}
         <div className="flex gap-2">
-          <Dialog
-            open={isPromotionModalOpen}
-            onOpenChange={setIsPromotionModalOpen}
-          >
+          <Dialog open={isPromotionModalOpen} onOpenChange={setIsPromotionModalOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Promote Students
               </Button>
             </DialogTrigger>
-
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Promote Students to Next Level</DialogTitle>
                 <DialogDescription>
-                  Select an academic session to promote all students.
+                  Select an academic session to promote all students to the next level.
+                  This will move Level 100 to Level 200, Level 200 to Level 300, Level 300 to Level 400,
+                  and Level 400 students will become Alumni.
                 </DialogDescription>
               </DialogHeader>
-
+              
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="session-select">Session:</Label>
-                  <Select
-                    value={selectedSessionForPromotion}
+                  <Select 
+                    value={selectedSessionForPromotion || ""} 
                     onValueChange={setSelectedSessionForPromotion}
                   >
                     <SelectTrigger className="w-full col-span-3">
                       <SelectValue placeholder="Select a session" />
                     </SelectTrigger>
                     <SelectContent>
-                      {sessions.map((session) => (
-                        <SelectItem
-                          key={session.id}
-                          value={String(session.id)}
-                        >
+                      {sessions.map(session => (
+                        <SelectItem key={session.id} value={session.id}>
                           {session.session_name} ({session.semester})
                         </SelectItem>
                       ))}
@@ -247,16 +228,15 @@ export default function AcademicSessionsManager() {
                   </Select>
                 </div>
               </div>
-
+              
               <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
+                <Button 
+                  variant="outline" 
                   onClick={() => setIsPromotionModalOpen(false)}
                 >
                   Cancel
                 </Button>
-
-                <Button
+                <Button 
                   onClick={handlePromoteStudents}
                   disabled={!selectedSessionForPromotion}
                 >
@@ -265,8 +245,7 @@ export default function AcademicSessionsManager() {
               </div>
             </DialogContent>
           </Dialog>
-
-          {/* CREATE / EDIT MODAL */}
+          
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -274,67 +253,55 @@ export default function AcademicSessionsManager() {
                 Add Session
               </Button>
             </DialogTrigger>
-
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>
-                  {editingSession
-                    ? "Edit Academic Session"
-                    : "Create Academic Session"}
-                </DialogTitle>
+                <DialogTitle>{editingSession ? "Edit Academic Session" : "Create Academic Session"}</DialogTitle>
+                <DialogDescription>
+                  {editingSession 
+                    ? "Update the information for this academic session." 
+                    : "Fill in the details for the new academic session."}
+                </DialogDescription>
               </DialogHeader>
-
+              
               <div className="space-y-4 py-4">
-                {/* Session Name */}
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="sessionName">Session Name *</Label>
                   <Input
                     id="sessionName"
                     value={formData.sessionName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, sessionName: e.target.value })
-                    }
+                    onChange={(e) => setFormData({...formData, sessionName: e.target.value})}
                     className="col-span-3"
                     placeholder="e.g., 2024/2025"
                   />
                 </div>
-
-                {/* Start Date */}
+                
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startDate">Start Date *</Label>
                   <Input
                     id="startDate"
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, startDate: e.target.value })
-                    }
+                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
                     className="col-span-3"
                   />
                 </div>
-
-                {/* End Date */}
+                
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endDate">End Date *</Label>
                   <Input
                     id="endDate"
                     type="date"
                     value={formData.endDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, endDate: e.target.value })
-                    }
+                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
                     className="col-span-3"
                   />
                 </div>
-
-                {/* Semester Select */}
+                
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="semester">Semester</Label>
-                  <Select
-                    value={formData.semester}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, semester: value })
-                    }
+                  <Select 
+                    value={formData.semester} 
+                    onValueChange={(value) => setFormData({...formData, semester: value})}
                   >
                     <SelectTrigger className="col-span-3">
                       <SelectValue />
@@ -342,37 +309,27 @@ export default function AcademicSessionsManager() {
                     <SelectContent>
                       <SelectItem value="Semester I">Semester I</SelectItem>
                       <SelectItem value="Semester II">Semester II</SelectItem>
-                      <SelectItem value="Rain Semester">
-                        Rain Semester
-                      </SelectItem>
-                      <SelectItem value="Dry Semester">
-                        Dry Semester
-                      </SelectItem>
+                      <SelectItem value="Rain Semester">Rain Semester</SelectItem>
+                      <SelectItem value="Dry Semester">Dry Semester</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-
-                {/* Active Checkbox */}
+                
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="isActive">Active Session</Label>
                   <input
                     type="checkbox"
                     id="isActive"
                     checked={formData.isActive}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        isActive: e.target.checked,
-                      })
-                    }
+                    onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
                     className="col-span-3 h-5 w-5"
                   />
                 </div>
               </div>
-
+              
               <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
+                <Button 
+                  variant="outline" 
                   onClick={() => {
                     setIsModalOpen(false);
                     setEditingSession(null);
@@ -387,7 +344,6 @@ export default function AcademicSessionsManager() {
                 >
                   Cancel
                 </Button>
-
                 <Button onClick={handleCreateOrUpdateSession}>
                   {editingSession ? "Update Session" : "Create Session"}
                 </Button>
@@ -397,7 +353,6 @@ export default function AcademicSessionsManager() {
         </div>
       </div>
 
-      {/* SESSIONS TABLE */}
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
@@ -410,7 +365,7 @@ export default function AcademicSessionsManager() {
           <CardContent>
             {sessions.length === 0 ? (
               <div className="text-center py-10 text-muted-foreground">
-                No academic sessions found.
+                No academic sessions found. Create one to get started.
               </div>
             ) : (
               <Table>
@@ -423,60 +378,46 @@ export default function AcademicSessionsManager() {
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-
                 <TableBody>
-                  {sessions.map((session) => {
-                    const startDate = session.start_date
-                      ? new Date(session.start_date).toLocaleDateString()
-                      : "—";
-
-                    const endDate = session.end_date
-                      ? new Date(session.end_date).toLocaleDateString()
-                      : "—";
-
-                    return (
-                      <TableRow key={session.id}>
-                        <TableCell className="font-medium">
-                          {session.session_name}
-                        </TableCell>
-                        <TableCell>
-                          {startDate} - {endDate}
-                        </TableCell>
-                        <TableCell>{session.semester}</TableCell>
-                        <TableCell>
-                          {session.is_active ? (
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                              Active
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
-                              Inactive
-                            </span>
-                          )}
-                        </TableCell>
-
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEdit(session)}
-                            >
-                              Edit
-                            </Button>
-
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDelete(session.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {sessions.map((session) => (
+                    <TableRow key={session.id}>
+                      <TableCell className="font-medium">{session.session_name}</TableCell>
+                      <TableCell>
+                        {new Date(session.start_date).toLocaleDateString()} - {" "}
+                        {new Date(session.end_date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>{session.semester}</TableCell>
+                      <TableCell>
+                        {session.is_active ? (
+                          <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                            Inactive
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEdit(session)}
+                          >
+                            Edit
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => handleDelete(session.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             )}

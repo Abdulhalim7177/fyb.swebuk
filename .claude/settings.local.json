@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npx supabase db reset)",
-      "Bash(npm install sonner)"
+      "Bash(npm install sonner)",
+      "Bash(npm run build)",
+      "Bash(cat -n C:UsersabdulHerdfyb.swebukcomponentslandingstats-section.tsx)"
     ],
     "deny": [],
     "ask": []

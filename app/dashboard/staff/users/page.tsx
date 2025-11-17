@@ -17,7 +17,7 @@ export interface UserProfile {
   linkedin_url: string | null;
   github_url: string | null;
   created_at: string;
-  email_confirmed_at: string | null;
+  email_confirmed_at: string | null | undefined;
   avatar_url?: string | null;
 }
 

@@ -11,8 +11,14 @@ export interface UserProfile {
   full_name: string | null;
   role: string;
   created_at: string;
-  email_confirmed_at: string | null;
+  email_confirmed_at: string | null | undefined;
   avatar_url?: string | null;
+  academic_level?: string | null;
+  department?: string | null;
+  faculty?: string | null;
+  institution?: string | null;
+  linkedin_url?: string | null;
+  github_url?: string | null;
 }
 
 export default async function StaffManagementPage() {
@@ -72,8 +78,14 @@ export default async function StaffManagementPage() {
         full_name: userProfile?.full_name || authUser.user_metadata?.full_name || "No name",
         role: userProfile?.role || "staff",
         created_at: authUser.created_at,
-        email_confirmed_at: authUser.email_confirmed_at,
+        email_confirmed_at: authUser.email_confirmed_at || null,
         avatar_url: userProfile?.avatar_url || null,
+        academic_level: userProfile?.academic_level || null,
+        department: userProfile?.department || null,
+        faculty: userProfile?.faculty || null,
+        institution: userProfile?.institution || null,
+        linkedin_url: userProfile?.linkedin_url || null,
+        github_url: userProfile?.github_url || null,
       };
     });
 
