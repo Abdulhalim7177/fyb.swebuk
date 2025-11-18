@@ -513,7 +513,7 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmJoin}>
+            <AlertDialogAction onClick={confirmJoin} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
               Send Request
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -442,7 +442,7 @@ export function ClusterMembersDialog({
                 )}
               </div>
               {(pendingStudentAdditions.length > 0 || pendingStaffAdditions.length > 0) && (
-                <Button onClick={handleCommitAdditions} disabled={loading}>
+                <Button onClick={handleCommitAdditions} disabled={loading} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
                   {loading ? "Adding..." : `Add ${pendingStudentAdditions.length + pendingStaffAdditions.length} Selected Members`}
                 </Button>
               )}
@@ -567,7 +567,7 @@ export function ClusterMembersDialog({
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-2 hover:bg-muted">
             Close
           </Button>
         </DialogFooter>
