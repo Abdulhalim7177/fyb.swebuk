@@ -87,33 +87,36 @@ export default function StaffClustersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Cluster Management</h1>
-          <p className="text-muted-foreground">
-            Manage clusters you are assigned to and view all other clusters.
-          </p>
-        </div>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold tracking-tight">Cluster Management</h1>
+        <p className="text-muted-foreground mt-2">
+          Manage clusters you are assigned to and view all other clusters.
+        </p>
+      </div>
+
+      {/* Centered Creation Button */}
+      <div className="flex justify-center">
         <CreateClusterDialog onClusterCreated={() => window.location.reload()}>
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
+          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg px-8 py-2 text-sm md:text-base">
             <Plus className="mr-2 h-4 w-4" />
             Create Cluster
           </Button>
         </CreateClusterDialog>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
+      {/* Search and Filter Section */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+        <div className="relative flex-1 sm:flex-initial sm:flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-500" />
           <Input
             placeholder="Search clusters by name, staff, or leaders..."
-            className="pl-9 border-blue-200 focus:border-blue-400 focus:ring-blue-100 dark:border-blue-800 dark:focus:border-blue-600 dark:focus:ring-blue-900/20"
+            className="pl-9 pr-4 py-2 w-full sm:w-full md:w-full lg:w-full border-blue-200 focus:border-blue-400 focus:ring-blue-100 dark:border-blue-800 dark:focus:border-blue-600 dark:focus:ring-blue-900/20 min-w-[200px]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[200px] border-blue-200 focus:border-blue-400 focus:ring-blue-100 dark:border-blue-800 dark:focus:border-blue-600 dark:focus:ring-blue-900/20">
+          <SelectTrigger className="w-full sm:w-[200px] border-blue-200 focus:border-blue-400 focus:ring-blue-100 dark:border-blue-800 dark:focus:border-blue-600 dark:focus:ring-blue-900/20">
             <SelectValue placeholder="Filter by Status" />
           </SelectTrigger>
           <SelectContent>
