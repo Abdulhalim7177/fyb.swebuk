@@ -89,7 +89,7 @@ export function StaffDashboard({ user, fullName }: StaffDashboardProps) {
             <h1 className="text-2xl font-bold text-gray-900">Staff Dashboard</h1>
             <p className="text-gray-600">Academic Staff Portal • {user.email}</p>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="border-2 hover:bg-muted">
             <Settings className="w-4 h-4 mr-2" />
             Staff Settings
           </Button>
@@ -159,7 +159,7 @@ export function StaffDashboard({ user, fullName }: StaffDashboardProps) {
                 <Button
                   key={index}
                   variant="outline"
-                  className="w-full justify-start h-auto p-4"
+                  className="w-full justify-start h-auto p-4 border-2 hover:bg-muted"
                   asChild
                 >
                   <Link href={action.href} className="relative">
@@ -206,7 +206,7 @@ export function StaffDashboard({ user, fullName }: StaffDashboardProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-600">{task.due}</p>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" className="border-2 hover:bg-muted">
                       Review
                     </Button>
                   </div>
@@ -297,19 +297,19 @@ export function StaffDashboard({ user, fullName }: StaffDashboardProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start border-2 hover:bg-muted">
               <FileText className="w-4 h-4 mr-2" />
               Templates
             </Button>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start border-2 hover:bg-muted">
               <Award className="w-4 h-4 mr-2" />
               Grading
             </Button>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start border-2 hover:bg-muted">
               <Users className="w-4 h-4 mr-2" />
               Student Lists
             </Button>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start border-2 hover:bg-muted">
               <BarChart className="w-4 h-4 mr-2" />
               Analytics
             </Button>

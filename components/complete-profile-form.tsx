@@ -157,7 +157,7 @@ export default function CompleteProfileForm() {
           />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button type="submit" className="w-full" disabled={uploading}>
+        <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg" disabled={uploading}>
           {uploading ? "Saving..." : "Complete Profile"}
         </Button>
       </form>

@@ -450,7 +450,7 @@ export default function UpdateProfileForm({
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         {successMessage && <p className="text-sm text-green-500">{successMessage}</p>}
-        <Button type="submit" className="w-full" disabled={uploading}>
+        <Button type="submit" className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-lg" disabled={uploading}>
           {uploading ? "Saving..." : "Update Profile"}
         </Button>
       </form>

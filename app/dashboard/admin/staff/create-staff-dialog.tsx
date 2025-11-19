@@ -76,7 +76,7 @@ export function CreateStaffDialog({ onCreate, currentUserRole }: CreateUserDialo
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
           <Plus className="h-4 w-4 mr-2" />
           Add Staff
         </Button>
@@ -160,6 +160,7 @@ export function CreateStaffDialog({ onCreate, currentUserRole }: CreateUserDialo
             <Button
               type="button"
               variant="outline"
+              className="border-2 hover:bg-muted"
               onClick={() => setOpen(false)}
               disabled={isLoading}
             >
@@ -167,6 +168,7 @@ export function CreateStaffDialog({ onCreate, currentUserRole }: CreateUserDialo
             </Button>
             <Button
               type="submit"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
               disabled={isLoading}
             >
               {isLoading ? "Creating..." : "Create Staff"}

@@ -210,7 +210,7 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -454,6 +454,7 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
             <div className="flex justify-end gap-2 pt-4">
               <Button
                 variant="outline"
+                className="border-2 hover:bg-muted"
                 onClick={() => setEditingUser(null)}
                 disabled={isLoading}
               >
@@ -461,6 +462,7 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
               </Button>
               <Button
                 onClick={handleSaveEdit}
+                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-lg"
                 disabled={isLoading}
               >
                 {isLoading ? "Saving..." : "Save Changes"}
@@ -500,6 +502,7 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
           <div className="flex justify-end gap-2 pt-4">
             <Button
               variant="outline"
+              className="border-2 hover:bg-muted"
               onClick={() => setDeletingUser(null)}
               disabled={isLoading}
             >
@@ -507,6 +510,7 @@ export function StaffTable({ profiles, currentUserRole, onUpdate }: StaffTablePr
             </Button>
             <Button
               variant="destructive"
+              className="bg-destructive hover:bg-destructive/90"
               onClick={handleDeleteConfirm}
               disabled={isLoading}
             >

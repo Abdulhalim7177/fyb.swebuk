@@ -272,7 +272,7 @@ export default function AcademicSessionForm() {
           </div>
 
           <div className="flex space-x-2 pt-2">
-            <Button type="submit">
+            <Button type="submit" className={editingSession ? "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-lg" : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"}>
               {editingSession ? 'Update Session' : 'Create Session'}
             </Button>
 
@@ -280,6 +280,7 @@ export default function AcademicSessionForm() {
               <Button
                 type="button"
                 variant="outline"
+                className="border-2 hover:bg-muted"
                 onClick={() => {
                   setEditingSession(null);
                   setSessionName("");
