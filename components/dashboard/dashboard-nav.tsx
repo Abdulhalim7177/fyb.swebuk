@@ -18,6 +18,8 @@ import {
   GitPullRequest,
   PieChart,
   BarChart3,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -34,6 +36,7 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
   const pathname = usePathname();
   const userRole = userProfileRole || "student";
   const [userClusters, setUserClusters] = useState<any[]>([]);
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false);
 
   useEffect(() => {
     if (userRole === "student" && userId) {
@@ -55,7 +58,11 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
       "Community": [
         { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
         { href: "/dashboard/events", label: "Events", icon: Calendar },
-        { href: "/dashboard/projects", label: "Projects", icon: FolderCheck },
+      ],
+      "Projects": [
+        { href: "/dashboard/projects?tab=personal", label: "My Personal Projects", icon: FolderCheck, isDropdownItem: true },
+        { href: "/dashboard/projects?tab=cluster", label: "My Cluster Projects", icon: FolderCheck, isDropdownItem: true },
+        { href: "/dashboard/projects?tab=all", label: "All Projects", icon: FolderCheck, isDropdownItem: true },
       ],
       "My Clubs": userClusters.map(cluster => ({
         href: `/dashboard/clusters/${cluster.id}`,
@@ -176,31 +183,97 @@ export function DashboardNav({ userId, userProfileRole, isSidebarOpen, setIsSide
       </div>
 
       {/* Navigation */}
-      <nav className="mt-4 flex-1 space-y-6 p-2">
-        {Object.entries(navSections).map(([sectionTitle, items]) => (
-          <div key={sectionTitle} className="space-y-1">
-            <h3 className="px-4 text-xs font-semibold uppercase text-muted-foreground">{sectionTitle}</h3>
-            {Array.isArray(items) && items.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium transition-all",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-hover hover:text-foreground"
-                  )}
-                >
-                  <Icon className="h-6 w-6" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        ))}
+      <nav className="mt-4 flex-1 space-y-2 p-2">
+        {Object.entries(navSections).map(([sectionTitle, items], sectionIndex) => {
+          // Check if this is the Projects section
+          const isProjectsSection = sectionTitle === "Projects";
+
+          return (
+            <div key={sectionTitle}>
+              {sectionIndex > 0 && (
+                <div className="border-t border-border/50 my-3" />
+              )}
+              <div className="space-y-1">
+              {isProjectsSection ? (
+                // Projects dropdown
+                <div className="space-y-1">
+                  <button
+                    onClick={() => setIsProjectsOpen(!isProjectsOpen)}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-lg px-4 py-2.5 font-medium transition-all duration-200 group",
+                      "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FolderCheck className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+                      <span>Projects</span>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 transition-transform duration-300 ease-out",
+                        isProjectsOpen ? "rotate-180" : "rotate-0"
+                      )}
+                    />
+                  </button>
+                  <div
+                    className={cn(
+                      "ml-4 space-y-0.5 overflow-hidden transition-all duration-300 ease-in-out",
+                      isProjectsOpen
+                        ? "max-h-[500px] opacity-100"
+                        : "max-h-0 opacity-0"
+                    )}
+                  >
+                    {Array.isArray(items) && items.map((item, index) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setIsProjectsOpen(false)}
+                          className={cn(
+                            "flex items-center gap-2.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
+                            "transform hover:translate-x-1",
+                            "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                          )}
+                          style={{
+                            transitionDelay: isProjectsOpen ? `${index * 30}ms` : '0ms'
+                          }}
+                        >
+                          <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 transition-all duration-200" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                // Regular section - hide section title for cleaner look
+                <div className="space-y-1">
+                  {Array.isArray(items) && items.length > 0 && items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium transition-all duration-200",
+                          isActive
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+              </div>
+            </div>
+          );
+        })}
       </nav>
     </div>
   );

@@ -85,9 +85,34 @@ export function ProjectGrid({
         query = query.eq("cluster_id", clusterId);
       }
 
-      // Filter by user's projects
+      // Filter by user's projects (owner OR member)
       if (showMyProjects && userId) {
-        query = query.or(`owner_id.eq.${userId}`);
+        // Get projects where user is owner
+        const { data: ownedProjects } = await supabase
+          .from("detailed_projects")
+          .select("id")
+          .eq("owner_id", userId);
+
+        // Get projects where user is a member
+        const { data: memberProjects } = await supabase
+          .from("project_members")
+          .select("project_id")
+          .eq("user_id", userId)
+          .eq("status", "approved");
+
+        const projectIds = [
+          ...(ownedProjects?.map(p => p.id) || []),
+          ...(memberProjects?.map(p => p.project_id) || [])
+        ];
+
+        if (projectIds.length === 0) {
+          // User has no projects, return empty
+          setProjects([]);
+          setLoading(false);
+          return;
+        }
+
+        query = query.in("id", projectIds);
       }
 
       // Filter by type
@@ -108,11 +133,24 @@ export function ProjectGrid({
       // Filter by visibility
       if (filterVisibility !== "all") {
         query = query.eq("visibility", filterVisibility);
+      } else if (!showMyProjects) {
+        // In "All Projects" view, only show public projects unless user is admin
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .single();
+
+        const userRole = profileData?.role;
+        if (userRole !== 'admin') {
+          query = query.eq("visibility", "public");
+        }
       }
 
       // Enhanced Search - includes name, description, owner name, owner email, and academic level
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,owner_name.ilike.%${searchTerm}%,owner_email.ilike.%${searchTerm}%`);
+        // Search across multiple fields including academic level
+        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,owner_name.ilike.%${searchTerm}%,owner_email.ilike.%${searchTerm}%,owner_academic_level.ilike.%${searchTerm}%`);
       }
 
       const { data, error } = await query;

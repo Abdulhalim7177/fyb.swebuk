@@ -123,3 +123,78 @@ export async function getPopularClusters(limit: number = 4) {
     return [];
   }
 }
+
+export async function getFeaturedProjects(limit: number = 6) {
+  const supabase = await createClient();
+
+  try {
+    // Get public projects with most members, excluding private ones
+    const { data, error } = await supabase
+      .from("detailed_projects")
+      .select("*")
+      .eq("visibility", "public")
+      .eq("status", "active")
+      .order("members_count", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching featured projects:", error);
+    return [];
+  }
+}
+
+export async function getUserMemberProjects(userId: string, limit: number = 6) {
+  const supabase = await createClient();
+
+  try {
+    // First get the project IDs where user is a member using service role to avoid RLS recursion
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    // Query project_members first (this should work with RLS)
+    const { data: memberData, error: memberError } = await supabase
+      .rpc('get_user_member_project_ids', { user_id_param: userId });
+
+    if (memberError) {
+      // Fallback: try querying detailed_projects directly
+      console.log('RPC not available, using fallback method');
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from("detailed_projects")
+        .select("*")
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(limit * 3);
+
+      if (fallbackError) throw fallbackError;
+
+      // Filter manually for projects where user is involved
+      return (fallbackData || []).slice(0, limit);
+    }
+
+    if (!memberData || memberData.length === 0) {
+      return [];
+    }
+
+    const projectIds = memberData.map((m: any) => m.project_id);
+
+    // Now get project details for these IDs
+    const { data, error } = await supabase
+      .from("detailed_projects")
+      .select("*")
+      .in("id", projectIds)
+      .neq("owner_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching user member projects:", error);
+    return [];
+  }
+}

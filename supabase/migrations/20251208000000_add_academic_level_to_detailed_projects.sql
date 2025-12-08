@@ -1,5 +1,7 @@
 -- Update view for detailed projects to include owner's academic level
-create or replace view detailed_projects as
+drop view if exists detailed_projects;
+
+create view detailed_projects as
 select
   p.id,
   p.name,

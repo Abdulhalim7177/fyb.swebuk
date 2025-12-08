@@ -196,7 +196,8 @@ export default function ProjectSettingsPage({ params }: { params: { id: string }
       router.push(`/dashboard/projects/${project!.id}`);
     } catch (error: any) {
       console.error("Error updating project:", error);
-      toast.error("Failed to update project: " + error.message);
+      const errorMessage = error?.message || error?.toString() || "Unknown error occurred";
+      toast.error("Failed to update project: " + errorMessage);
     } finally {
       setSaving(false);
     }
@@ -216,7 +217,8 @@ export default function ProjectSettingsPage({ params }: { params: { id: string }
       router.push("/dashboard/projects");
     } catch (error: any) {
       console.error("Error deleting project:", error);
-      toast.error("Failed to delete project: " + error.message);
+      const errorMessage = error?.message || error?.toString() || "Unknown error occurred";
+      toast.error("Failed to delete project: " + errorMessage);
     }
   };
 

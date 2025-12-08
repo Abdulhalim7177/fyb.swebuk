@@ -31,9 +31,11 @@ interface StudentDashboardProps {
     lead_name: string | null;
     staff_manager_name: string | null;
   }>;
+  featuredProjects: Array<any>;
+  memberProjects: Array<any>;
 }
 
-export function StudentDashboard({ user, fullName, academicLevel, stats, recentProjects, popularClusters }: StudentDashboardProps) {
+export function StudentDashboard({ user, fullName, academicLevel, stats, recentProjects, popularClusters, featuredProjects, memberProjects }: StudentDashboardProps) {
   const statsDisplay = [
     { title: "My Clubs", value: stats.myClubs.toString(), icon: Users2, iconBg: "bg-primary/10 text-primary" },
     { title: "Active Projects", value: stats.activeProjects.toString(), icon: Code2, iconBg: "bg-green-500/10 text-green-500" },
@@ -144,7 +146,7 @@ export function StudentDashboard({ user, fullName, academicLevel, stats, recentP
             </div>
           </section>
 
-          {/* Featured Projects */}
+          {/* Recent Projects */}
           <section>
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Recent Projects</h2>
@@ -196,6 +198,104 @@ export function StudentDashboard({ user, fullName, academicLevel, stats, recentP
               )}
             </div>
           </section>
+
+          {/* Featured Projects */}
+          <section>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Featured Projects</h2>
+              <Link href="/dashboard/projects" className="text-sm font-medium text-primary hover:underline">View All</Link>
+            </div>
+            <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+              {featuredProjects.length > 0 ? (
+                featuredProjects.slice(0, 4).map((project, index) => (
+                  <Card key={project.id}>
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">{project.name}</h3>
+                        <Badge variant={project.type === "cluster" ? "default" : "secondary"} className="shrink-0">
+                          {project.type}
+                        </Badge>
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{project.description}</p>
+                      {project.cluster_name && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Cluster: {project.cluster_name}
+                        </p>
+                      )}
+                      <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                        <Users className="h-3 w-3" />
+                        <span>{project.members_count} members</span>
+                      </div>
+                      <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center flex-wrap gap-2">
+                          {project.tags?.slice(0, 2).map((tag: string, i: number) => (
+                            <span key={i} className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{tag}</span>
+                          ))}
+                          {project.tags?.length > 2 && (
+                            <span className="text-xs text-muted-foreground">+{project.tags.length - 2} more</span>
+                          )}
+                        </div>
+                        <Button variant="outline" size="sm" asChild className="border-indigo-500 text-indigo-500 hover:bg-indigo-500/10 hover:text-indigo-500">
+                          <Link href={`/dashboard/projects/${project.id}`}>View</Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="col-span-2 text-center py-8 text-muted-foreground">
+                  <Code2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>No featured projects yet</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* My Contributions */}
+          {memberProjects.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">My Contributions</h2>
+                <Link href="/dashboard/projects?tab=my" className="text-sm font-medium text-primary hover:underline">View All</Link>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+                {memberProjects.slice(0, 4).map((project) => (
+                  <Card key={project.id}>
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">{project.name}</h3>
+                        <Badge variant={project.type === "cluster" ? "default" : "secondary"} className="shrink-0">
+                          {project.type}
+                        </Badge>
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{project.description}</p>
+                      {project.cluster_name && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Cluster: {project.cluster_name}
+                        </p>
+                      )}
+                      <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>Owner: {project.owner_name}</span>
+                      </div>
+                      <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center flex-wrap gap-2">
+                          {project.tags?.slice(0, 2).map((tag: string, i: number) => (
+                            <span key={i} className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{tag}</span>
+                          ))}
+                          {project.tags?.length > 2 && (
+                            <span className="text-xs text-muted-foreground">+{project.tags.length - 2} more</span>
+                          )}
+                        </div>
+                        <Button variant="outline" size="sm" asChild className="border-purple-500 text-purple-500 hover:bg-purple-500/10 hover:text-purple-500">
+                          <Link href={`/dashboard/projects/${project.id}`}>View</Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Right Column (Upcoming Events) */}
