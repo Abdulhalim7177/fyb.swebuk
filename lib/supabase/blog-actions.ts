@@ -5,6 +5,59 @@ import { revalidatePath } from "next/cache";
 import type { DetailedBlog, DetailedBlogComment, BlogCategory } from "@/lib/constants/blog";
 
 // ============================================
+// IMAGE URL HELPER
+// ============================================
+
+async function getBlogImageSignedUrl(filePath: string | null): Promise<string | null> {
+  if (!filePath) return null;
+
+  const supabase = await createClient();
+
+  // If it's already a full URL, extract the path
+  let path = filePath;
+  if (filePath.startsWith('http')) {
+    const urlParts = filePath.split('/blog-images/');
+    if (urlParts.length > 1) {
+      path = urlParts[1];
+    } else {
+      return filePath; // Return as-is if we can't parse it
+    }
+  }
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("blog-images")
+      .createSignedUrl(path, 3600); // 1 hour expiry
+
+    if (error) {
+      console.error("Error creating signed URL for blog image:", error);
+      return null;
+    }
+
+    // Normalize hostname for local development
+    const signedUrl = data?.signedUrl?.replace('localhost', '127.0.0.1') || null;
+    return signedUrl;
+  } catch (error) {
+    console.error("Error getting blog image signed URL:", error);
+    return null;
+  }
+}
+
+// Transform a blog to include signed image URL
+async function transformBlogWithSignedUrl(blog: DetailedBlog): Promise<DetailedBlog> {
+  if (blog.featured_image_url) {
+    const signedUrl = await getBlogImageSignedUrl(blog.featured_image_url);
+    return { ...blog, featured_image_url: signedUrl };
+  }
+  return blog;
+}
+
+// Transform multiple blogs to include signed image URLs
+async function transformBlogsWithSignedUrls(blogs: DetailedBlog[]): Promise<DetailedBlog[]> {
+  return Promise.all(blogs.map(transformBlogWithSignedUrl));
+}
+
+// ============================================
 // PUBLIC BLOG ACTIONS (Read operations)
 // ============================================
 
@@ -53,7 +106,9 @@ export async function getPublishedBlogs(options: GetPublishedBlogsOptions = {}) 
       return [];
     }
 
-    return (data as DetailedBlog[]) || [];
+    // Transform blogs to include signed image URLs
+    const blogs = (data as DetailedBlog[]) || [];
+    return transformBlogsWithSignedUrls(blogs);
   } catch (error) {
     console.error("Unexpected error fetching blogs:", error);
     return [];
@@ -82,7 +137,8 @@ export async function getBlogBySlug(slug: string) {
       return null;
     }
 
-    return data as DetailedBlog;
+    // Transform to include signed image URL
+    return transformBlogWithSignedUrl(data as DetailedBlog);
   } catch (error) {
     console.error("Unexpected error fetching blog:", error);
     return null;
@@ -107,7 +163,8 @@ export async function getBlogById(id: string) {
       return null;
     }
 
-    return data as DetailedBlog;
+    // Transform to include signed image URL
+    return transformBlogWithSignedUrl(data as DetailedBlog);
   } catch (error) {
     console.error("Unexpected error fetching blog:", error);
     return null;
@@ -445,7 +502,7 @@ export async function getRelatedBlogs(blogId: string, category: string, limit = 
   try {
     const { data, error } = await supabase
       .from("detailed_blogs")
-      .select("id, title, slug, excerpt, author_name, published_at, featured_image_url, category")
+      .select("*")
       .eq("status", "published")
       .eq("category", category)
       .neq("id", blogId)
@@ -454,7 +511,9 @@ export async function getRelatedBlogs(blogId: string, category: string, limit = 
 
     if (error) throw error;
 
-    return data || [];
+    // Transform blogs to include signed image URLs
+    const blogs = (data as DetailedBlog[]) || [];
+    return transformBlogsWithSignedUrls(blogs);
   } catch (error) {
     console.error("Error fetching related blogs:", error);
     return [];

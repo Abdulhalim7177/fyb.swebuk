@@ -195,8 +195,8 @@ export function BlogModeration({
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Post</TableHead>
                   <TableHead>Author</TableHead>
-                  <TableHead>Title</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Cluster</TableHead>
                   <TableHead>Submitted</TableHead>
@@ -206,6 +206,29 @@ export function BlogModeration({
               <TableBody>
                 {pendingBlogs.map((blog) => (
                   <TableRow key={blog.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {blog.featured_image_url ? (
+                          <div className="w-16 h-12 rounded overflow-hidden flex-shrink-0">
+                            <img
+                              src={blog.featured_image_url}
+                              alt={blog.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-12 rounded bg-muted flex items-center justify-center flex-shrink-0">
+                            <BookOpen className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="max-w-[200px]">
+                          <p className="font-medium truncate">{blog.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {blog.excerpt}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
@@ -220,14 +243,6 @@ export function BlogModeration({
                             {blog.author_role}
                           </p>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="max-w-[250px]">
-                        <p className="font-medium truncate">{blog.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {blog.excerpt}
-                        </p>
                       </div>
                     </TableCell>
                     <TableCell>

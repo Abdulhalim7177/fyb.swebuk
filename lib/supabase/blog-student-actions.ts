@@ -6,6 +6,59 @@ import type { DetailedBlog, BlogCategory, BlogStatus } from "@/lib/constants/blo
 import { generateSlug, calculateReadTime } from "@/lib/constants/blog";
 
 // ============================================
+// IMAGE URL HELPER (for fetching blogs)
+// ============================================
+
+async function getSignedImageUrl(filePath: string | null): Promise<string | null> {
+  if (!filePath) return null;
+
+  const supabase = await createClient();
+
+  // If it's already a full URL, extract the path
+  let path = filePath;
+  if (filePath.startsWith('http')) {
+    const urlParts = filePath.split('/blog-images/');
+    if (urlParts.length > 1) {
+      path = urlParts[1];
+    } else {
+      return filePath; // Return as-is if we can't parse it
+    }
+  }
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("blog-images")
+      .createSignedUrl(path, 3600); // 1 hour expiry
+
+    if (error) {
+      console.error("Error creating signed URL for blog image:", error);
+      return null;
+    }
+
+    // Normalize hostname for local development
+    const signedUrl = data?.signedUrl?.replace('localhost', '127.0.0.1') || null;
+    return signedUrl;
+  } catch (error) {
+    console.error("Error getting blog image signed URL:", error);
+    return null;
+  }
+}
+
+// Transform a blog to include signed image URL
+async function transformBlogWithSignedUrl(blog: DetailedBlog): Promise<DetailedBlog> {
+  if (blog.featured_image_url) {
+    const signedUrl = await getSignedImageUrl(blog.featured_image_url);
+    return { ...blog, featured_image_url: signedUrl };
+  }
+  return blog;
+}
+
+// Transform multiple blogs to include signed image URLs
+async function transformBlogsWithSignedUrls(blogs: DetailedBlog[]): Promise<DetailedBlog[]> {
+  return Promise.all(blogs.map(transformBlogWithSignedUrl));
+}
+
+// ============================================
 // USER'S OWN BLOG ACTIONS
 // ============================================
 
@@ -35,7 +88,9 @@ export async function getMyBlogs(status?: BlogStatus) {
       return [];
     }
 
-    return (data as DetailedBlog[]) || [];
+    // Transform blogs to include signed image URLs
+    const blogs = (data as DetailedBlog[]) || [];
+    return transformBlogsWithSignedUrls(blogs);
   } catch (error) {
     console.error("Unexpected error fetching user blogs:", error);
     return [];
@@ -64,7 +119,8 @@ export async function getMyBlogById(blogId: string) {
       return null;
     }
 
-    return data as DetailedBlog;
+    // Transform to include signed image URL
+    return transformBlogWithSignedUrl(data as DetailedBlog);
   } catch (error) {
     console.error("Unexpected error fetching blog:", error);
     return null;
@@ -500,14 +556,44 @@ export async function uploadBlogImage(file: File) {
 
     if (uploadError) throw uploadError;
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("blog-images").getPublicUrl(filePath);
-
-    return { success: true, url: publicUrl };
+    // Return the file path (not the full URL) - we'll generate signed URLs when displaying
+    return { success: true, url: filePath };
   } catch (error: any) {
     console.error("Error uploading image:", error);
     return { success: false, error: error.message };
+  }
+}
+
+// Get signed URL for a blog image
+export async function getBlogImageSignedUrl(filePath: string): Promise<string | null> {
+  if (!filePath) return null;
+
+  // If it's already a full URL (legacy data), extract the path
+  if (filePath.startsWith('http')) {
+    const urlParts = filePath.split('/blog-images/');
+    if (urlParts.length > 1) {
+      filePath = urlParts[1];
+    } else {
+      return filePath; // Return as-is if we can't parse it
+    }
+  }
+
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("blog-images")
+      .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+    if (error) {
+      console.error("Error creating signed URL for blog image:", error);
+      return null;
+    }
+
+    return data?.signedUrl || null;
+  } catch (error) {
+    console.error("Error getting blog image signed URL:", error);
+    return null;
   }
 }
 
