@@ -16,7 +16,14 @@
       "Bash(supabase status:*)",
       "Bash(cat:*)",
       "Bash(node:*)",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(supabase db push:*)",
+      "Bash(npm exec:*)",
+      "Bash(docker ps:*)"
     ],
     "deny": [],
     "ask": []

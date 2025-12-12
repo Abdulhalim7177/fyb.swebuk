@@ -59,7 +59,7 @@ export function Navigation() {
             <Link href="#features" className="text-gray-300 hover:text-white transition-colors">
               Features
             </Link>
-            <Link href="#blog" className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
               Blog
             </Link>
             <Link href="#stats" className="text-gray-300 hover:text-white transition-colors">
@@ -91,7 +91,7 @@ export function Navigation() {
               <Link href="#features" className="text-gray-300 hover:text-white transition-colors py-2">
                 Features
               </Link>
-              <Link href="#blog" className="text-gray-300 hover:text-white transition-colors py-2">
+              <Link href="/blog" className="text-gray-300 hover:text-white transition-colors py-2">
                 Blog
               </Link>
               <Link href="#stats" className="text-gray-300 hover:text-white transition-colors py-2">
