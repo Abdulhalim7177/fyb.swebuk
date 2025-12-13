@@ -23,7 +23,8 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(supabase db push:*)",
       "Bash(npm exec:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "WebFetch(domain:dribbble.com)"
     ],
     "deny": [],
     "ask": []

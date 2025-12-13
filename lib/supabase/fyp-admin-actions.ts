@@ -208,7 +208,7 @@ export async function getSupervisorWorkload() {
     // Get all staff members
     const { data: staff, error: staffError } = await supabase
       .from("profiles")
-      .select("id, full_name")
+      .select("id, full_name, email")
       .eq("role", "staff");
 
     if (staffError || !staff) {

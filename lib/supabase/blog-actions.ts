@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@/lib/supabase/service";
 import { revalidatePath } from "next/cache";
 import type { DetailedBlog, DetailedBlogComment, BlogCategory } from "@/lib/constants/blog";
 
@@ -374,7 +375,8 @@ export async function checkBlogLiked(blogId: string) {
 // ============================================
 
 export async function incrementViewCount(blogId: string) {
-  const supabase = await createClient();
+  // Use service role client for view count to bypass RLS (allows anonymous views)
+  const supabase = await createServiceClient();
 
   try {
     // Use RPC or direct update to increment view count
@@ -401,6 +403,59 @@ export async function incrementViewCount(blogId: string) {
   } catch (error: any) {
     console.error("Error incrementing view count:", error);
     return { success: false, error: error.message };
+  }
+}
+
+// ============================================
+// BLOG LIKES - WHO LIKED
+// ============================================
+
+export interface BlogLikeUser {
+  id: string;
+  user_id: string;
+  user_name: string | null;
+  user_avatar: string | null;
+  user_role: string | null;
+  created_at: string;
+}
+
+export async function getBlogLikes(blogId: string): Promise<BlogLikeUser[]> {
+  const supabase = await createClient();
+
+  try {
+    // First try to use a view if it exists
+    const { data, error } = await supabase
+      .from("blog_likes")
+      .select(`
+        id,
+        user_id,
+        created_at,
+        profiles:user_id (
+          full_name,
+          avatar_url,
+          role
+        )
+      `)
+      .eq("blog_id", blogId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching blog likes:", error);
+      return [];
+    }
+
+    // Transform the data
+    return (data || []).map((like: any) => ({
+      id: like.id,
+      user_id: like.user_id,
+      user_name: like.profiles?.full_name || "Anonymous",
+      user_avatar: like.profiles?.avatar_url || null,
+      user_role: like.profiles?.role || null,
+      created_at: like.created_at,
+    }));
+  } catch (error) {
+    console.error("Unexpected error fetching blog likes:", error);
+    return [];
   }
 }
 
@@ -490,6 +545,19 @@ export async function searchBlogs(query: string, limit = 10) {
     console.error("Error searching blogs:", error);
     return [];
   }
+}
+
+// ============================================
+// GET CURRENT USER
+// ============================================
+
+export async function getCurrentUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user;
 }
 
 // ============================================

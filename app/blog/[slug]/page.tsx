@@ -6,22 +6,47 @@ import {
   getRelatedBlogs,
   checkBlogLiked,
   incrementViewCount,
+  getCurrentUser,
 } from "@/lib/supabase/blog-actions";
 import { BlogContent } from "@/components/blog/blog-editor";
-import { CategoryBadge } from "@/components/blog/category-badge";
 import { BlogCard } from "@/components/blog/blog-card";
+import { BlogNavBar } from "@/components/blog/blog-nav-bar";
 import { BlogCommentsSection } from "./blog-comments-section";
 import { BlogLikeButton } from "./blog-like-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Calendar, Clock, Eye, MessageCircle, Share2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Eye,
+  MessageCircle,
+  BookOpen,
+  Twitter,
+  Linkedin,
+  Link2,
+  ChevronRight,
+} from "lucide-react";
 import type { Metadata } from "next";
+import { cn } from "@/lib/utils";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
+
+const categoryColors: Record<string, string> = {
+  tutorials: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  news: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+  projects: "bg-green-500/10 text-green-600 dark:text-green-400",
+  events: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  career: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+  resources: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+  community: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+  other: "bg-gray-500/10 text-gray-600 dark:text-gray-400",
+};
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -53,10 +78,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   // Fetch related data
-  const [comments, relatedBlogs, isLiked] = await Promise.all([
+  const [comments, relatedBlogs, isLiked, currentUser] = await Promise.all([
     getBlogComments(blog.id),
     getRelatedBlogs(blog.id, blog.category, 3),
     checkBlogLiked(blog.id),
+    getCurrentUser(),
   ]);
 
   // Increment view count (fire and forget)
@@ -71,101 +97,122 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     });
   };
 
+  const categoryColor = categoryColors[blog.category] || categoryColors.other;
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with featured image */}
-      {blog.featured_image_url && (
-        <div className="relative h-[400px] w-full">
-          <img
-            src={blog.featured_image_url}
-            alt={blog.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        </div>
-      )}
+      {/* Navigation Bar */}
+      <BlogNavBar isAuthenticated={!!currentUser} />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
-        <Button variant="ghost" asChild className="mb-6">
-          <Link href="/blog">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Blog
-          </Link>
-        </Button>
+      {/* Hero Header */}
+      <header className="relative">
+        {/* Featured Image */}
+        {blog.featured_image_url ? (
+          <div className="relative h-[60vh] md:h-[70vh] lg:h-[75vh] w-full">
+            <img
+              src={blog.featured_image_url}
+              alt={blog.title}
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+          </div>
+        ) : (
+          <div className="h-32 bg-gradient-to-br from-primary/10 to-primary/5" />
+        )}
 
-        {/* Article Header */}
-        <article>
-          <header className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <CategoryBadge category={blog.category} size="lg" />
-              {blog.cluster_name && (
-                <span className="text-sm text-muted-foreground">
-                  in {blog.cluster_name}
-                </span>
-              )}
-            </div>
+        {/* Content overlay */}
+        <div className={cn(
+          "relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
+          blog.featured_image_url ? "-mt-32 md:-mt-40" : "pt-8"
+        )}>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+            <Link href="/blog" className="hover:text-primary transition-colors flex items-center gap-1">
+              <BookOpen className="w-4 h-4" />
+              Blog
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="capitalize">{blog.category}</span>
+          </nav>
 
-            <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
-
-            {/* Author and Meta */}
-            <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={blog.author_avatar || undefined} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {blog.author_name?.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium text-foreground">{blog.author_name}</p>
-                  <p className="text-sm capitalize">{blog.author_role}</p>
-                </div>
-              </div>
-
-              <Separator orientation="vertical" className="h-8" />
-
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span className="text-sm">
-                  {formatDate(blog.published_at || blog.created_at)}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                <span className="text-sm">{blog.read_time_minutes || 5} min read</span>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Eye className="h-4 w-4" />
-                <span className="text-sm">{blog.view_count || 0} views</span>
-              </div>
-            </div>
-          </header>
-
-          {/* Article Content */}
-          <div className="mb-8">
-            <BlogContent content={blog.content} />
+          {/* Category & Meta */}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Badge className={cn("text-sm font-medium border-0", categoryColor)}>
+              {blog.category}
+            </Badge>
+            {blog.cluster_name && (
+              <span className="text-sm text-muted-foreground">
+                in {blog.cluster_name}
+              </span>
+            )}
           </div>
 
-          {/* Tags */}
-          {blog.tags && blog.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-8">
-              {blog.tags.map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/blog?search=${encodeURIComponent(tag)}`}
-                  className="text-sm bg-muted px-3 py-1 rounded-full hover:bg-muted/80 transition-colors"
-                >
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6">
+            {blog.title}
+          </h1>
 
-          {/* Engagement Bar */}
-          <div className="flex items-center justify-between py-4 border-t border-b mb-8">
+          {/* Author & Meta Bar */}
+          <div className="flex flex-wrap items-center gap-6 pb-8 border-b">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12 ring-2 ring-background">
+                <AvatarImage src={blog.author_avatar || undefined} />
+                <AvatarFallback className="bg-primary/10 text-primary text-lg">
+                  {blog.author_name?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold">{blog.author_name}</p>
+                <p className="text-sm text-muted-foreground capitalize">{blog.author_role}</p>
+              </div>
+            </div>
+
+            <Separator orientation="vertical" className="h-10 hidden md:block" />
+
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" />
+                {formatDate(blog.published_at || blog.created_at)}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                {blog.read_time_minutes || 5} min read
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Eye className="h-4 w-4" />
+                {blog.view_count || 0} views
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Article Content */}
+        <article className="prose prose-lg dark:prose-invert max-w-none">
+          <BlogContent content={blog.content} />
+        </article>
+
+        {/* Tags */}
+        {blog.tags && blog.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t">
+            <span className="text-sm font-medium text-muted-foreground mr-2">Tags:</span>
+            {blog.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/blog?search=${encodeURIComponent(tag)}`}
+                className="text-sm bg-muted px-3 py-1.5 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+              >
+                #{tag}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Engagement Bar */}
+        <Card className="mt-8 p-6 border-0 bg-muted/50">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <BlogLikeButton
                 blogId={blog.id}
@@ -177,37 +224,93 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <span>{blog.comments_count || 0} comments</span>
               </div>
             </div>
-            <Button variant="outline" size="sm">
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
+
+            {/* Share Buttons */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground mr-2">Share:</span>
+              <Button variant="outline" size="icon" className="h-9 w-9 rounded-full">
+                <Twitter className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" className="h-9 w-9 rounded-full">
+                <Linkedin className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" className="h-9 w-9 rounded-full">
+                <Link2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Author Card */}
+        <Card className="mt-8 p-6 border-0 bg-gradient-to-br from-primary/5 to-primary/10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <Avatar className="h-16 w-16 ring-4 ring-background">
+              <AvatarImage src={blog.author_avatar || undefined} />
+              <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                {blog.author_name?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground mb-1">Written by</p>
+              <h3 className="text-lg font-semibold">{blog.author_name}</h3>
+              <p className="text-sm text-muted-foreground capitalize">{blog.author_role}</p>
+            </div>
+            <Button variant="outline" asChild>
+              <Link href={`/blog?author=${blog.author_id}`}>
+                View all posts
+              </Link>
             </Button>
           </div>
+        </Card>
 
-          {/* Comments Section */}
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Comments</h2>
-            <BlogCommentsSection
-              blogId={blog.id}
-              initialComments={comments}
-            />
-          </section>
-        </article>
+        {/* Comments Section */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <MessageCircle className="h-6 w-6" />
+            Comments ({blog.comments_count || 0})
+          </h2>
+          <BlogCommentsSection
+            blogId={blog.id}
+            initialComments={comments}
+            currentUserId={currentUser?.id}
+          />
+        </section>
+      </div>
 
-        {/* Related Posts */}
-        {relatedBlogs.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-bold mb-6">Related Posts</h2>
+      {/* Related Posts */}
+      {relatedBlogs.length > 0 && (
+        <section className="border-t bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold">Related Posts</h2>
+              <Button variant="outline" asChild>
+                <Link href={`/blog?category=${blog.category}`}>
+                  View all in {blog.category}
+                </Link>
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedBlogs.map((relatedBlog: any) => (
                 <BlogCard
                   key={relatedBlog.id}
                   blog={relatedBlog}
-                  variant="compact"
                 />
               ))}
             </div>
-          </section>
-        )}
+          </div>
+        </section>
+      )}
+
+      {/* Back to Blog */}
+      <div className="border-t">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Button variant="ghost" asChild>
+            <Link href="/blog">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to all posts
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );
