@@ -75,10 +75,11 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
       "Community": [
         { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
         { href: "/blog", label: "Community Blog", icon: BookOpen },
-        { href: "/dashboard/events", label: "Events", icon: Calendar },
+        { href: "/events", label: "Browse Events", icon: Calendar },
       ],
-      "Content": [
+      "My Content": [
         { href: "/dashboard/blog", label: "My Blog Posts", icon: PenSquare },
+        { href: "/dashboard/student/events", label: "My Events", icon: CalendarCog },
       ],
       "Projects": [
         { href: "/dashboard/projects?tab=personal", label: "My Personal Projects", icon: FolderCheck, isDropdownItem: true },
@@ -103,7 +104,7 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
       "Content": [
         { href: "/dashboard/admin/clusters", label: "Club Management", icon: Users2 },
         { href: "/dashboard/admin/blog", label: "Blog Management", icon: BookOpen },
-        { href: "/dashboard/events", label: "Event Management", icon: CalendarCog },
+        { href: "/dashboard/admin/events", label: "Event Management", icon: Calendar },
         { href: "/dashboard/projects", label: "Project Oversight", icon: FolderCheck },
         { href: "/dashboard/repository", label: "Repository Control", icon: GitPullRequest },
       ],
@@ -133,7 +134,7 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
           "Content": [
             { href: "/dashboard/staff/clusters", label: "Cluster Management", icon: Users2 },
             { href: "/dashboard/staff/blog", label: "Blog Moderation", icon: BookOpen },
-            { href: "/dashboard/events", label: "Event Management", icon: CalendarCog },
+            { href: "/dashboard/staff/events", label: "Event Management", icon: Calendar },
             { href: "/dashboard/projects", label: "Project Oversight", icon: FolderCheck },
           ],
         };
@@ -151,6 +152,8 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
           "Community": [
             { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
             { href: "/blog", label: "Community Blog", icon: BookOpen },
+            { href: "/events", label: "Browse Events", icon: Calendar },
+            { href: "/dashboard/student/events", label: "My Events", icon: CalendarCog },
           ]
         };
       case "deputy":
@@ -167,6 +170,8 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
           "Community": [
             { href: "/dashboard/clusters", label: "All Clubs", icon: Users2 },
             { href: "/blog", label: "Community Blog", icon: BookOpen },
+            { href: "/events", label: "Browse Events", icon: Calendar },
+            { href: "/dashboard/student/events", label: "My Events", icon: CalendarCog },
           ]
         };
       case "student":
