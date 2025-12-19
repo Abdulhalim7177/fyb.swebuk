@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getStudentFYPWithSubmissions() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return null;
 
@@ -65,7 +65,7 @@ export async function getStudentFYPWithSubmissions() {
 
 export async function submitFYPDocument(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -136,7 +136,7 @@ export async function updateStudentSubmission(
   description: string
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -162,7 +162,7 @@ export async function updateStudentSubmission(
 
 export async function updateGithubRepo(fypId: string, githubRepoUrl: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 

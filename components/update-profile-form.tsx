@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { type User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,7 +24,7 @@ export default function UpdateProfileForm({
   user,
   profile,
 }: {
-  user: User;
+  user: any;
   profile: Profile;
 }) {
   const supabase = createClient();

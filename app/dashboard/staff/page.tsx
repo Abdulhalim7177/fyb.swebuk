@@ -5,7 +5,7 @@ import { getStaffDashboardStats } from "@/lib/supabase/fyp-staff-actions";
 
 export default async function StaffDashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     redirect("/auth/login");

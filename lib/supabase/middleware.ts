@@ -40,12 +40,12 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
+  // (supabase.auth as any).getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
   // IMPORTANT: If you remove getUser() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (user) {
     // Fetch role from profiles table instead of user metadata
@@ -88,8 +88,12 @@ export async function updateSession(request: NextRequest) {
 
       // Check if the segment after /dashboard/ is a known role segment
       if (userRoleSegment && knownRoleSegments.includes(userRoleSegment)) {
+        // Admins can access staff routes
+        const isAdminAccessingStaff = userRole === 'admin' && userRoleSegment === 'staff';
+
         // If user is trying to access another role's dashboard section (main or sub-pages)
-        if (userRoleSegment !== userRole) {
+        // Allow admins to access staff pages
+        if (userRoleSegment !== userRole && !isAdminAccessingStaff) {
           const url = request.nextUrl.clone();
           url.pathname = `/dashboard/${userRole}`;
           return NextResponse.redirect(url);
@@ -108,13 +112,23 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Define public routes that don't require authentication
+  const publicRoutes = [
+    "/",
+    "/login",
+    "/auth",
+    "/blog",  // Public blog listing
+    "/events",  // Public events listing
+  ];
+
+  const isPublicRoute = publicRoutes.some(route =>
+    request.nextUrl.pathname === route ||
+    request.nextUrl.pathname.startsWith(route + "/") ||
+    request.nextUrl.pathname.startsWith("/auth")
+  );
+
+  if (!user && !isPublicRoute) {
+    // no user and not a public route, redirect to login
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);

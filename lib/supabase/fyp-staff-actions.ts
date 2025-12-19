@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getStaffAssignedFYPs() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return [];
 
@@ -42,7 +42,7 @@ export async function getStaffAssignedFYPs() {
 
 export async function getAllFYPsForStaff() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return [];
 
@@ -142,7 +142,7 @@ export async function reviewFYPSubmission(
   feedback: string
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -195,7 +195,7 @@ export async function reviewFYPSubmission(
 
 export async function getStaffDashboardStats() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return null;
 

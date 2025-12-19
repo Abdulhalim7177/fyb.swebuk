@@ -13,7 +13,7 @@ export async function processAcademicSessionEnd() {
 
   try {
     // First, check if the user is an admin
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await (supabase.auth as any).getUser();
 
     if (userError || !user) {
       throw new Error('User not authenticated');

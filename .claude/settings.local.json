@@ -16,7 +16,20 @@
       "Bash(supabase status:*)",
       "Bash(cat:*)",
       "Bash(node:*)",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(supabase db push:*)",
+      "Bash(npm exec:*)",
+      "Bash(docker ps:*)",
+      "WebFetch(domain:dribbble.com)",
+      "Bash(timeout /t 5 /nobreak)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npx tsc:*)",
+      "Bash(del /F /Q C:UsersabdulHerdfyb.swebuk.nextlock)",
+      "Bash(if exist .next rmdir /s /q .next)"
     ],
     "deny": [],
     "ask": []

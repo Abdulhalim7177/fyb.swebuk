@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 
 export default async function StudentFYPPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     redirect("/auth/login");
@@ -83,13 +83,13 @@ export default async function StudentFYPPage() {
     return {
       type: chapter.type,
       label: chapter.label,
-      status: !latest
+      status: (!latest
         ? 'not_started'
         : latest.status === 'approved'
           ? 'approved'
           : latest.status === 'pending'
             ? 'pending'
-            : 'needs_revision',
+            : 'needs_revision') as "approved" | "pending" | "needs_revision" | "not_started",
       latestVersion: latest?.version_number,
     };
   });

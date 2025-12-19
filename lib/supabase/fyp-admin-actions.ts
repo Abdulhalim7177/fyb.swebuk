@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getAllFYPsForAdmin() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return [];
 
@@ -55,7 +55,7 @@ export async function getAllFYPsForAdmin() {
 
 export async function getUnassignedFYPs() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return [];
 
@@ -102,7 +102,7 @@ export async function getAllSupervisors() {
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, full_name, avatar_url")
+      .select("id, full_name, email, avatar_url")
       .eq("role", "staff")
       .order("full_name", { ascending: true });
 
@@ -120,7 +120,7 @@ export async function getAllSupervisors() {
 
 export async function assignSupervisorToFYP(fypId: string, supervisorId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -155,7 +155,7 @@ export async function assignSupervisorToFYP(fypId: string, supervisorId: string)
 
 export async function bulkAssignSupervisor(fypIds: string[], supervisorId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -189,7 +189,7 @@ export async function bulkAssignSupervisor(fypIds: string[], supervisorId: strin
 
 export async function getSupervisorWorkload() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return [];
 
@@ -208,7 +208,7 @@ export async function getSupervisorWorkload() {
     // Get all staff members
     const { data: staff, error: staffError } = await supabase
       .from("profiles")
-      .select("id, full_name")
+      .select("id, full_name, email")
       .eq("role", "staff");
 
     if (staffError || !staff) {
@@ -246,7 +246,7 @@ export async function getSupervisorWorkload() {
 
 export async function getAdminDashboardStats() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return null;
 
@@ -299,7 +299,7 @@ export async function getAdminDashboardStats() {
 
 export async function approveFYPProposal(fypId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -333,7 +333,7 @@ export async function approveFYPProposal(fypId: string) {
 
 export async function rejectFYPProposal(fypId: string, reason: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 

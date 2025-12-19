@@ -242,3 +242,24 @@ chats (id, room_id, user_id, message, created_at)
 - Database testing with proper fixtures
 
 This documentation serves as the primary reference for Claude when working on the Swebuk project. All implementation decisions should align with the architecture and patterns outlined here.
+- # Error Type
+Console Error
+
+## Error Message
+Error fetching certificates: {}
+
+
+    at getMyCertificates (lib\supabase\event-student-actions.ts:464:15)
+    at MyCertificates (app\dashboard\student\events\page.tsx:276:24)
+    at StudentEventsPage (app\dashboard\student\events\page.tsx:372:13)
+
+## Code Frame
+  462 |
+  463 |     if (error) {
+> 464 |       console.error("Error fetching certificates:", error);
+      |               ^
+  465 |       return [];
+  466 |     }
+  467 |
+
+Next.js version: 16.0.10 (Turbopack)

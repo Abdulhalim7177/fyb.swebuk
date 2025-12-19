@@ -40,7 +40,7 @@ export default function CompleteProfileForm() {
 
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await (supabase.auth as any).getUser();
 
       if (!user) {
         throw new Error("No authenticated user found");

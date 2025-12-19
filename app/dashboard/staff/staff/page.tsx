@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import StaffClientWrapper from "./staff-client-wrapper";
 import { createAdminClient } from "@/lib/supabase/admin-actions";
-import { User } from "@supabase/supabase-js";
 
 // Define a more comprehensive user type for our page
 export interface UserProfile {
@@ -20,7 +19,7 @@ export default async function StaffManagementPage() {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await (supabase.auth as any).getUser();
 
   if (!user) {
     return redirect("/auth/login");
@@ -39,7 +38,7 @@ export default async function StaffManagementPage() {
 
   // Use admin client to fetch all users from auth.users
   const adminSupabase = await createAdminClient();
-  const { data: authUsersResponse, error: authUsersError } = await adminSupabase.auth.admin.listUsers();
+  const { data: authUsersResponse, error: authUsersError } = await (adminSupabase.auth as any).admin.listUsers();
 
   if (authUsersError) {
     console.error("Error fetching auth users:", authUsersError);
@@ -64,7 +63,7 @@ export default async function StaffManagementPage() {
   // Combine auth users with their profiles (only for staff members)
   const staffUsers: UserProfile[] = authUsersResponse.users
     .filter(authUser => profilesMap.has(authUser.id))  // Only staff members
-    .map((authUser: User) => {
+    .map((authUser: any) => {
       const userProfile = profilesMap.get(authUser.id);
       return {
         id: authUser.id,

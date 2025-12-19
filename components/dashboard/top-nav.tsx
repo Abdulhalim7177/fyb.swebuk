@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { User } from "@supabase/supabase-js";
 import { Bell, Menu, LogOut, Settings } from "lucide-react";
 import { ThemeSelector } from "@/components/theme-selector";
 import {
@@ -22,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 interface TopNavProps {
-  user: User;
+  user: any;
   userRole: string; // Pass role from profile instead of user metadata
   onMenuClick: () => void;
 }
@@ -110,7 +109,7 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await supabase.auth.signOut();
+    await (supabase.auth as any).signOut();
     router.push("/");
   };
 

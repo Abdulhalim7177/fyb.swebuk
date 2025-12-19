@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { updateFYPStatus, assignSupervisor, updateFYPGrade, getStaffMembers } from "@/lib/supabase/fyp-actions";
+import { updateFYPStatus, assignSupervisor, updateFYPGrade } from "@/lib/supabase/fyp-actions";
 import { toast } from "sonner";
 import { CheckCircle, XCircle, User, Award, FileCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";

@@ -11,7 +11,7 @@ export default async function EditUserPage({
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await (supabase.auth as any).getUser();
 
   if (!user) {
     return redirect("/auth/login");

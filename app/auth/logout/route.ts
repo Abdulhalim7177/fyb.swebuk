@@ -8,10 +8,10 @@ export async function GET(req: NextRequest) {
   // Check if a user's session exists
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await (supabase.auth as any).getSession();
 
   if (session) {
-    await supabase.auth.signOut();
+    await (supabase.auth as any).signOut();
     revalidatePath("/", "layout");
   }
 

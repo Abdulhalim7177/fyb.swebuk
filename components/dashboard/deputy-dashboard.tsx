@@ -1,14 +1,13 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from "@supabase/supabase-js";
 import { Users, UserPlus, BookOpen, FileText, Users2, Clock, CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
 interface DeputyDashboardProps {
-  user: User;
+  user: any;
   fullName?: string; // Pass full name from profile
 }
 
@@ -53,7 +52,12 @@ export function DeputyDashboard({ user, fullName }: DeputyDashboardProps) {
       if (clustersError) {
         console.error('Error fetching user clusters:', clustersError);
       } else if (userClusters) {
-        setMyClusters(userClusters);
+        // Initialize clusters with members_count as 0
+        const clustersWithCounts = userClusters.map(cluster => ({
+          ...cluster,
+          members_count: 0
+        }));
+        setMyClusters(clustersWithCounts);
 
         // Get cluster IDs to fetch related data
         const clusterIds = userClusters.map(cluster => cluster.id);
@@ -74,7 +78,8 @@ export function DeputyDashboard({ user, fullName }: DeputyDashboardProps) {
               user_id,
               profiles!cluster_members_user_id_fkey(full_name),
               cluster_id,
-              clusters!cluster_members_cluster_id_fkey(name)
+              clusters!cluster_members_cluster_id_fkey(name),
+              created_at
             `)
             .in('cluster_id', clusterIds)
             .eq('status', 'pending');
@@ -94,9 +99,9 @@ export function DeputyDashboard({ user, fullName }: DeputyDashboardProps) {
             const formattedRequests = requests.map(req => ({
               id: req.id,
               user_id: req.user_id,
-              user_name: req.profiles?.full_name || 'Unknown User',
+              user_name: (req.profiles as any)?.full_name || 'Unknown User',
               cluster_id: req.cluster_id,
-              cluster_name: req.clusters?.name || 'Unknown Cluster',
+              cluster_name: (req.clusters as any)?.name || 'Unknown Cluster',
               created_at: req.created_at
             }));
 

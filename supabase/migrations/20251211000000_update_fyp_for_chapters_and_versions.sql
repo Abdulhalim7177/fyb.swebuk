@@ -11,6 +11,16 @@ ADD COLUMN IF NOT EXISTS progress_percentage INTEGER DEFAULT 0;
 ALTER TABLE fyp_submissions
 DROP CONSTRAINT IF EXISTS fyp_submissions_submission_type_check;
 
+-- Migrate existing data: map old types to new types
+UPDATE fyp_submissions
+SET submission_type = CASE
+  WHEN submission_type = 'progress_report' THEN 'chapter_1'
+  WHEN submission_type = 'draft' THEN 'chapter_2'
+  WHEN submission_type = 'final' THEN 'final_thesis'
+  ELSE submission_type
+END
+WHERE submission_type NOT IN ('proposal', 'chapter_1', 'chapter_2', 'chapter_3', 'chapter_4', 'chapter_5', 'final_thesis');
+
 -- Add new constraint with chapter types
 ALTER TABLE fyp_submissions
 ADD CONSTRAINT fyp_submissions_submission_type_check

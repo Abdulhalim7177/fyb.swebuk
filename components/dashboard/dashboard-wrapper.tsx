@@ -3,7 +3,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { TopNav } from "@/components/dashboard/top-nav";
-import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
 interface DashboardWrapperProps {
@@ -11,17 +10,18 @@ interface DashboardWrapperProps {
 }
 
 export function DashboardWrapper({ children }: DashboardWrapperProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userAcademicLevel, setUserAcademicLevel] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    const supabase = createClient();
+
     const initializeUser = async () => {
       setLoading(true);
-      const supabase = createClient();
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await (supabase.auth as any).getUser();
 
       if (userError || !user) {
         setUser(null);
@@ -56,16 +56,17 @@ export function DashboardWrapper({ children }: DashboardWrapperProps) {
 
     initializeUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
+    // Listen for auth changes using getSession polling
+    const authInterval = setInterval(async () => {
+      const { data: { session } } = await (supabase.auth as any).getSession();
       if (session?.user) {
         setUser(session.user);
       } else {
         setUser(null);
       }
-    });
+    }, 5000);
 
-    return () => subscription.unsubscribe();
+    return () => clearInterval(authInterval);
   }, []);
 
   if (loading || !user) {

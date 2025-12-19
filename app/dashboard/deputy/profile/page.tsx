@@ -14,7 +14,7 @@ export default async function DeputyProfilePage() {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await (supabase.auth as any).getUser();
 
   if (!user) {
     return redirect("/auth/login");

@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User } from "@supabase/supabase-js";
 import { Users, FileText, Calendar, Settings, GraduationCap, ClipboardList, Award, BarChart } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -28,7 +27,7 @@ interface PendingSubmission {
 }
 
 interface StaffDashboardProps {
-  user: User;
+  user: any;
   fullName?: string;
   fypStats: FYPStats | null;
   pendingSubmissions: PendingSubmission[];

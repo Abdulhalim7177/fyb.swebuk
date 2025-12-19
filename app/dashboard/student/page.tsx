@@ -5,7 +5,7 @@ import { getStudentDashboardStats, getRecentProjects, getPopularClusters, getFea
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     redirect("/auth/login");

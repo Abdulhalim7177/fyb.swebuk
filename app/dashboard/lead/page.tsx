@@ -4,7 +4,7 @@ import { LeadDashboard } from "@/components/dashboard/lead-dashboard";
 
 export default async function LeadDashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     redirect("/auth/login");

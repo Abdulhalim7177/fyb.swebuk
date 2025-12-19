@@ -165,7 +165,7 @@ export default function AcademicSessionForm() {
       const {
         data: { session },
         error: sessionError
-      } = await supabase.auth.getSession();
+      } = await (supabase.auth as any).getSession();
 
       if (sessionError || !session) {
         throw new Error('Authentication error');

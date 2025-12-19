@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 async function getUserRole() {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const { data: { user }, error: userError } = await (supabase.auth as any).getUser();
 
   if (userError || !user) {
     throw new Error("User not authenticated");

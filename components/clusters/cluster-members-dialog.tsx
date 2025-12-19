@@ -239,7 +239,7 @@ export function ClusterMembersDialog({
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
       if (!user) return;
 
       const { error } = await supabase

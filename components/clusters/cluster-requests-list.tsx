@@ -48,7 +48,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
         setLoading(true);
 
         // Get current user ID
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await (supabase.auth as any).getUser();
         setCurrentUserId(user?.id || null);
 
         // First, fetch the cluster members with pending status
@@ -176,7 +176,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
     }
     try {
       console.log("Attempting to approve request with ID:", requestId);
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await (supabase.auth as any).getUser();
       if (authError || !user) {
         throw new Error("User not authenticated");
       }

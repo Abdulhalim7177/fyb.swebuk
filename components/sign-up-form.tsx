@@ -43,7 +43,7 @@ export function SignUpForm({
       const {
         data: { user },
         error,
-      } = await supabase.auth.signUp({
+      } = await (supabase.auth as any).signUp({
         email,
         password,
         options: {

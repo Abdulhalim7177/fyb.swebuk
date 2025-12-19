@@ -21,7 +21,7 @@ export function AuthButtonClient() {
   useEffect(() => {
     const getUser = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
       setUser(user);
       setLoading(false);
     };
@@ -29,7 +29,7 @@ export function AuthButtonClient() {
     getUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = (createClient().auth as any).onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user ?? null);
     });
 
@@ -39,7 +39,7 @@ export function AuthButtonClient() {
   const handleLogout = async () => {
     const supabase = createClient();
     setIsLoggingOut(true);
-    await supabase.auth.signOut();
+    await (supabase.auth as any).signOut();
     router.push("/");
   };
 

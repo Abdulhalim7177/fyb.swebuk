@@ -4,7 +4,7 @@ import { DeputyDashboard } from "@/components/dashboard/deputy-dashboard";
 
 export default async function DeputyDashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     redirect("/auth/login");

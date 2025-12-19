@@ -1,11 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User } from "@supabase/supabase-js";
 import { Users, UserCheck, Settings, Shield, Database, BarChart, AlertTriangle, TrendingUp, Globe, FileText, Award } from "lucide-react";
 import Link from "next/link";
 
 interface AdminDashboardProps {
-  user: User;
+  user: any;
   fullName?: string; // Pass full name from profile
   metrics: {
     totalStudents: number;

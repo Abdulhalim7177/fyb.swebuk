@@ -33,7 +33,7 @@ interface DetailedCluster {
 
 async function getUser() {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const { data: { user }, error: userError } = await (supabase.auth as any).getUser();
 
   if (userError || !user) {
     throw new Error("User not authenticated");

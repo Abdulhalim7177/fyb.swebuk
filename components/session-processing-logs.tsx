@@ -16,7 +16,7 @@ export default async function SessionProcessingLogs() {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await (supabase.auth as any).getUser();
 
   if (!user) {
     return <div>Access denied</div>;

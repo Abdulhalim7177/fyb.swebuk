@@ -15,7 +15,7 @@ export function DashboardDirector({ fallbackPath = "/dashboard/student" }: Dashb
   useEffect(() => {
     const checkUserRole = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
 
       if (!user) {
         router.push("/auth/login");

@@ -65,7 +65,7 @@ export async function createAcademicSession(
     // Check if user is admin
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await (supabase.auth as any).getUser();
     
     if (!user) {
       throw new Error("No authenticated user found");
@@ -126,7 +126,7 @@ export async function updateAcademicSession(
     // Check if user is admin
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await (supabase.auth as any).getUser();
     
     if (!user) {
       throw new Error("No authenticated user found");
@@ -180,7 +180,7 @@ export async function deleteAcademicSession(sessionId: string) {
     // Check if user is admin
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await (supabase.auth as any).getUser();
     
     if (!user) {
       throw new Error("No authenticated user found");
@@ -225,7 +225,7 @@ export async function promoteStudentsToNextLevel(sessionId: string) {
     // Check if user is admin
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await (supabase.auth as any).getUser();
     
     if (!user) {
       throw new Error("No authenticated user found");

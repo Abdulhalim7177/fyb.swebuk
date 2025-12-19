@@ -156,7 +156,7 @@ export async function getUserMemberProjects(userId: string, limit: number = 6) {
 
   try {
     // First get the project IDs where user is a member using service role to avoid RLS recursion
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await (supabase.auth as any).getUser();
     if (!user) return [];
 
     // Query project_members first (this should work with RLS)

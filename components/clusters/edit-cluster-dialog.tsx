@@ -113,7 +113,7 @@ export function EditClusterDialog({
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
       if (!user) {
         toast.error("You must be logged in to update a cluster");
         return;

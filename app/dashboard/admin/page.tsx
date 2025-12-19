@@ -5,7 +5,7 @@ import { getAdminDashboardMetrics } from "@/lib/supabase/admin-actions";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     redirect("/auth/login");

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getStudentFYP() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return null;
 
@@ -36,7 +36,7 @@ export async function getStudentFYP() {
 
 export async function submitFYPProposal(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) {
     return { success: false, error: "Not authenticated" };
@@ -146,7 +146,7 @@ export async function getFYPComments(fypId: string) {
 
 export async function postFYPComment(fypId: string, content: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -170,7 +170,7 @@ export async function postFYPComment(fypId: string, content: string) {
 
 export async function updateFYPStatus(fypId: string, status: string, feedback?: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -214,7 +214,7 @@ export async function updateFYPStatus(fypId: string, status: string, feedback?: 
 
 export async function assignSupervisor(fypId: string, supervisorId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -248,7 +248,7 @@ export async function assignSupervisor(fypId: string, supervisorId: string) {
 
 export async function updateFYPGrade(fypId: string, grade: string, feedback?: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -297,7 +297,7 @@ export async function uploadFYPDocument(
   documentType: "proposal" | "report"
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -346,7 +346,7 @@ export async function deleteFYPDocument(
   documentType: "proposal" | "report"
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -411,7 +411,7 @@ export async function createFYPSubmission(
   file?: File
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -474,7 +474,7 @@ export async function reviewSubmission(
   feedback: string
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 
@@ -513,7 +513,7 @@ export async function reviewSubmission(
 
 export async function deleteSubmission(submissionId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await (supabase.auth as any).getUser();
 
   if (!user) return { success: false, error: "Not authenticated" };
 

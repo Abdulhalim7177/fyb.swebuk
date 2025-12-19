@@ -46,7 +46,7 @@ export async function deleteUser(userId: string) {
 
   try {
     // Then delete the auth user using the admin client first to avoid referential integrity issues
-    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    const { error: authError } = await (supabase.auth as any).admin.deleteUser(userId);
 
     if (authError) {
       console.error("Error deleting auth user:", authError);
@@ -77,7 +77,7 @@ export async function createUser(
 
   try {
     // Create user in auth using admin client
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: authError } = await (supabase.auth as any).admin.createUser({
       email: email,
       password: password,
       email_confirm: true, // Automatically confirm email
@@ -179,7 +179,7 @@ export async function createStaffMember(email: string, password: string, fullNam
     // Check if the current user has permission to create staff members
     const {
       data: { user },
-    } = await userClient.auth.getUser();
+    } = await (userClient.auth as any).getUser();
 
     if (!user) {
       throw new Error("No authenticated user found");
@@ -213,7 +213,7 @@ export async function createStaffMember(email: string, password: string, fullNam
     const adminClient = await createAdminClient();
 
     // Create user in auth using admin client
-    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
+    const { data: authData, error: authError } = await (adminClient.auth as any).admin.createUser({
       email: email,
       password: password,
       email_confirm: true, // Automatically confirm email
@@ -240,7 +240,7 @@ export async function createStaffMember(email: string, password: string, fullNam
       if (profileError) {
         console.error("Error creating profile:", profileError);
         // Clean up by deleting the auth user if profile creation fails
-        await adminClient.auth.admin.deleteUser(authData.user.id);
+        await (adminClient.auth as any).admin.deleteUser(authData.user.id);
         throw new Error(`Failed to create user profile: ${profileError.message}`);
       }
 

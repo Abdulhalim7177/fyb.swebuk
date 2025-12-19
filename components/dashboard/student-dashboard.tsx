@@ -1,12 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User } from "@supabase/supabase-js";
 import { Users2, Code2, CalendarCheck, GitCommit, Palette, Brain, Server, CloudCog, Users, GraduationCap } from "lucide-react";
 import Link from "next/link";
 
 interface StudentDashboardProps {
-  user: User;
+  user: any;
   fullName?: string;
   academicLevel?: string;
   stats: {

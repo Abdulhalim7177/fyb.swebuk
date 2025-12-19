@@ -17,27 +17,29 @@ export function Navigation() {
   const router = useRouter();
 
   useEffect(() => {
+    const supabase = createClient();
+
     const getUser = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
       setUser(user);
       setLoading(false);
     };
 
     getUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
+    // Listen for auth changes using getSession polling
+    const authInterval = setInterval(async () => {
+      const { data: { session } } = await (supabase.auth as any).getSession();
       setUser(session?.user ?? null);
-    });
+    }, 5000);
 
-    return () => subscription.unsubscribe();
+    return () => clearInterval(authInterval);
   }, []);
 
   const handleLogout = async () => {
     const supabase = createClient();
     setIsLoggingOut(true);
-    await supabase.auth.signOut();
+    await (supabase.auth as any).signOut();
     setIsMenuOpen(false); // Close menu after logout
     router.push("/");
   };
@@ -59,7 +61,7 @@ export function Navigation() {
             <Link href="#features" className="text-gray-300 hover:text-white transition-colors">
               Features
             </Link>
-            <Link href="#blog" className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
               Blog
             </Link>
             <Link href="#stats" className="text-gray-300 hover:text-white transition-colors">
@@ -91,7 +93,7 @@ export function Navigation() {
               <Link href="#features" className="text-gray-300 hover:text-white transition-colors py-2">
                 Features
               </Link>
-              <Link href="#blog" className="text-gray-300 hover:text-white transition-colors py-2">
+              <Link href="/blog" className="text-gray-300 hover:text-white transition-colors py-2">
                 Blog
               </Link>
               <Link href="#stats" className="text-gray-300 hover:text-white transition-colors py-2">

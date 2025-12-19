@@ -51,7 +51,7 @@ export async function updateUserProfile(
 
   try {
     // Update the auth user's metadata
-    const { data: authUser, error: authError } = await supabase.auth.admin.updateUserById(
+    const { data: authUser, error: authError } = await (supabase.auth as any).admin.updateUserById(
       userId,
       {
         user_metadata: { role: role, full_name: fullName },
@@ -116,7 +116,7 @@ export async function viewUser(userId: string) {
     // Get auth user data (using the auth admin API)
     let authUser = null;
     try {
-      const { data: authData, error: authError } = await supabase.auth.admin.getUserById(userId);
+      const { data: authData, error: authError } = await (supabase.auth as any).admin.getUserById(userId);
       if (!authError && authData) {
         authUser = authData.user;
       }
@@ -154,7 +154,7 @@ export async function deleteUser(userId: string) {
     }
 
     // Then delete the auth user using the admin client
-    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    const { error: authError } = await (supabase.auth as any).admin.deleteUser(userId);
 
     if (authError) {
       console.error("Error deleting auth user:", authError);
@@ -220,7 +220,7 @@ export async function createUser(
 
   try {
     // Create user in auth using admin client
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: authError } = await (supabase.auth as any).admin.createUser({
       email: email,
       password: password,
       email_confirm: true, // Automatically confirm email

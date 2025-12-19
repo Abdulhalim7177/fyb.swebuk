@@ -54,7 +54,7 @@ export function CreateClusterDialog({ children, onClusterCreated }: CreateCluste
 
   const fetchUsers = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
       if (!user) return;
 
       // Fetch staff and admin users
@@ -96,7 +96,7 @@ export function CreateClusterDialog({ children, onClusterCreated }: CreateCluste
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase.auth as any).getUser();
       if (!user) {
         toast.error("You must be logged in to create a cluster");
         return;
