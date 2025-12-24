@@ -176,7 +176,7 @@ async function EventsTable({ status }: { status?: string }) {
                         Manage Attendance
                       </Link>
                     </DropdownMenuItem>
-                    {event.status === "completed" && (
+                    {new Date(event.end_date) < new Date() && (
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/staff/events/${event.id}/certificates`}>
                           Issue Certificates

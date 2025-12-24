@@ -55,6 +55,7 @@ export async function getMyUpcomingRegistrations() {
   if (!user) return [];
 
   try {
+    // Get authenticated registrations
     const { data, error } = await supabase
       .from("user_event_registrations")
       .select("*")
@@ -66,6 +67,81 @@ export async function getMyUpcomingRegistrations() {
     if (error) {
       console.error("Error fetching upcoming registrations:", error);
       return [];
+    }
+
+    // Also get guest registrations by email
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.email) {
+      const { data: guestRegs } = await supabase
+        .from("guest_registrations")
+        .select(`
+          id,
+          event_id,
+          status,
+          registered_at,
+          events!inner (
+            id,
+            title,
+            slug,
+            description,
+            short_description,
+            start_date,
+            end_date,
+            location_type,
+            location,
+            venue_name,
+            event_type,
+            category,
+            organizer_id,
+            profiles!events_organizer_id_fkey (
+              full_name,
+              avatar_url
+            )
+          )
+        `)
+        .eq("email", profile.email.toLowerCase())
+        .in("status", ["registered", "attended"])
+        .gte("events.start_date", new Date().toISOString());
+
+      if (guestRegs && guestRegs.length > 0) {
+        // Transform guest registrations to match UserEventRegistration format
+        const transformedGuestRegs = guestRegs.map((reg: any) => ({
+          registration_id: reg.id,
+          event_id: reg.event_id,
+          user_id: user.id,
+          registration_status: reg.status,
+          registered_at: reg.registered_at,
+          event_title: reg.events.title,
+          event_slug: reg.events.slug,
+          event_description: reg.events.description,
+          short_description: reg.events.short_description,
+          start_date: reg.events.start_date,
+          end_date: reg.events.end_date,
+          location_type: reg.events.location_type,
+          location: reg.events.location,
+          venue_name: reg.events.venue_name,
+          event_type: reg.events.event_type,
+          category: reg.events.category,
+          organizer_id: reg.events.organizer_id,
+          organizer_name: reg.events.profiles?.full_name,
+          organizer_avatar: reg.events.profiles?.avatar_url,
+          has_feedback: false,
+          has_certificate: false,
+          is_guest_registration: true,
+        }));
+
+        // Merge and sort by start_date
+        const allRegistrations = [...(data || []), ...transformedGuestRegs].sort(
+          (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+        );
+
+        return allRegistrations as UserEventRegistration[];
+      }
     }
 
     return (data as UserEventRegistration[]) || [];
@@ -84,6 +160,7 @@ export async function getMyPastRegistrations() {
   if (!user) return [];
 
   try {
+    // Get authenticated registrations
     const { data, error } = await supabase
       .from("user_event_registrations")
       .select("*")
@@ -94,6 +171,80 @@ export async function getMyPastRegistrations() {
     if (error) {
       console.error("Error fetching past registrations:", error);
       return [];
+    }
+
+    // Also get guest registrations by email
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.email) {
+      const { data: guestRegs } = await supabase
+        .from("guest_registrations")
+        .select(`
+          id,
+          event_id,
+          status,
+          registered_at,
+          events!inner (
+            id,
+            title,
+            slug,
+            description,
+            short_description,
+            start_date,
+            end_date,
+            location_type,
+            location,
+            venue_name,
+            event_type,
+            category,
+            organizer_id,
+            profiles!events_organizer_id_fkey (
+              full_name,
+              avatar_url
+            )
+          )
+        `)
+        .eq("email", profile.email.toLowerCase())
+        .lt("events.end_date", new Date().toISOString());
+
+      if (guestRegs && guestRegs.length > 0) {
+        // Transform guest registrations to match UserEventRegistration format
+        const transformedGuestRegs = guestRegs.map((reg: any) => ({
+          registration_id: reg.id,
+          event_id: reg.event_id,
+          user_id: user.id,
+          registration_status: reg.status,
+          registered_at: reg.registered_at,
+          event_title: reg.events.title,
+          event_slug: reg.events.slug,
+          event_description: reg.events.description,
+          short_description: reg.events.short_description,
+          start_date: reg.events.start_date,
+          end_date: reg.events.end_date,
+          location_type: reg.events.location_type,
+          location: reg.events.location,
+          venue_name: reg.events.venue_name,
+          event_type: reg.events.event_type,
+          category: reg.events.category,
+          organizer_id: reg.events.organizer_id,
+          organizer_name: reg.events.profiles?.full_name,
+          organizer_avatar: reg.events.profiles?.avatar_url,
+          has_feedback: false,
+          has_certificate: false,
+          is_guest_registration: true,
+        }));
+
+        // Merge and sort by start_date (descending)
+        const allRegistrations = [...(data || []), ...transformedGuestRegs].sort(
+          (a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+        );
+
+        return allRegistrations as UserEventRegistration[];
+      }
     }
 
     return (data as UserEventRegistration[]) || [];
@@ -621,6 +772,7 @@ export async function checkRegistrationStatus(eventId: string) {
   }
 
   try {
+    // First check event_registrations (authenticated registrations)
     const { data, error } = await supabase
       .from("event_registrations")
       .select("status")
@@ -628,17 +780,47 @@ export async function checkRegistrationStatus(eventId: string) {
       .eq("user_id", user.id)
       .single();
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        return { isRegistered: false, status: null };
+    if (data && !error) {
+      return {
+        isRegistered: data.status !== "cancelled",
+        status: data.status as RegistrationStatus,
+      };
+    }
+
+    // If no authenticated registration found, check guest_registrations by email
+    if (error && error.code === "PGRST116") {
+      // Get user's email from profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.email) {
+        const { data: guestReg } = await supabase
+          .from("guest_registrations")
+          .select("status")
+          .eq("event_id", eventId)
+          .eq("email", profile.email.toLowerCase())
+          .single();
+
+        if (guestReg) {
+          return {
+            isRegistered: guestReg.status !== "cancelled",
+            status: guestReg.status as RegistrationStatus,
+            isGuestRegistration: true,
+          };
+        }
       }
+
+      return { isRegistered: false, status: null };
+    }
+
+    if (error) {
       throw error;
     }
 
-    return {
-      isRegistered: data.status !== "cancelled",
-      status: data.status as RegistrationStatus,
-    };
+    return { isRegistered: false, status: null };
   } catch (error) {
     console.error("Error checking registration:", error);
     return { isRegistered: false, status: null };

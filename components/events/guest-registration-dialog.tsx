@@ -41,6 +41,10 @@ export function GuestRegistrationDialog({
   >("success");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [hasAccount, setHasAccount] = useState(false);
+  const [confirmationEventDetails, setConfirmationEventDetails] = useState<{
+    title?: string;
+    start_date?: string;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,12 +84,43 @@ export function GuestRegistrationDialog({
       const data = await response.json();
 
       if (!response.ok) {
-        if (data.error?.includes("already registered")) {
+        // Handle different error scenarios
+        if (data.promptLogin || data.hasAccount) {
+          // User has an account - show login prompt
           setConfirmationStatus("existing");
-        } else {
+          setConfirmationMessage(data.error || "An account exists with this email. Please sign in to continue.");
+          setHasAccount(true);
+        } else if (data.alreadyRegistered) {
+          // Already registered
+          setConfirmationStatus("existing");
+          setConfirmationMessage(data.error || "You're already registered for this event.");
+          setHasAccount(data.hasAccount || false);
+        } else if (data.requiresAccount) {
+          // Guest registration not available
           setConfirmationStatus("error");
+          setConfirmationMessage(data.error || "Please create an account to register.");
+        } else {
+          // Other errors
+          setConfirmationStatus("error");
+          setConfirmationMessage(data.error || "Failed to register");
         }
-        setConfirmationMessage(data.error || "Failed to register");
+
+        // Store event details if provided
+        if (data.eventDetails) {
+          setConfirmationEventDetails({
+            title: data.eventDetails.title,
+            start_date: data.eventDetails.start_date,
+          });
+        } else {
+          // Fallback to props
+          setConfirmationEventDetails({
+            title: eventTitle,
+            start_date: eventDate,
+          });
+        }
+
+        // Close form dialog and show confirmation modal
+        onOpenChange(false);
         setShowConfirmation(true);
         return;
       }
@@ -117,6 +152,7 @@ export function GuestRegistrationDialog({
           : "Failed to register for event";
       setConfirmationStatus("error");
       setConfirmationMessage(message);
+      onOpenChange(false);
       setShowConfirmation(true);
     } finally {
       setLoading(false);
@@ -130,9 +166,13 @@ export function GuestRegistrationDialog({
         <DialogHeader>
           <DialogTitle>Register for Event</DialogTitle>
           <DialogDescription>
-            Register for &quot;{eventTitle}&quot; by providing your details below.
-            If you have an account with this email, we&apos;ll link it automatically.
+            Enter your details to register for &quot;{eventTitle}&quot;.
           </DialogDescription>
+          <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-xs text-blue-900 dark:text-blue-200">
+              <strong>Note:</strong> If you have an existing account, you&apos;ll be prompted to sign in.
+            </p>
+          </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -202,10 +242,19 @@ export function GuestRegistrationDialog({
       onOpenChange={setShowConfirmation}
       status={confirmationStatus}
       message={confirmationMessage}
-      eventTitle={eventTitle}
+      eventTitle={confirmationEventDetails?.title || eventTitle}
       hasAccount={hasAccount}
       additionalInfo={{
-        eventDate: eventDate,
+        eventDate: confirmationEventDetails?.start_date
+          ? new Date(confirmationEventDetails.start_date).toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })
+          : eventDate,
       }}
     />
     </>

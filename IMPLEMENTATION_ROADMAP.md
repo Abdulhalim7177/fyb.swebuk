@@ -55,43 +55,43 @@
 - [x] Automatically transition Level 400 students to an 'Alumni' status
 
 ### 2. Core Dashboard Functionality
-- [ ] Student Dashboard: Personal activities, projects, and content management
-- [ ] Lead/Deputy Student Dashboard: Cluster management tools
-- [ ] Staff Dashboard: Role varies based on assigned permissions (cluster oversight, user management, FYP supervision)
-- [ ] Administrator Dashboard: Complete system overview with administrative controls
+- [x] Student Dashboard: Personal activities, projects, and content management
+- [x] Lead/Deputy Student Dashboard: Cluster management tools
+- [x] Staff Dashboard: Role varies based on assigned permissions (cluster oversight, user management, FYP supervision)
+- [x] Administrator Dashboard: Complete system overview with administrative controls
 
 ### 3. Cluster (Club) Management System
-- [ ] Browse, join, and leave clusters functionality
-- [ ] Cluster creation and management for Administrators
-- [ ] Lead/Deputy Lead tools for managing cluster members and projects
-- [ ] Cluster-specific dashboards and views
-- [ ] Cluster role promotion system (Lead/Deputy Lead assignment)
+- [x] Browse, join, and leave clusters functionality
+- [x] Cluster creation and management for Administrators
+- [x] Lead/Deputy Lead tools for managing cluster members and projects
+- [x] Cluster-specific dashboards and views
+- [x] Cluster role promotion system (Lead/Deputy Lead assignment)
 
 ### 4. Project Management System
-- [ ] Create personal projects (with public/private toggle)
-- [ ] Create cluster-based projects (by Leads/Staff)
-- [ ] Browse and request to join projects
-- [ ] Formal request/approval workflow for joining projects
-- [ ] Project membership management
-- [ ] Project collaboration tools
+- [x] Create personal projects (with public/private toggle)
+- [x] Create cluster-based projects (by Leads/Staff)
+- [x] Browse and request to join projects
+- [x] Formal request/approval workflow for joining projects
+- [x] Project membership management
+- [x] Project collaboration tools
 
 ## Phase 2: Content and Communication Features
 
 ### 5. Final Year Project (FYP) Management System
-- [ ] Dedicated module for Level 400 students only
-- [ ] Functionality for submitting project proposals
-- [ ] Workflow for proposal review, approval, and supervisor assignment
-- [ ] Progress tracking, report uploading
-- [ ] Supervisor feedback mechanism
-- [ ] FYP-specific dashboards for students and supervisors
+- [x] Dedicated module for Level 400 students only
+- [x] Functionality for submitting project proposals
+- [x] Workflow for proposal review, approval, and supervisor assignment
+- [x] Progress tracking, report uploading
+- [x] Supervisor feedback mechanism
+- [x] FYP-specific dashboards for students and supervisors
 
 ### 6. Blog and Content Management System
-- [ ] Ability for all users to write blog posts
-- [ ] Approval workflow for student-written posts (by Leads, Staff, Admins)
-- [ ] System for Staff to publish official posts
-- [ ] Commenting system on blog posts
-- [ ] Ability to tag posts to specific clusters
-- [ ] Content categorization and filtering
+- [x] Ability for all users to write blog posts
+- [x] Approval workflow for student-written posts (by Leads, Staff, Admins)
+- [x] System for Staff to publish official posts
+- [x] Commenting system on blog posts
+- [x] Ability to tag posts to specific clusters
+- [x] Content categorization and filtering
 
 ### 7. Communication and Notifications System
 - [ ] Central notification center for all system alerts
@@ -108,10 +108,10 @@
 - [ ] User activity and engagement tracking
 
 ### 9. Event Management System
-- [ ] Create and manage events (Staff/Admins)
-- [ ] Event registration for students
-- [ ] Event attendance tracking
-- [ ] Feedback system and certificate issuance
+- [x] Create and manage events (Staff/Admins)
+- [x] Event registration for students
+- [x] Event attendance tracking
+- [x] Feedback system and certificate issuance
 
 ### 10. Enhanced Profile and Portfolio System
 - [ ] Detailed user profiles with more fields
@@ -122,10 +122,10 @@
 ## Phase 4: Administrative and System Features
 
 ### 11. Academic Session Management
-- [ ] Admins can manage academic sessions (e.g., 2024/2025) and semesters
-- [ ] Automated process to increment student levels (100 -> 200, etc.) at the end of a session
-- [ ] Automatically transition Level 400 students to an 'Alumni' status
-- [ ] Session-based reporting and analytics
+- [x] Admins can manage academic sessions (e.g., 2024/2025) and semesters
+- [x] Automated process to increment student levels (100 -> 200, etc.) at the end of a session
+- [x] Automatically transition Level 400 students to an 'Alumni' status
+- [x] Session-based reporting and analytics
 
 ### 12. Analytics and Reporting System
 - [ ] System-wide analytics dashboard
@@ -148,23 +148,20 @@
 
 ## Immediate Next Steps Priority:
 
-### High Priority (Week 1-2)
-1. Complete basic dashboard infrastructure for all user roles
-2. Implement academic level selection and display
-3. Create basic cluster management system
-4. Implement basic project creation and browsing
+### High Priority (Next Steps)
+1. **Notifications System**: Implement real-time alerts for requests, approvals, and messages.
+2. **Enhanced Profile**: Add portfolio sections, skill endorsements, and detailed user fields.
+3. **Testing & QA**: Comprehensive testing of the newly implemented modules (Clusters, Projects, Events).
 
-### Medium Priority (Week 3-4)
-1. Develop blog and content management system
-2. Implement notification system
-3. Enhance user profile functionality
-4. Start FYP module development
+### Medium Priority (Upcoming)
+1. **Analytics & Reporting**: Develop system-wide dashboards for engagement and performance metrics.
+2. **Advanced Repository**: Integration with version control and documentation tools.
+3. **Refinement**: UI/UX polish and bug fixes across all dashboards.
 
-### Lower Priority (Week 5+)
-1. Advanced analytics and reporting
-2. Event management system
-3. Academic session management
-4. Advanced repository features
+### Lower Priority (Future)
+1. **SIWES Management**: Industrial training module.
+2. **Resource Sharing**: Lecture notes and exam questions.
+3. **AI Integration**: Future smart features.
 
 ## Technical Implementation Notes:
 - Database schema needs to be enhanced to support all planned features

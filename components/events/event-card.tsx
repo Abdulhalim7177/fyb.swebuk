@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, MapPin, Users, Clock, Star } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Star, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RegisteredUsersAvatars } from "@/components/events/registered-users-avatars";
-import type { DetailedEvent } from "@/lib/constants/events";
+import type { DetailedEvent, RegistrationStatus } from "@/lib/constants/events";
 import {
   getEventTypeLabel,
   getEventTypeColorClass,
@@ -22,6 +22,8 @@ interface EventCardProps {
   variant?: "default" | "compact" | "featured";
   showOrganizer?: boolean;
   registeredUsers?: Array<{ id: string; avatar_url: string | null; full_name: string | null }>;
+  userRegistrationStatus?: RegistrationStatus | null;
+  showRegistrationStatus?: boolean;
 }
 
 export function EventCard({
@@ -29,8 +31,11 @@ export function EventCard({
   variant = "default",
   showOrganizer = true,
   registeredUsers = [],
+  userRegistrationStatus = null,
+  showRegistrationStatus = false,
 }: EventCardProps) {
   const timeStatus = getEventTimeStatus(event.start_date, event.end_date);
+  const isRegistered = userRegistrationStatus !== null && userRegistrationStatus !== "cancelled";
 
   if (variant === "compact") {
     return (
@@ -178,13 +183,19 @@ export function EventCard({
               <div className="absolute inset-0 bg-grid-pattern opacity-10" />
             </div>
           )}
-          <div className="absolute top-3 left-3 flex gap-2">
+          <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
             <Badge
               variant="secondary"
               className={getEventTypeColorClass(event.event_type)}
             >
               {getEventTypeLabel(event.event_type)}
             </Badge>
+            {showRegistrationStatus && isRegistered && (
+              <Badge className="bg-green-600 text-white hover:bg-green-700">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                Registered
+              </Badge>
+            )}
           </div>
           {timeStatus.status === "ongoing" && (
             <div className="absolute top-3 right-3">

@@ -253,28 +253,32 @@ export function EventRegistrationButton({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Registration</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to register for &quot;{event.title}&quot;?
-              <div className="mt-4 p-3 bg-muted rounded-lg space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-foreground">
-                    {new Date(event.start_date).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">
-                    {new Date(event.start_date).toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </span>
+            <AlertDialogDescription asChild>
+              <div>
+                <p className="mb-4">
+                  Are you sure you want to register for &quot;{event.title}&quot;?
+                </p>
+                <div className="p-3 bg-muted rounded-lg space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-foreground">
+                      {new Date(event.start_date).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-primary" />
+                    <span className="text-muted-foreground">
+                      {new Date(event.start_date).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
                 </div>
               </div>
             </AlertDialogDescription>

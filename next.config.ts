@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         port: "54321",
         pathname: "/storage/v1/object/public/avatars/**",
       },
+      {
+        protocol: "https",
+        hostname: "fonts.gstatic.com",
+      },
     ],
   },
   /* config options here */

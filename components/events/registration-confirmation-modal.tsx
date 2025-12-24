@@ -304,10 +304,18 @@ export function RegistrationConfirmationModal({
                       </Link>
                     )}
 
-                    {status === "existing" && (
-                      <Link href="/auth/signin">
+                    {status === "existing" && hasAccount && (
+                      <Link href="/auth/login">
                         <Button className="w-full" size="lg" variant="default">
-                          Sign In to Manage
+                          Sign In to Continue
+                        </Button>
+                      </Link>
+                    )}
+
+                    {status === "existing" && !hasAccount && (
+                      <Link href="/auth/login">
+                        <Button className="w-full" size="lg" variant="default">
+                          View Registration
                         </Button>
                       </Link>
                     )}

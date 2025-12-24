@@ -202,3 +202,132 @@ export async function getUserMemberProjects(userId: string, limit: number = 6) {
     return [];
   }
 }
+
+/**
+ * Get all projects accessible to a user based on:
+ * - Projects they own
+ * - Projects they are members of
+ * - Cluster projects (if they are a member of the cluster)
+ * - Public projects
+ * - Staff/Admin can see all projects
+ */
+export async function getAccessibleProjects(userId: string, options: {
+  limit?: number;
+  offset?: number;
+  filterType?: string;
+  filterStatus?: string;
+  filterClusterId?: string;
+  filterVisibility?: string;
+  searchTerm?: string;
+} = {}) {
+  const supabase = await createClient();
+
+  try {
+    const {
+      limit = 100,
+      offset = 0,
+      filterType,
+      filterStatus,
+      filterClusterId,
+      filterVisibility,
+      searchTerm
+    } = options;
+
+    const { data, error } = await supabase
+      .rpc('get_accessible_projects', {
+        user_id_param: userId,
+        filter_type: filterType !== 'all' && filterType ? filterType : null,
+        filter_status: filterStatus !== 'all' && filterStatus ? filterStatus : null,
+        filter_cluster_id: filterClusterId !== 'all' && filterClusterId ? filterClusterId : null,
+        filter_visibility: filterVisibility !== 'all' && filterVisibility ? filterVisibility : null,
+        search_term: searchTerm || null,
+        limit_count: limit,
+        offset_count: offset
+      });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching accessible projects:", error);
+    return [];
+  }
+}
+
+/**
+ * Get cluster projects accessible to a user based on cluster membership
+ */
+export async function getClusterProjectsForUser(userId: string, limit: number = 10) {
+  const supabase = await createClient();
+
+  try {
+    // Use the new RPC to get cluster projects where user is a cluster member
+    const { data, error } = await supabase
+      .rpc('get_accessible_projects', {
+        user_id_param: userId,
+        filter_type: 'cluster',
+        limit_count: limit
+      });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching cluster projects for user:", error);
+    return [];
+  }
+}
+
+/**
+ * Check if a user can access a specific project
+ * Returns true if user is owner, member, or cluster member (for cluster projects)
+ */
+export async function canUserAccessProject(userId: string, projectId: string): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    // Check if user is owner
+    const { data: project } = await supabase
+      .from("projects")
+      .select("owner_id, type, visibility, cluster_id")
+      .eq("id", projectId)
+      .single();
+
+    if (!project) return false;
+
+    // Owner can always access
+    if (project.owner_id === userId) return true;
+
+    // Public projects can be accessed by anyone
+    if (project.visibility === "public") return true;
+
+    // Check if user is a project member
+    const { data: memberData } = await supabase
+      .from("project_members")
+      .select("id")
+      .eq("project_id", projectId)
+      .eq("user_id", userId)
+      .eq("status", "approved")
+      .single();
+
+    if (memberData) return true;
+
+    // Check if user is a cluster member (for cluster projects)
+    if (project.type === "cluster" && project.cluster_id) {
+      const { data: clusterMemberData } = await supabase
+        .from("cluster_members")
+        .select("id")
+        .eq("cluster_id", project.cluster_id)
+        .eq("user_id", userId)
+        .eq("status", "approved")
+        .single();
+
+      if (clusterMemberData) return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Error checking project access:", error);
+    return false;
+  }
+}

@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Folder, User, GitBranch } from "lucide-react";
+import { Folder, User, GitBranch, Lock } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface ClusterProject {
   id: string;
@@ -23,9 +24,12 @@ interface ClusterProject {
 interface ClusterProjectsListProps {
   clusterId: string;
   userRole: string;
+  userId?: string;
+  isMember?: boolean;
+  canManage?: boolean;
 }
 
-export function ClusterProjectsList({ clusterId, userRole }: ClusterProjectsListProps) {
+export function ClusterProjectsList({ clusterId, userRole, userId, isMember = false, canManage = false }: ClusterProjectsListProps) {
   const [projects, setProjects] = useState<ClusterProject[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,8 +41,9 @@ export function ClusterProjectsList({ clusterId, userRole }: ClusterProjectsList
         setLoading(true);
         
         // Fetch projects associated with this cluster
+        // Use detailed_projects view which includes member counts and tags
         const { data, error } = await supabase
-          .from("projects")
+          .from("detailed_projects")
           .select(`
             id,
             name,
@@ -47,9 +52,10 @@ export function ClusterProjectsList({ clusterId, userRole }: ClusterProjectsList
             created_at,
             updated_at,
             owner_id,
-            profiles!projects_owner_id_fkey (
-              full_name
-            )
+            owner_name,
+            cluster_id,
+            tags,
+            members_count
           `)
           .eq("cluster_id", clusterId)
           .order("created_at", { ascending: false });
@@ -95,34 +101,20 @@ export function ClusterProjectsList({ clusterId, userRole }: ClusterProjectsList
         }
 
         if (data) {
-          // For each project, also fetch the number of members
-          const projectsWithMembers = await Promise.all(
-            data.map(async (project: any) => {
-              // Count project members
-              const { count: membersCount, error: memberError } = await supabase
-                .from("project_members")
-                .select("*", { count: "exact", head: true })
-                .eq("project_id", project.id);
-
-              if (memberError) {
-                console.error("Error counting members for project:", project.id, memberError);
-              }
-
-              return {
-                id: project.id,
-                name: project.name,
-                description: project.description,
-                status: project.status,
-                created_at: project.created_at,
-                updated_at: project.updated_at,
-                owner_id: project.owner_id,
-                owner_name: project.profiles?.full_name || 'Unknown',
-                cluster_id: project.cluster_id,
-                tags: project.tags || [], // Assuming tags field exists
-                members_count: membersCount || 0
-              };
-            })
-          );
+          // detailed_projects already includes member counts and tags
+          const projectsWithMembers: ClusterProject[] = data.map((project: any) => ({
+            id: project.id,
+            name: project.name,
+            description: project.description,
+            status: project.status,
+            created_at: project.created_at,
+            updated_at: project.updated_at,
+            owner_id: project.owner_id,
+            owner_name: project.owner_name || 'Unknown',
+            cluster_id: project.cluster_id,
+            tags: project.tags || [],
+            members_count: project.members_count || 0
+          }));
 
           setProjects(projectsWithMembers);
         }
@@ -166,30 +158,60 @@ export function ClusterProjectsList({ clusterId, userRole }: ClusterProjectsList
             No projects in this cluster yet.
           </div>
         ) : (
-          projects.map((project) => (
-            <div key={project.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <Folder className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold">{project.name}</h4>
-                    <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      <Badge variant="secondary">{project.status}</Badge>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <User className="h-3 w-3" />
-                        <span>{project.members_count} members</span>
+          projects.map((project) => {
+            const canAccessProject = isMember || canManage;
+
+            const projectCard = (
+              <div className={`p-4 ${canAccessProject ? "hover:bg-muted/50 transition-colors cursor-pointer" : ""}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4 flex-1">
+                    <Folder className={`h-6 w-6 mt-1 flex-shrink-0 ${canAccessProject ? "text-primary" : "text-muted-foreground"}`} />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className={`font-semibold ${!canAccessProject ? "text-muted-foreground" : ""}`}>{project.name}</h4>
+                        {!canAccessProject && (
+                          <span title="Join this cluster to access projects">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                          </span>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <GitBranch className="h-3 w-3" />
-                        <span>Owner: {project.owner_name}</span>
+                      <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <Badge variant="secondary">{project.status}</Badge>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          <span>{project.members_count} members</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <GitBranch className="h-3 w-3" />
+                          <span>Owner: {project.owner_name}</span>
+                        </div>
                       </div>
+                      {!canAccessProject && (
+                        <p className="text-xs text-muted-foreground mt-2 italic">
+                          Join this cluster to access project details
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+
+            if (canAccessProject) {
+              return (
+                <Link key={project.id} href={`/dashboard/projects/${project.id}`}>
+                  {projectCard}
+                </Link>
+              );
+            }
+
+            return (
+              <div key={project.id} className="opacity-75">
+                {projectCard}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

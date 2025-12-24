@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import {
   Users,
@@ -28,11 +35,18 @@ import {
   ExternalLink,
   Eye,
   Lock,
-  FolderGit2
+  FolderGit2,
+  FileText,
+  Target,
+  MessageSquare,
+  MoreHorizontal
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProjectMembersList } from "@/components/projects/project-members-list";
 import { ProjectRequestsList } from "@/components/projects/project-requests-list";
+import { ProjectFiles } from "@/components/projects/project-files";
+import { ProjectActivity } from "@/components/projects/project-activity";
+import { ProjectChat } from "@/components/projects/project-chat";
 import Link from "next/link";
 
 interface DetailedProject {
@@ -92,9 +106,13 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   const [loading, setLoading] = useState(true);
   const [isMember, setIsMember] = useState(false);
   const [userMembershipStatus, setUserMembershipStatus] = useState<string | null>(null);
+  const [isClusterMember, setIsClusterMember] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [projectMembers, setProjectMembers] = useState<Array<{ user_id: string; full_name: string; avatar_url: string | null }>>([]);
+  const [currentUserProfile, setCurrentUserProfile] = useState<{ full_name: string; avatar_url: string | null } | null>(null);
+  const [activeTab, setActiveTab] = useState("activity");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,6 +159,42 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             setIsMember(false);
             setUserMembershipStatus(null);
           }
+
+          // Check if user is a cluster member (for cluster projects)
+          if (projectData.type === "cluster" && projectData.cluster_id) {
+            const { data: clusterMemberData } = await supabase
+              .from("cluster_members")
+              .select("status")
+              .eq("cluster_id", projectData.cluster_id)
+              .eq("user_id", user.id)
+              .single();
+
+            if (clusterMemberData && clusterMemberData.status === "approved") {
+              setIsClusterMember(true);
+            }
+          }
+
+          // Fetch current user profile for chat
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("full_name, avatar_url")
+            .eq("id", user.id)
+            .single();
+
+          if (profileData) {
+            setCurrentUserProfile(profileData);
+          }
+        }
+
+        // Fetch project members for progress component
+        const { data: membersData } = await supabase
+          .from("detailed_project_members")
+          .select("user_id, full_name, avatar_url")
+          .eq("project_id", projectId)
+          .eq("status", "approved");
+
+        if (membersData) {
+          setProjectMembers(membersData);
         }
       } catch (err) {
         console.error("Error fetching project data:", err);
@@ -254,170 +308,306 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
   const isOwner = project.owner_id === user?.id;
   const canManage = isOwner || userRole === 'admin';
+  const canUpload = (isMember && userMembershipStatus === "approved") || isClusterMember || isOwner;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Project Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-            <Badge variant={project.status === "active" ? "default" : "secondary"}>
-              {project.status}
-            </Badge>
-            <Badge variant={project.type === "cluster" ? "default" : "secondary"}>
-              {project.type}
-            </Badge>
-            {project.visibility === "private" ? (
-              <Badge variant="outline" className="gap-1">
-                <Lock className="h-3 w-3" />
-                Private
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight truncate">{project.name}</h1>
+            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+              <Badge variant={project.status === "active" ? "default" : "secondary"} className="text-[10px] sm:text-xs px-1.5 py-0 h-5">
+                {project.status}
               </Badge>
-            ) : (
-              <Badge variant="outline" className="gap-1">
-                <Eye className="h-3 w-3" />
-                Public
+              <Badge variant={project.type === "cluster" ? "default" : "secondary"} className="text-[10px] sm:text-xs px-1.5 py-0 h-5">
+                {project.type}
               </Badge>
-            )}
+              {project.visibility === "private" ? (
+                <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs px-1.5 py-0 h-5">
+                  <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                  Private
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs px-1.5 py-0 h-5">
+                  <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                  Public
+                </Badge>
+              )}
+            </div>
           </div>
-          <p className="text-muted-foreground mt-2">{project.description}</p>
 
-          {/* Owner Info */}
-          <div className="flex items-center gap-2 mt-3">
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={project.owner_avatar} />
-              <AvatarFallback className="text-xs">
-                {project.owner_name?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-muted-foreground">
-              Created by <span className="font-medium">{project.owner_name}</span>
-            </span>
-            {project.cluster_name && (
-              <>
-                <span className="text-muted-foreground">•</span>
-                <Link href={`/dashboard/clusters/${project.cluster_id}`} className="text-sm text-primary hover:underline">
-                  {project.cluster_name}
-                </Link>
-              </>
-            )}
-          </div>
+          {/* Mobile Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="sm:hidden">
+              <Button variant="outline" size="icon" className="h-8 w-8">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {project.repository_url && (
+                <DropdownMenuItem asChild>
+                  <a href={project.repository_url} target="_blank" rel="noopener noreferrer">
+                    <GitBranch className="mr-2 h-4 w-4" />
+                    Repository
+                  </a>
+                </DropdownMenuItem>
+              )}
+              {project.demo_url && (
+                <DropdownMenuItem asChild>
+                  <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Demo
+                  </a>
+                </DropdownMenuItem>
+              )}
+              {canManage && (
+                <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/projects/${project.id}/settings`}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-2">
+        {/* Owner Info */}
+        <div className="flex items-center gap-1.5 flex-wrap text-xs">
+          <Avatar className="h-4 w-4 sm:h-5 sm:w-5">
+            <AvatarImage src={project.owner_avatar} />
+            <AvatarFallback className="text-[8px] sm:text-[10px]">
+              {project.owner_name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-muted-foreground">
+            by <span className="font-medium">{project.owner_name}</span>
+          </span>
+          {project.cluster_name && (
+            <>
+              <span className="text-muted-foreground">•</span>
+              <Link href={`/dashboard/clusters/${project.cluster_id}`} className="text-primary hover:underline truncate max-w-[150px]">
+                {project.cluster_name}
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Desktop Action Buttons */}
+        <div className="hidden sm:flex gap-2 flex-wrap">
           {project.repository_url && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a href={project.repository_url} target="_blank" rel="noopener noreferrer">
-                <GitBranch className="mr-2 h-4 w-4" />
+                <GitBranch className="mr-2 h-3 w-3" />
                 Repository
               </a>
             </Button>
           )}
           {project.demo_url && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
+                <ExternalLink className="mr-2 h-3 w-3" />
                 Demo
               </a>
             </Button>
           )}
           {canManage && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link href={`/dashboard/projects/${project.id}/settings`}>
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings className="mr-2 h-3 w-3" />
                 Settings
               </Link>
             </Button>
           )}
           {!isMember && !isOwner && (
-            <Button onClick={handleJoinClick}>
-              <Plus className="mr-2 h-4 w-4" />
-              Join Project
+            <Button size="sm" onClick={handleJoinClick}>
+              <Plus className="mr-2 h-3 w-3" />
+              Join
             </Button>
           )}
           {isMember && userMembershipStatus === "pending" && (
-            <Button variant="outline" onClick={handleLeaveClick}>
+            <Button variant="outline" size="sm" onClick={handleLeaveClick}>
               Cancel Request
             </Button>
           )}
           {isMember && userMembershipStatus === "approved" && !isOwner && (
-            <Button variant="outline" onClick={handleLeaveClick}>
-              Leave Project
+            <Button variant="outline" size="sm" onClick={handleLeaveClick}>
+              Leave
             </Button>
           )}
         </div>
+
+        {/* Mobile Join/Leave Button */}
+        {!isMember && !isOwner && (
+          <Button size="sm" onClick={handleJoinClick} className="w-full sm:hidden">
+            <Plus className="mr-2 h-3 w-3" />
+            Join Project
+          </Button>
+        )}
+        {isMember && userMembershipStatus === "pending" && (
+          <Button variant="outline" size="sm" onClick={handleLeaveClick} className="w-full sm:hidden">
+            Cancel Request
+          </Button>
+        )}
+        {isMember && userMembershipStatus === "approved" && !isOwner && (
+          <Button variant="outline" size="sm" onClick={handleLeaveClick} className="w-full sm:hidden">
+            Leave Project
+          </Button>
+        )}
       </div>
 
-      {/* Project Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Members</CardTitle>
-            <Users className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{project.members_count}</div>
-            <p className="text-xs text-muted-foreground">Project contributors</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Started</CardTitle>
-            <Calendar className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {new Date(project.started_at || project.created_at).toLocaleDateString()}
-            </div>
-            <p className="text-xs text-muted-foreground">Project start date</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Technologies</CardTitle>
-            <FolderGit2 className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{project.tags?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Tech stack items</p>
-          </CardContent>
-        </Card>
+      {/* Project Info and Description Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-4">
+        {/* Left Column - Description and Links (70%) */}
+        <div className="lg:col-span-7">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Description</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none text-sm"
+                dangerouslySetInnerHTML={{ __html: project.description }}
+              />
+
+              {/* Repository and Demo Links */}
+              {(project.repository_url || project.demo_url) && (
+                <>
+                  <Separator className="my-3" />
+                  <div className="flex flex-wrap gap-2">
+                    {project.repository_url && (
+                      <Button variant="default" size="sm" asChild>
+                        <a
+                          href={project.repository_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2"
+                        >
+                          <GitBranch className="h-3 w-3" />
+                          View Repository
+                        </a>
+                      </Button>
+                    )}
+                    {project.demo_url && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a
+                          href={project.demo_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          View Demo
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Project Info (30%) */}
+        <div className="lg:col-span-3">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Project Info</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {/* Members */}
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Users className="h-3 w-3 text-blue-600" />
+                  <span className="font-medium">Members</span>
+                </div>
+                <div className="text-lg font-bold">{project.members_count}</div>
+              </div>
+
+              <Separator />
+
+              {/* Started Date */}
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3 text-green-600" />
+                  <span className="font-medium">Started</span>
+                </div>
+                <div className="text-lg font-bold">
+                  {new Date(project.started_at || project.created_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Technologies */}
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <FolderGit2 className="h-3 w-3 text-purple-600" />
+                  <span className="font-medium">Technologies</span>
+                </div>
+                <div className="text-lg font-bold">{project.tags?.length || 0}</div>
+                {project.tags && project.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {project.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0 h-5">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Technologies/Tags */}
-      {project.tags && project.tags.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Technologies</CardTitle>
-            <CardDescription>Tech stack used in this project</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Tabs: Members, Requests */}
-      <Tabs defaultValue="members" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="members" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Members ({project.members_count})
+      {/* Tabs: Progress (Activity), Members, Files, Chat */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" id="project-tabs">
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 h-auto gap-1 p-1">
+          <TabsTrigger value="activity" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+            <Target className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Activity & Progress</span>
+            <span className="sm:hidden">Activity</span>
           </TabsTrigger>
+          <TabsTrigger value="members" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Members ({project.members_count})</span>
+            <span className="sm:hidden">Members</span>
+          </TabsTrigger>
+          <TabsTrigger value="files" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            Files
+          </TabsTrigger>
+          {project.members_count > 1 && (
+            <TabsTrigger value="chat" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+              Chat
+            </TabsTrigger>
+          )}
           {canManage && (
-            <TabsTrigger value="requests" className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4" />
-              Join Requests
+            <TabsTrigger value="requests" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Requests</span>
+              <span className="sm:hidden">Req</span>
             </TabsTrigger>
           )}
         </TabsList>
+        <TabsContent value="activity" className="mt-4">
+          <ProjectActivity
+            projectId={project.id}
+            projectName={project.name}
+            currentUserId={user?.id || ""}
+            isOwner={isOwner}
+            projectOwnerId={project.owner_id}
+            onTabChange={setActiveTab}
+          />
+        </TabsContent>
         <TabsContent value="members" className="mt-4">
           <ProjectMembersList
             projectId={project.id}
@@ -425,6 +615,23 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             currentUserId={user?.id || ""}
           />
         </TabsContent>
+        <TabsContent value="files" className="mt-4">
+          <ProjectFiles
+            projectId={project.id}
+            canUpload={canUpload}
+            currentUserId={user?.id || ""}
+          />
+        </TabsContent>
+        {project.members_count > 1 && (
+          <TabsContent value="chat" className="mt-4">
+            <ProjectChat
+              projectId={project.id}
+              currentUserId={user?.id || ""}
+              currentUserName={currentUserProfile?.full_name || "You"}
+              currentUserAvatar={currentUserProfile?.avatar_url || null}
+            />
+          </TabsContent>
+        )}
         {canManage && (
           <TabsContent value="requests" className="mt-4">
             <ProjectRequestsList

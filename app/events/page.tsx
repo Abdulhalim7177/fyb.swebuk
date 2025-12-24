@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Calendar, Search, Sparkles, Clock, CalendarCheck, History, TrendingUp } from "lucide-react";
 import { getPublishedEvents } from "@/lib/supabase/event-actions";
-import { EventCardWithUsers } from "@/components/events/event-card-with-users";
+import { EventCardWithStatus } from "@/components/events/event-card-with-status";
 import { EventHeader } from "@/components/events/event-header";
 import { EventFilters } from "@/components/events/event-filters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -54,14 +54,47 @@ function SectionSkeleton() {
   );
 }
 
+// Section for the Closest Upcoming Event
+async function ClosestEventSection() {
+  const { events } = await getPublishedEvents({
+    upcoming: true,
+    limit: 1,
+  });
+
+  if (events.length === 0) return null;
+
+  const closestEvent = events[0];
+
+  return (
+    <section className="space-y-6 mb-16">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/70">
+          <Sparkles className="h-5 w-5 text-white" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold">Next Event</h2>
+          <p className="text-sm text-muted-foreground">
+            Don't miss our upcoming event
+          </p>
+        </div>
+      </div>
+
+      <EventCardWithStatus event={closestEvent} variant="featured" />
+    </section>
+  );
+}
+
 // Section for Upcoming Events (Next 30 days)
 async function UpcomingEventsSection() {
   const { events } = await getPublishedEvents({
     upcoming: true,
-    limit: 6,
+    limit: 7, // Get 7 so we can skip the first one (shown in ClosestEventSection)
   });
 
-  if (events.length === 0) return null;
+  // Skip the first event if we have more than one (first is shown in ClosestEventSection)
+  const upcomingEvents = events.length > 1 ? events.slice(1) : [];
+
+  if (upcomingEvents.length === 0) return null;
 
   return (
     <section className="space-y-6">
@@ -71,13 +104,13 @@ async function UpcomingEventsSection() {
             <Clock className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold">Upcoming Events</h2>
+            <h2 className="text-2xl font-bold">More Upcoming Events</h2>
             <p className="text-sm text-muted-foreground">
-              Don't miss out on these exciting events
+              Explore what else is coming up
             </p>
           </div>
         </div>
-        {events.length >= 6 && (
+        {upcomingEvents.length >= 6 && (
           <Link
             href="/events?section=upcoming"
             className="text-sm font-medium text-primary hover:underline"
@@ -88,8 +121,8 @@ async function UpcomingEventsSection() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
-          <EventCardWithUsers key={event.id} event={event} />
+        {upcomingEvents.map((event) => (
+          <EventCardWithStatus key={event.id} event={event} />
         ))}
       </div>
     </section>
@@ -141,7 +174,7 @@ async function RecentPastEventsSection() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {data.map((event: any) => (
-          <EventCardWithUsers key={event.id} event={event} />
+          <EventCardWithStatus key={event.id} event={event} />
         ))}
       </div>
     </section>
@@ -234,7 +267,7 @@ async function PastEventsSection() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {data.map((event: any) => (
-          <EventCardWithUsers key={event.id} event={event} />
+          <EventCardWithStatus key={event.id} event={event} />
         ))}
       </div>
     </section>
@@ -292,7 +325,7 @@ async function EventsList({
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event: any) => (
-                <EventCardWithUsers key={event.id} event={event} />
+                <EventCardWithStatus key={event.id} event={event} />
               ))}
             </div>
 
@@ -346,7 +379,7 @@ async function EventsList({
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event: any) => (
-                <EventCardWithUsers key={event.id} event={event} />
+                <EventCardWithStatus key={event.id} event={event} />
               ))}
             </div>
 
@@ -410,7 +443,7 @@ async function EventsList({
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
-            <EventCardWithUsers key={event.id} event={event} />
+            <EventCardWithStatus key={event.id} event={event} />
           ))}
         </div>
 
@@ -443,6 +476,10 @@ async function EventsList({
   // Default view: Show categorized sections
   return (
     <div className="space-y-16">
+      <Suspense fallback={<SectionSkeleton />}>
+        <ClosestEventSection />
+      </Suspense>
+
       <Suspense fallback={<SectionSkeleton />}>
         <UpcomingEventsSection />
       </Suspense>

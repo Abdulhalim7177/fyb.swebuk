@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Check if event exists and is published
     const { data: event, error: eventError } = await supabase
       .from("events")
-      .select("id, title, status, is_registration_required, max_capacity")
+      .select("id, title, slug, start_date, end_date, status, is_registration_required, max_capacity")
       .eq("id", eventId)
       .single();
 
@@ -49,14 +49,14 @@ export async function POST(request: NextRequest) {
     // Check if there's an existing user with this email
     const { data: existingUser } = await supabase
       .from("profiles")
-      .select("id, email")
+      .select("id, email, full_name")
       .eq("email", email.toLowerCase())
       .single();
 
     let userId: string | null = null;
 
     if (existingUser) {
-      // User has an account - use their user ID
+      // User has an account - register them directly with their account
       userId = existingUser.id;
 
       // Check if already registered with this account
@@ -70,44 +70,27 @@ export async function POST(request: NextRequest) {
       if (existingRegistration) {
         return NextResponse.json(
           {
-            error: "This email is already registered for this event",
-            status: existingRegistration.status,
+            error: `You're already registered for this event! Sign in to view your registration.`,
+            hasAccount: true,
+            alreadyRegistered: true,
+            registrationStatus: existingRegistration.status,
+            eventDetails: {
+              title: event.title,
+              slug: event.slug,
+              start_date: event.start_date,
+              end_date: event.end_date,
+            },
           },
           { status: 400 }
         );
       }
-    } else {
-      // No account - check if this email has already been used for guest registration
-      // We check the event_registrations table for any registration with users who have this email
-      const { data: emailCheck } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", email.toLowerCase())
-        .single();
 
-      if (emailCheck) {
-        // Email exists in profiles, check registrations
-        const { data: existingReg } = await supabase
-          .from("event_registrations")
-          .select("id, status")
-          .eq("event_id", eventId)
-          .eq("user_id", emailCheck.id)
-          .single();
-
-        if (existingReg) {
-          return NextResponse.json(
-            {
-              error: "This email is already registered for this event. Please sign in to manage your registration.",
-              status: existingReg.status,
-            },
-            { status: 400 }
-          );
-        }
-      }
+      // Has account but not registered - register them with their account
+      // (Instead of prompting to login, we'll register them automatically)
     }
 
-    // Check capacity
-    if (event.max_capacity) {
+    // Check capacity for users with accounts
+    if (userId && event.max_capacity) {
       const { count } = await supabase
         .from("event_registrations")
         .select("*", { count: "exact", head: true })
@@ -116,36 +99,29 @@ export async function POST(request: NextRequest) {
 
       if (count && count >= event.max_capacity) {
         // Event is full - add to waitlist
-        if (userId) {
-          const { error: insertError } = await supabase
-            .from("event_registrations")
-            .insert({
-              event_id: eventId,
-              user_id: userId,
-              status: "waitlisted",
-            });
-
-          if (insertError) {
-            throw insertError;
-          }
-
-          return NextResponse.json({
-            success: true,
-            message: "Added to waitlist. We'll notify you if a spot opens up.",
+        const { error: insertError } = await supabase
+          .from("event_registrations")
+          .insert({
+            event_id: eventId,
+            user_id: userId,
             status: "waitlisted",
           });
-        } else {
-          return NextResponse.json(
-            { error: "Event is full. Please create an account to join the waitlist." },
-            { status: 400 }
-          );
+
+        if (insertError) {
+          throw insertError;
         }
+
+        return NextResponse.json({
+          success: true,
+          message: "Event is full. You've been added to the waitlist. We'll notify you if a spot opens up!",
+          status: "waitlisted",
+          hasAccount: true,
+        });
       }
     }
 
-    // Register the user
+    // Register user with account
     if (userId) {
-      // User has an account - register with their user ID
       const { error: insertError } = await supabase
         .from("event_registrations")
         .insert({
@@ -160,23 +136,99 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message:
-          "Registration successful! Since you have an account, you can view your registration in your dashboard.",
+        message: `Registration successful! Sign in to view and manage your registration.`,
         hasAccount: true,
-      });
-    } else {
-      // No account - store as guest registration
-      // For now, we'll create a temporary record or store in a separate table
-      // You might want to create a guest_registrations table for this
-
-      return NextResponse.json({
-        success: true,
-        message:
-          "Registration received! We've sent a confirmation to your email. Create an account to manage your registration.",
-        hasAccount: false,
-        note: "Guest registration functionality requires additional setup",
+        status: "registered",
       });
     }
+
+    // At this point, user doesn't have an account - create guest registration
+
+    // Check if this guest email has already registered for this event
+    const { data: existingGuestReg } = await supabase
+      .from("guest_registrations")
+      .select("id, status")
+      .eq("event_id", eventId)
+      .eq("email", email.toLowerCase())
+      .single();
+
+    if (existingGuestReg) {
+      return NextResponse.json(
+        {
+          error: `This email is already registered for this event as a guest! Check your email for confirmation details.`,
+          alreadyRegistered: true,
+          registrationStatus: existingGuestReg.status,
+          hasAccount: false,
+          eventDetails: {
+            title: event.title,
+            slug: event.slug,
+            start_date: event.start_date,
+            end_date: event.end_date,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check capacity for guest registration
+    if (event.max_capacity) {
+      const { count } = await supabase
+        .from("event_registrations")
+        .select("*", { count: "exact", head: true })
+        .eq("event_id", eventId)
+        .in("status", ["registered", "attended"]);
+
+      const { count: guestCount } = await supabase
+        .from("guest_registrations")
+        .select("*", { count: "exact", head: true })
+        .eq("event_id", eventId)
+        .in("status", ["registered", "attended"]);
+
+      const totalRegistrations = (count || 0) + (guestCount || 0);
+
+      if (totalRegistrations >= event.max_capacity) {
+        // Event is full - add guest to waitlist
+        const { error: insertError } = await supabase
+          .from("guest_registrations")
+          .insert({
+            event_id: eventId,
+            full_name: fullName,
+            email: email.toLowerCase(),
+            status: "waitlisted",
+          });
+
+        if (insertError) {
+          throw insertError;
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: "Event is full. You've been added to the waitlist. We'll email you if a spot opens up!",
+          status: "waitlisted",
+          hasAccount: false,
+        });
+      }
+    }
+
+    // Register as guest
+    const { error: insertError } = await supabase
+      .from("guest_registrations")
+      .insert({
+        event_id: eventId,
+        full_name: fullName,
+        email: email.toLowerCase(),
+        status: "registered",
+      });
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Registration successful! We've sent a confirmation email to ${email}. Create an account to manage your registrations easily.`,
+      hasAccount: false,
+    });
   } catch (error: unknown) {
     console.error("Error in guest registration:", error);
     return NextResponse.json(

@@ -29,7 +29,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(npx tsc:*)",
       "Bash(del /F /Q C:UsersabdulHerdfyb.swebuk.nextlock)",
-      "Bash(if exist .next rmdir /s /q .next)"
+      "Bash(if exist .next rmdir /s /q .next)",
+      "WebFetch(domain:www.figma.com)"
     ],
     "deny": [],
     "ask": []

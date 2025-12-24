@@ -161,6 +161,13 @@ export async function updateEvent(
   }
 
   try {
+    // Check if event can be edited
+    const editCheck = await canEditEvent(eventId);
+
+    if (!editCheck.canEdit) {
+      return { success: false, error: editCheck.reason };
+    }
+
     // Get existing event
     const { data: existing } = await supabase
       .from("events")
@@ -383,7 +390,10 @@ export async function getAllEventsForManagement(status?: EventStatus) {
       .select("*")
       .order("start_date", { ascending: false });
 
-    if (status) {
+    // If filtering for completed, get events where end_date has passed
+    if (status === "completed") {
+      query = query.lt("end_date", new Date().toISOString());
+    } else if (status) {
       query = query.eq("status", status);
     }
 
@@ -422,6 +432,168 @@ export async function getEventForManagement(eventId: string) {
   } catch (error) {
     console.error("Unexpected error:", error);
     return null;
+  }
+}
+
+// ============================================
+// CHECK IF EVENT CAN BE EDITED
+// ============================================
+
+export async function canEditEvent(eventId: string) {
+  const { allowed, supabase } = await checkStaffPermission();
+
+  if (!allowed) {
+    return {
+      canEdit: false,
+      reason: "Unauthorized",
+    };
+  }
+
+  try {
+    // Get event details
+    const { data: event, error: eventError } = await supabase
+      .from("events")
+      .select("id, created_at")
+      .eq("id", eventId)
+      .single();
+
+    if (eventError || !event) {
+      return {
+        canEdit: false,
+        reason: "Event not found",
+      };
+    }
+
+    // Check if event was created more than 3 days ago
+    const createdAt = new Date(event.created_at);
+    const now = new Date();
+    const daysSinceCreation = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (daysSinceCreation > 3) {
+      return {
+        canEdit: false,
+        reason: "Cannot edit event more than 3 days after creation",
+        daysSinceCreation: Math.floor(daysSinceCreation),
+      };
+    }
+
+    // Check if there are any registrations
+    const { count: registrationCount } = await supabase
+      .from("event_registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId);
+
+    // Check guest registrations as well
+    const { count: guestRegistrationCount } = await supabase
+      .from("guest_registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId);
+
+    const totalRegistrations = (registrationCount || 0) + (guestRegistrationCount || 0);
+
+    if (totalRegistrations > 0) {
+      return {
+        canEdit: false,
+        reason: "Cannot edit event with existing registrations",
+        registrationCount: totalRegistrations,
+      };
+    }
+
+    return {
+      canEdit: true,
+      daysSinceCreation: Math.floor(daysSinceCreation),
+      daysRemaining: Math.ceil(3 - daysSinceCreation),
+    };
+  } catch (error) {
+    console.error("Error checking edit eligibility:", error);
+    return {
+      canEdit: false,
+      reason: "An error occurred while checking edit eligibility",
+    };
+  }
+}
+
+// ============================================
+// DELETE EVENT
+// ============================================
+
+export async function canDeleteEvent(eventId: string) {
+  const { allowed, supabase } = await checkStaffPermission();
+
+  if (!allowed) {
+    return {
+      canDelete: false,
+      reason: "Unauthorized",
+    };
+  }
+
+  try {
+    // Check if there are any registrations
+    const { count: registrationCount } = await supabase
+      .from("event_registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId);
+
+    // Check guest registrations as well
+    const { count: guestRegistrationCount } = await supabase
+      .from("guest_registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId);
+
+    const totalRegistrations = (registrationCount || 0) + (guestRegistrationCount || 0);
+
+    if (totalRegistrations > 0) {
+      return {
+        canDelete: false,
+        reason: "Cannot delete event with existing registrations",
+        registrationCount: totalRegistrations,
+      };
+    }
+
+    return {
+      canDelete: true,
+    };
+  } catch (error) {
+    console.error("Error checking delete eligibility:", error);
+    return {
+      canDelete: false,
+      reason: "An error occurred while checking delete eligibility",
+    };
+  }
+}
+
+export async function deleteEvent(eventId: string) {
+  const { allowed, supabase } = await checkStaffPermission();
+
+  if (!allowed) {
+    return { success: false, error: "Not authorized" };
+  }
+
+  try {
+    // Check if event can be deleted
+    const deleteCheck = await canDeleteEvent(eventId);
+
+    if (!deleteCheck.canDelete) {
+      return { success: false, error: deleteCheck.reason };
+    }
+
+    // Delete event (cascade will handle related records)
+    const { error: deleteError } = await supabase
+      .from("events")
+      .delete()
+      .eq("id", eventId);
+
+    if (deleteError) throw deleteError;
+
+    revalidatePath("/dashboard/staff/events");
+    revalidatePath("/dashboard/admin/events");
+    revalidatePath("/events");
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Error deleting event:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete event";
+    return { success: false, error: errorMessage };
   }
 }
 

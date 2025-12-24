@@ -4,16 +4,8 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, MoreHorizontal, User, FileText, Calendar, GitBranch, Users } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Check, X } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 interface RequestItem {
   id: string;
@@ -31,14 +23,16 @@ interface RequestItem {
 interface ClusterRequestsListProps {
   clusterId: string;
   userRole: string;
+  userId?: string;
+  hasPendingRequest?: boolean;
+  onCancelRequest?: () => void;
   canManage: boolean;
 }
 
-export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterRequestsListProps) {
+export function ClusterRequestsList({ clusterId, userRole, userId, hasPendingRequest = false, onCancelRequest, canManage }: ClusterRequestsListProps) {
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const router = useRouter();
 
   const supabase = createClient();
 
@@ -56,7 +50,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
         let clusterMembersError: any = null;
 
         try {
-          const response = await supabase
+          const query = supabase
             .from("cluster_members")
             .select(`
               id,
@@ -67,8 +61,14 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
               approved_at
             `)
             .eq("cluster_id", clusterId)
-            .eq("status", "pending")
-            .order("joined_at", { ascending: false });
+            .eq("status", "pending");
+
+          // Non-managers can only see their own pending request
+          if (!canManage && userId) {
+            query.eq("user_id", userId);
+          }
+
+          const response = await query.order("joined_at", { ascending: false });
 
           clusterMembersData = response.data || [];
           clusterMembersError = response.error;
@@ -167,7 +167,7 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
     if (clusterId) {
       fetchRequests();
     }
-  }, [clusterId]);
+  }, [clusterId, canManage, userId]);
 
   const handleApproveRequest = async (requestId: string) => {
     if (!['admin', 'staff', 'lead'].includes(userRole)) {
@@ -175,7 +175,6 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
       return;
     }
     try {
-      console.log("Attempting to approve request with ID:", requestId);
       const { data: { user }, error: authError } = await (supabase.auth as any).getUser();
       if (authError || !user) {
         throw new Error("User not authenticated");
@@ -190,18 +189,12 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
         })
         .eq("id", requestId);
 
-      console.log("Update operation result:", { error, status });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success("Request approved successfully");
       // Refresh the requests list
       const updatedRequests = requests.filter(req => req.id !== requestId);
       setRequests(updatedRequests);
-      console.log("Approved request removed from UI");
     } catch (error: any) {
       console.error("Error approving request:", error);
       toast.error("Failed to approve request: " + error.message);
@@ -233,27 +226,23 @@ export function ClusterRequestsList({ clusterId, userRole, canManage }: ClusterR
 
   const handleCancelRequest = async (requestId: string) => {
     try {
-      console.log("Attempting to cancel request with ID:", requestId);
-
-      // Since users may not have permission to delete, update status to rejected instead
-      const { error, status } = await supabase
+      // Delete the request from database
+      const { error } = await supabase
         .from("cluster_members")
-        .update({ status: "rejected" })
+        .delete()
         .eq("id", requestId)
-        .eq("user_id", currentUserId); // Ensure user can only update their own request
+        .eq("user_id", currentUserId); // Ensure user can only delete their own request
 
-      console.log("Update operation result:", { error, status });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success("Request cancelled successfully");
       // Remove the request from the list
       const updatedRequests = requests.filter(req => req.id !== requestId);
       setRequests(updatedRequests);
-      console.log("Request removed from UI");
+      // Notify parent component to update the pending request state
+      if (onCancelRequest) {
+        onCancelRequest();
+      }
     } catch (error: any) {
       console.error("Error cancelling request:", error);
       toast.error("Failed to cancel request: " + error.message);

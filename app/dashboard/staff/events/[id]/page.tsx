@@ -37,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getEventForManagement } from "@/lib/supabase/event-staff-actions";
 import { getEventRegisteredUsers, getEventFeedbackStats } from "@/lib/supabase/event-actions";
 import { RegisteredUsersAvatars } from "@/components/events/registered-users-avatars";
+import { DeleteEventButton } from "@/components/events/delete-event-button";
 import {
   getEventTypeLabel,
   getEventTypeColorClass,
@@ -151,6 +152,12 @@ export default async function EventDetailPage({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <DeleteEventButton
+            eventId={event.id}
+            eventTitle={event.title}
+            hasRegistrations={event.registrations_count > 0}
+            variant="outline"
+          />
         </div>
       </div>
 
@@ -234,23 +241,47 @@ export default async function EventDetailPage({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    {event.location_type === "online" ? (
-                      <Globe className="h-5 w-5 text-primary" />
-                    ) : (
+                {/* Physical or Hybrid Location */}
+                {(event.location_type === "physical" || event.location_type === "hybrid") && (
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       <Building2 className="h-5 w-5 text-primary" />
-                    )}
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Venue</p>
+                      <p className="font-medium">
+                        {event.venue_name || "Physical Location"}
+                      </p>
+                      {event.location && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {event.location}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Location</p>
-                    <p className="font-medium">
-                      {event.venue_name ||
-                        event.location ||
-                        getLocationTypeLabel(event.location_type)}
-                    </p>
+                )}
+
+                {/* Online or Hybrid Meeting Link */}
+                {(event.location_type === "online" || event.location_type === "hybrid") && event.meeting_url && (
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Globe className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">Online Meeting</p>
+                      <Button variant="outline" size="sm" className="mt-1" asChild>
+                        <a
+                          href={event.meeting_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Join Meeting
+                        </a>
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary/10 rounded-lg">
@@ -269,27 +300,6 @@ export default async function EventDetailPage({
                   </div>
                 </div>
               </div>
-
-              {event.meeting_url && (
-                <>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Meeting Link
-                    </span>
-                    <Button variant="outline" size="sm" asChild>
-                      <a
-                        href={event.meeting_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Join Meeting
-                      </a>
-                    </Button>
-                  </div>
-                </>
-              )}
             </CardContent>
           </Card>
 
