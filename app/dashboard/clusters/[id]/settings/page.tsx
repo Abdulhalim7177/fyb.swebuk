@@ -11,7 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Shield, Users, Check, X, Settings } from "lucide-react";
+import { Crown, Shield, Users, Check, X, Settings, Trash2, AlertTriangle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface DetailedCluster {
   id: string;
@@ -77,6 +87,8 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
   const [selectedDeputy, setSelectedDeputy] = useState("");
   const [selectedStaff, setSelectedStaff] = useState("");
   const [updatingRole, setUpdatingRole] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -392,6 +404,34 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
       toast.error("Failed to remove member: " + error.message);
     } finally {
       setUpdatingRole("");
+    }
+  };
+
+  const handleDeleteCluster = async () => {
+    if (!cluster || !user || userRole !== 'admin') {
+      toast.error("Only admins can delete clusters");
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      const supabase = createClient();
+
+      const { error } = await supabase
+        .from("clusters")
+        .delete()
+        .eq("id", cluster.id);
+
+      if (error) throw error;
+
+      toast.success("Cluster deleted successfully");
+      router.push("/dashboard/clusters");
+    } catch (error: any) {
+      console.error("Error deleting cluster:", error);
+      toast.error("Failed to delete cluster: " + error.message);
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -912,6 +952,72 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Cluster Section - Admin Only */}
+      {userRole === 'admin' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Delete Cluster
+            </CardTitle>
+            <CardDescription>
+              <span className="text-destructive font-semibold">Danger Zone:</span> This action cannot be undone. All members, projects, and events associated with this cluster will be permanently deleted.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30">
+                <p className="text-sm text-destructive">
+                  <strong>Warning:</strong> You are about to delete this cluster and all its data. This action is irreversible.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  This will permanently delete:
+                  <ul className="list-disc list-inside mt-2 ml-4 space-y-1">
+                    <li>All cluster members</li>
+                    <li>All cluster projects</li>
+                    <li>All cluster events</li>
+                    <li>Cluster settings and history</li>
+                  </ul>
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={() => setDeleteDialogOpen(true)}
+                className="w-full"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete This Cluster
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Delete Cluster Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-destructive" />
+              Delete "{cluster?.name || 'this cluster'}"?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All members, projects, and events associated with this cluster will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCluster}
+              className="bg-destructive hover:bg-destructive/90"
+              disabled={deleting}
+            >
+              {deleting ? 'Deleting...' : 'Delete Cluster'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

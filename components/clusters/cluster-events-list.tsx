@@ -60,13 +60,27 @@ export function ClusterEventsList({ clusterId, userRole, userId, isMember = fals
       return;
     }
     const registration = registrations[eventId];
+    const minimalEvent: ClusterEvent = {
+      id: eventId,
+      slug: "",
+      title: eventTitle,
+      description: "",
+      start_date: "",
+      end_date: "",
+      location: "",
+      status: "",
+      created_at: "",
+      cluster_id: "",
+      organizer_name: "",
+      attendees_count: 0,
+    };
     if (registration?.status === "registered") {
       // Already registered - show success info
-      setSelectedEvent({ id: eventId, slug: "", title: eventTitle });
+      setSelectedEvent(minimalEvent);
       setSuccessDialogOpen(true);
       return;
     }
-    setSelectedEvent({ id: eventId, slug: "", title: eventTitle });
+    setSelectedEvent(minimalEvent);
     setRegisterDialogOpen(eventId);
   };
 
@@ -259,7 +273,9 @@ export function ClusterEventsList({ clusterId, userRole, userId, isMember = fals
                           {event.title}
                         </h4>
                         {!canAccessEvent && (
-                          <Lock className="h-4 w-4 text-muted-foreground" title="Join this cluster to access event details" />
+                          <span title="Join this cluster to access event details">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                          </span>
                         )}
                       </div>
                       <Badge variant={event.status === "active" ? "default" :

@@ -15,12 +15,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users, Calendar, FileText, AlertCircle, Clock, Plus, Lock } from "lucide-react";
+import { Users, Calendar, FileText, AlertCircle, Clock, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClusterMembersList } from "./cluster-members-list";
 import { ClusterProjectsList } from "./cluster-projects-list";
 import { ClusterEventsList } from "./cluster-events-list";
 import { ClusterRequestsList } from "./cluster-requests-list";
+import { StudentClusterStats } from "./student-cluster-stats";
 
 interface DetailedCluster {
   id: string;
@@ -53,31 +54,6 @@ interface StudentClusterViewProps {
   userMembershipStatus: string | null;
   onJoin: () => void;
   onLeave: () => void;
-  fetchActivities?: () => void;
-}
-
-// Fetch additional stats for student view
-async function fetchClusterStats(clusterId: string) {
-  const { createClient } = await import("@/lib/supabase/client");
-  const supabase = createClient();
-
-  // Get project count
-  const { count: projectCount } = await supabase
-    .from("projects")
-    .select("*", { count: "exact", head: true })
-    .eq("cluster_id", clusterId);
-
-  // Get upcoming events count
-  const { count: eventsCount } = await supabase
-    .from("events")
-    .select("*", { count: "exact", head: true })
-    .eq("cluster_id", clusterId)
-    .gte("start_date", new Date().toISOString());
-
-  return {
-    projects: projectCount || 0,
-    events: eventsCount || 0,
-  };
 }
 
 export function StudentClusterView({
@@ -237,25 +213,29 @@ export function StudentClusterView({
         </CardHeader>
         <CardContent className="p-0">
           <Tabs defaultValue="members" className="w-full">
-            <div className="px-6">
-              <TabsList className="w-full sm:w-auto inline-flex h-9 items-center justify-start bg-muted/50 p-1 rounded-lg">
-                <TabsTrigger value="members" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow">
+            <div className="px-4 sm:px-6">
+              <TabsList className="w-full sm:w-auto inline-flex h-9 items-center justify-start bg-muted/50 p-1 rounded-lg overflow-x-auto max-w-full">
+                <TabsTrigger value="members" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
                   <Users className="h-4 w-4" />
-                  Members
+                  <span className="hidden sm:inline">Members</span>
+                  <span className="sm:hidden">Members</span>
                   <Badge variant="secondary" className="h-5 px-1.5 text-xs">{cluster.members_count}</Badge>
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow">
+                <TabsTrigger value="projects" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
                   <FileText className="h-4 w-4" />
-                  Projects
+                  <span className="hidden sm:inline">Projects</span>
+                  <span className="sm:hidden">Projects</span>
                 </TabsTrigger>
-                <TabsTrigger value="events" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow">
+                <TabsTrigger value="events" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
                   <Calendar className="h-4 w-4" />
-                  Events
+                  <span className="hidden sm:inline">Events</span>
+                  <span className="sm:hidden">Events</span>
                 </TabsTrigger>
                 {isMember && (
-                  <TabsTrigger value="requests" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow">
+                  <TabsTrigger value="requests" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
                     <AlertCircle className="h-4 w-4" />
-                    Requests
+                    <span className="hidden sm:inline">Requests</span>
+                    <span className="sm:hidden">Requests</span>
                   </TabsTrigger>
                 )}
               </TabsList>
@@ -328,37 +308,5 @@ export function StudentClusterView({
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
-}
-
-// Sub-component for fetching and displaying project/event stats
-function StudentClusterStats({ clusterId }: { clusterId: string }) {
-  const [stats, setStats] = useState<{ projects: number; events: number }>({ projects: 0, events: 0 });
-
-  useState(() => {
-    fetchClusterStats(clusterId).then(setStats).catch(console.error);
-  });
-
-  return (
-    <>
-      <Card className="hover:shadow-md transition-shadow">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Projects</CardTitle>
-          <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.projects}</div>
-        </CardContent>
-      </Card>
-      <Card className="hover:shadow-md transition-shadow">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Events</CardTitle>
-          <Calendar className="h-4 w-4 text-green-600 dark:text-green-400" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.events}</div>
-        </CardContent>
-      </Card>
-    </>
   );
 }

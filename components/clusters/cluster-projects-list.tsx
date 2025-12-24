@@ -170,7 +170,9 @@ export function ClusterProjectsList({ clusterId, userRole, userId, isMember = fa
                       <div className="flex items-center gap-2">
                         <h4 className={`font-semibold ${!canAccessProject ? "text-muted-foreground" : ""}`}>{project.name}</h4>
                         {!canAccessProject && (
-                          <Lock className="h-4 w-4 text-muted-foreground" title="Join this cluster to access projects" />
+                          <span title="Join this cluster to access projects">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                          </span>
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
