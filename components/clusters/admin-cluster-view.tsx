@@ -81,6 +81,8 @@ interface AdminClusterViewProps {
   isMember: boolean;
   hasPendingRequest: boolean;
   userMembershipStatus: string | null;
+  canManage: boolean;
+  canManageProjects: boolean;
   onJoin: () => void;
   onLeave: () => void;
 }
@@ -122,6 +124,8 @@ export function AdminClusterView({
   isMember,
   hasPendingRequest,
   userMembershipStatus,
+  canManage,
+  canManageProjects,
   onJoin,
   onLeave,
 }: AdminClusterViewProps) {
@@ -238,10 +242,12 @@ export function AdminClusterView({
                 Edit Details
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}>
-                <FileText className="h-4 w-4 mr-2" />
-                Create Project
-              </DropdownMenuItem>
+              {canManageProjects && (
+                <DropdownMenuItem onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Create Project
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => router.push(`/dashboard/events/create?cluster_id=${cluster.id}`)}>
                 <Calendar className="h-4 w-4 mr-2" />
                 Create Event
@@ -388,23 +394,25 @@ export function AdminClusterView({
                   <div className="text-xs text-muted-foreground">Update details & settings</div>
                 </div>
               </Button>
+              {canManageProjects && (
+                <Button
+                  variant="outline"
+                  className="justify-start gap-3 h-auto py-4"
+                  onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}
+                >
+                  <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold">New Project</div>
+                    <div className="text-xs text-muted-foreground">Create for this cluster</div>
+                  </div>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 className="justify-start gap-3 h-auto py-4"
-                onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}
-              >
-                <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-purple-600" />
-                </div>
-                <div className="text-left">
-                  <div className="font-semibold">New Project</div>
-                  <div className="text-xs text-muted-foreground">Create for this cluster</div>
-                </div>
-              </Button>
-              <Button
-                variant="outline"
-                className="justify-start gap-3 h-auto py-4"
-                onClick={() => router.push(`/dashboard/events/create?cluster_id=${cluster.id}`)}
+                onClick={() => router.push(`/dashboard/clusters/events/new?cluster_id=${cluster.id}`)}
               >
                 <div className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center">
                   <Calendar className="h-5 w-5 text-green-600" />
@@ -521,7 +529,7 @@ export function AdminClusterView({
                 <ClusterMembersList clusterId={cluster.id} userRole={user.role} canManage={true} />
               </TabsContent>
               <TabsContent value="projects" className="mt-0">
-                <ClusterProjectsList clusterId={cluster.id} userRole={user.role} userId={user.id} isMember={isMember} canManage={true} />
+                <ClusterProjectsList clusterId={cluster.id} userRole={user.role} userId={user.id} isMember={isMember} canManage={canManageProjects} />
               </TabsContent>
               <TabsContent value="events" className="mt-0">
                 <ClusterEventsList

@@ -127,11 +127,18 @@ export default function AdminBlogPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Blog Management</h1>
-        <p className="text-muted-foreground">
-          Full administrative control over the blog system
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">Blog Management</h1>
+          <p className="text-muted-foreground">
+            Full administrative control over the blog system
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/dashboard/blog/create">
+            Create Blog Post
+          </Link>
+        </Button>
       </div>
 
       {/* Analytics Overview */}

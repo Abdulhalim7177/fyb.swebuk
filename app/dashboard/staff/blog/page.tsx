@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { BlogModeration } from "@/components/blog/blog-moderation";
 import { getAllBlogsForModeration } from "@/lib/supabase/blog-staff-actions";
 import type { DetailedBlog } from "@/lib/constants/blog";
+import Link from "next/link";
 
 export default function StaffBlogModerationPage() {
   const [blogs, setBlogs] = useState<DetailedBlog[]>([]);
@@ -52,11 +54,26 @@ export default function StaffBlogModerationPage() {
   }
 
   return (
-    <BlogModeration
-      blogs={blogs}
-      title="Blog Moderation"
-      description="Review and approve pending blog posts from students"
-      onRefresh={fetchBlogs}
-    />
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">Blog Moderation</h1>
+          <p className="text-muted-foreground">
+            Review and approve pending blog posts from students
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/dashboard/blog/create">
+            Create Blog Post
+          </Link>
+        </Button>
+      </div>
+      <BlogModeration
+        blogs={blogs}
+        title="Blog Moderation"
+        description="Review and approve pending blog posts from students"
+        onRefresh={fetchBlogs}
+      />
+    </div>
   );
 }

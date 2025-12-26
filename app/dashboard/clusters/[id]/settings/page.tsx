@@ -9,9 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Shield, Users, Check, X, Settings, Trash2, AlertTriangle } from "lucide-react";
+import { Crown, Shield, Users, Check, X, Settings, Trash2, AlertTriangle, Search, UserPlus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,6 +99,10 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
   const [updatingRole, setUpdatingRole] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showMemberManagement, setShowMemberManagement] = useState(false);
+  const [userSearchOpen, setUserSearchOpen] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -197,6 +211,22 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
 
     fetchUsers();
   }, [userRole, cluster]);
+
+  useEffect(() => {
+    // Filter to find users who are NOT already cluster members and match the search query
+    // This should include both students and staff who are not in the cluster
+    const filtered = allUsers.filter(user =>
+      (user.role === 'student' || user.role === 'staff') && // Include both students and staff
+      !availableUsers.some(availableUser => availableUser.id === user.id) && // Not already a member
+      user.id !== cluster?.lead_id && // Not current lead
+      user.id !== cluster?.deputy_id && // Not current deputy
+      user.id !== cluster?.staff_manager_id && // Not current staff manager
+      (user.full_name.toLowerCase().includes(userSearchQuery.toLowerCase()) || // Name matches
+       user.email.toLowerCase().includes(userSearchQuery.toLowerCase())) // Or email matches
+    );
+
+    setFilteredUsers(filtered);
+  }, [allUsers, availableUsers, userSearchQuery, cluster?.id, cluster?.lead_id, cluster?.deputy_id, cluster?.staff_manager_id]);
 
   const canManage = userRole === 'admin' ||
                    userRole === 'staff' ||
@@ -349,6 +379,10 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
       );
 
       setAvailableUsers(filteredUsers);
+
+      // Reset the search query and close the search dropdown
+      setUserSearchQuery("");
+      setUserSearchOpen(false);
     } catch (error: any) {
       console.error("Error adding member:", error);
       toast.error("Failed to add member: " + error.message);
@@ -868,89 +902,114 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
       {/* Member Management Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            Member Management
-          </CardTitle>
-          <CardDescription>Add or remove members from this cluster</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Member Management
+              </CardTitle>
+              <CardDescription>Add or remove members from this cluster</CardDescription>
+            </div>
+            <div className="flex items-center gap-3">
+              <Label htmlFor="member-toggle" className="text-sm font-medium">Show Members</Label>
+              <Switch
+                id="member-toggle"
+                checked={showMemberManagement}
+                onCheckedChange={setShowMemberManagement}
+              />
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Add New Members</h3>
+        {showMemberManagement && (
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Add New Members</h3>
 
-            {/* Search for users to add */}
-            <div className="flex gap-2">
-              <Select
-                value=""
-                onValueChange={(selectedId) => {
-                  // Find user in allUsers that is not already a member
-                  const userToAdd = allUsers.find(u =>
-                    u.id === selectedId &&
-                    !availableUsers.some(av => av.id === selectedId) &&
-                    u.role === 'student'
-                  );
-
-                  if (userToAdd) {
-                    handleAddMember(userToAdd.id);
-                  }
-                }}
-              >
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Search for users to add..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {allUsers
-                    .filter(user =>
-                      user.role === 'student' && // Only allow adding students
-                      !availableUsers.some(av => av.id === user.id) && // Filter out existing members
-                      user.id !== cluster.lead_id && // Don't show current lead
-                      user.id !== cluster.deputy_id && // Don't show current deputy
-                      user.id !== cluster.staff_manager_id // Don't show current staff manager
-                    )
-                    .map(user => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.full_name} ({user.email})
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+              {/* Search for users to add */}
+              <div className="flex gap-2">
+                <Popover open={userSearchOpen} onOpenChange={setUserSearchOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-muted-foreground"
+                    >
+                      <Search className="mr-2 h-4 w-4" />
+                      Search for users to add...
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 w-[300px]" align="start">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search by name or email..."
+                        value={userSearchQuery}
+                        onValueChange={setUserSearchQuery}
+                      />
+                      <CommandList>
+                        <CommandEmpty>No users found.</CommandEmpty>
+                        <CommandGroup>
+                          {filteredUsers.map(user => (
+                            <CommandItem
+                              key={user.id}
+                              value={user.id}
+                              onSelect={(value) => {
+                                const userToAdd = allUsers.find(u => u.id === value);
+                                if (userToAdd) {
+                                  handleAddMember(userToAdd.id);
+                                }
+                                setUserSearchOpen(false);
+                                setUserSearchQuery("");
+                              }}
+                            >
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              <span>{user.full_name}</span>
+                              <span className="text-muted-foreground text-xs ml-2">
+                                ({user.email})
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
-          </div>
 
-          <div className="pt-4">
-            <h3 className="text-lg font-semibold mb-4">Cluster Members</h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {availableUsers.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No members in this cluster</p>
-              ) : (
-                availableUsers.map(member => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent"
-                  >
-                    <div>
-                      <p className="font-medium">{member.full_name}</p>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
+            <div className="pt-4">
+              <h3 className="text-lg font-semibold mb-4">Cluster Members ({availableUsers.length})</h3>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {availableUsers.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-4">No members in this cluster</p>
+                ) : (
+                  availableUsers.map(member => (
+                    <div
+                      key={member.id}
+                      className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent"
+                    >
+                      <div>
+                        <p className="font-medium">{member.full_name}</p>
+                        <p className="text-sm text-muted-foreground">{member.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {member.role === 'student' && (
+                          <Badge variant="secondary">Student</Badge>
+                        )}
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleRemoveMember(member.id)}
+                          disabled={updatingRole === member.id}
+                        >
+                          {updatingRole === member.id ? 'Removing...' : 'Remove'}
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {member.role === 'student' && (
-                        <Badge variant="secondary">Student</Badge>
-                      )}
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRemoveMember(member.id)}
-                        disabled={updatingRole === member.id}
-                      >
-                        {updatingRole === member.id ? 'Removing...' : 'Remove'}
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
 
       {/* Delete Cluster Section - Admin Only */}
@@ -971,7 +1030,7 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
                 <p className="text-sm text-destructive">
                   <strong>Warning:</strong> You are about to delete this cluster and all its data. This action is irreversible.
                 </p>
-                <p className="text-xs text-muted-foreground mt-2">
+                <div className="text-xs text-muted-foreground mt-2">
                   This will permanently delete:
                   <ul className="list-disc list-inside mt-2 ml-4 space-y-1">
                     <li>All cluster members</li>
@@ -979,7 +1038,7 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
                     <li>All cluster events</li>
                     <li>Cluster settings and history</li>
                   </ul>
-                </p>
+                </div>
               </div>
               <Button
                 variant="destructive"

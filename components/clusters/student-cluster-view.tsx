@@ -52,6 +52,7 @@ interface StudentClusterViewProps {
   isMember: boolean;
   hasPendingRequest: boolean;
   userMembershipStatus: string | null;
+  canManageProjects: boolean;
   onJoin: () => void;
   onLeave: () => void;
 }
@@ -62,6 +63,7 @@ export function StudentClusterView({
   isMember,
   hasPendingRequest,
   userMembershipStatus,
+  canManageProjects,
   onJoin,
   onLeave,
 }: StudentClusterViewProps) {
@@ -214,7 +216,7 @@ export function StudentClusterView({
         <CardContent className="p-0">
           <Tabs defaultValue="members" className="w-full">
             <div className="px-4 sm:px-6">
-              <TabsList className="w-full sm:w-auto inline-flex h-9 items-center justify-start bg-muted/50 p-1 rounded-lg overflow-x-auto max-w-full">
+              <TabsList className="w-full sm:w-auto grid sm:inline-flex grid-cols-2 sm:h-9 h-auto items-start sm:items-center justify-start bg-muted/50 p-1 rounded-lg overflow-x-auto max-w-full">
                 <TabsTrigger value="members" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">Members</span>
@@ -245,7 +247,7 @@ export function StudentClusterView({
                 <ClusterMembersList clusterId={cluster.id} userRole={user.role} canManage={false} />
               </TabsContent>
               <TabsContent value="projects" className="mt-0">
-                <ClusterProjectsList clusterId={cluster.id} userRole={user.role} userId={user.id} isMember={isMember} canManage={false} />
+                <ClusterProjectsList clusterId={cluster.id} userRole={user.role} userId={user.id} isMember={isMember} canManage={canManageProjects} />
               </TabsContent>
               <TabsContent value="events" className="mt-0">
                 <ClusterEventsList

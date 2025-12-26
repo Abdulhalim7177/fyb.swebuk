@@ -249,7 +249,7 @@ export function ClusterEventsList({ clusterId, userRole, userId, isMember = fals
         <h3 className="text-lg font-semibold">Cluster Events</h3>
         <p className="text-sm text-muted-foreground">Upcoming events organized by this cluster</p>
       </div>
-      <div className="divide-y">
+      <div className="divide-y max-h-[400px] overflow-y-auto">
         {events.length === 0 ? (
           <div className="p-6 text-center text-muted-foreground">
             No upcoming events scheduled for this cluster yet.

@@ -86,22 +86,22 @@ export async function GET() {
 
     // 1. Create Users
     const usersToCreate = [
-      { email: 'admin@swebuk.com', password: 'password', role: 'admin', name: 'System Admin' },
-      { email: 'staff1@swebuk.com', password: 'password', role: 'staff', name: 'Dr. Sarah Johnson' },
-      { email: 'staff2@swebuk.com', password: 'password', role: 'staff', name: 'Prof. Michael Chen' },
-      { email: 'staff3@swebuk.com', password: 'password', role: 'staff', name: 'Dr. Emily Rodriguez' },
-      { email: 'student100@swebuk.com', password: 'password', role: 'student', academic_level: 'level_100', name: 'Alex Thompson' },
-      { email: 'student200@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Maya Patel' },
-      { email: 'student300@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'James Wilson' },
-      { email: 'student400@swebuk.com', password: 'password', role: 'student', academic_level: 'level_400', name: 'Sophia Martinez' },
-      { email: 'student100_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_100', name: 'Liam Brown' },
-      { email: 'student200_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Olivia Davis' },
-      { email: 'student300_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'Noah Anderson' },
-      { email: 'student400_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_400', name: 'Emma Taylor' },
-      { email: 'lead1@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'David Kim' }, // Will be lead
-      { email: 'lead2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'Sarah Lee' }, // Will be lead
-      { email: 'deputy1@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Ryan Murphy' }, // Will be deputy
-      { email: 'deputy2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Jessica White' }, // Will be deputy
+      { email: 'admin@swebuk.com', password: 'password', role: 'admin', name: 'System Admin', staff_number: 'ADM-001' },
+      { email: 'staff1@swebuk.com', password: 'password', role: 'staff', name: 'Dr. Sarah Johnson', staff_number: 'STF-001' },
+      { email: 'staff2@swebuk.com', password: 'password', role: 'staff', name: 'Prof. Michael Chen', staff_number: 'STF-002' },
+      { email: 'staff3@swebuk.com', password: 'password', role: 'staff', name: 'Dr. Emily Rodriguez', staff_number: 'STF-003' },
+      { email: 'student100@swebuk.com', password: 'password', role: 'student', academic_level: 'level_100', name: 'Alex Thompson', registration_number: '24/12345' },
+      { email: 'student200@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Maya Patel', registration_number: '23/23456' },
+      { email: 'student300@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'James Wilson', registration_number: '22/34567' },
+      { email: 'student400@swebuk.com', password: 'password', role: 'student', academic_level: 'level_400', name: 'Sophia Martinez', registration_number: '21/45678' },
+      { email: 'student100_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_100', name: 'Liam Brown', registration_number: '24/12346' },
+      { email: 'student200_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Olivia Davis', registration_number: '23/23457' },
+      { email: 'student300_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'Noah Anderson', registration_number: '22/34568' },
+      { email: 'student400_2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_400', name: 'Emma Taylor', registration_number: '21/45679' },
+      { email: 'lead1@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'David Kim', registration_number: '22/34569' }, // Will be lead
+      { email: 'lead2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_300', name: 'Sarah Lee', registration_number: '22/34570' }, // Will be lead
+      { email: 'deputy1@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Ryan Murphy', registration_number: '23/23458' }, // Will be deputy
+      { email: 'deputy2@swebuk.com', password: 'password', role: 'student', academic_level: 'level_200', name: 'Jessica White', registration_number: '23/23459' }, // Will be deputy
     ];
 
     for (const u of usersToCreate) {
@@ -119,16 +119,27 @@ export async function GET() {
 
       userData[u.email] = data.user.id;
 
-      // Update Profile with role and academic level
+      // Update Profile with role and additional fields
       // Note: Trigger creates profile, we update it.
       const updateData: any = {
         role: u.role,
-        full_name: u.name
+        full_name: u.name,
+        department: 'Software Engineering',
+        faculty: 'Faculty of Computing',
+        institution: 'Bayero University',
+        skills: ['React', 'TypeScript', 'JavaScript', 'Python'],
+        bio: `${u.name} is a ${u.role === 'student' ? 'passionate student' : 'dedicated staff member'} in the Software Engineering department.`
       };
 
-      // Only set academic_level if it's explicitly provided
+      // Only set academic_level and registration_number for students
       if (u.academic_level) {
         updateData.academic_level = u.academic_level;
+      }
+      if (u.registration_number) {
+        updateData.registration_number = u.registration_number;
+      }
+      if (u.staff_number) {
+        updateData.staff_number = u.staff_number;
       }
 
       await supabase.from('profiles').update(updateData).eq('id', data.user.id);

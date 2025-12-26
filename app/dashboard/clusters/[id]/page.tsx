@@ -244,12 +244,15 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
     );
   }
 
-  // Determine if user can manage this cluster
+  // Determine if user can manage this cluster (only admins, cluster leads, deputy leads, and assigned staff managers)
   const canManage = userRole === 'admin' ||
-                   userRole === 'staff' ||
                    cluster.lead_id === user.id ||
                    cluster.deputy_id === user.id ||
                    cluster.staff_manager_id === user.id;
+
+  // Determine if user can manage projects specifically (only admins and staff managers)
+  const canManageProjects = userRole === 'admin' ||
+                           cluster.staff_manager_id === user.id;
 
   // Render different views based on role
   if (userRole === 'admin') {
@@ -260,6 +263,8 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
         isMember={isMember}
         hasPendingRequest={hasPendingRequest}
         userMembershipStatus={userMembershipStatus}
+        canManage={canManage}
+        canManageProjects={canManageProjects}
         onJoin={handleJoin}
         onLeave={handleLeave}
       />
@@ -275,6 +280,7 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
         hasPendingRequest={hasPendingRequest}
         userMembershipStatus={userMembershipStatus}
         canManage={canManage}
+        canManageProjects={canManageProjects}
         onJoin={handleJoin}
         onLeave={handleLeave}
       />
@@ -289,6 +295,7 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
       isMember={isMember}
       hasPendingRequest={hasPendingRequest}
       userMembershipStatus={userMembershipStatus}
+      canManageProjects={canManageProjects}
       onJoin={handleJoin}
       onLeave={handleLeave}
     />

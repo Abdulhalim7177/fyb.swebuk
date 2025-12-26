@@ -1,14 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import UpdateProfileForm from "@/components/update-profile-form";
-import AcademicProfileDisplay from "@/components/academic-profile-display";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { GraduationCap } from "lucide-react";
 
 export default async function StudentProfilePage() {
   const supabase = await createClient();
@@ -21,7 +14,7 @@ export default async function StudentProfilePage() {
     return redirect("/auth/login");
   }
 
-  // Fetch role from profiles table instead of user metadata
+  // Fetch role from profiles table
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("*")
@@ -33,19 +26,16 @@ export default async function StudentProfilePage() {
     return <div>User profile not found.</div>;
   }
 
-  // Generate the URL for the avatar server-side (works better for local Supabase)
+  // Generate URL for avatar server-side
   let avatarPublicUrl = null;
   if (profileData.avatar_url) {
     try {
-      // For local development, we might need to handle the URL differently
-      // First, try to create a signed URL
       const { data, error } = await supabase.storage
         .from("avatars")
-        .createSignedUrl(profileData.avatar_url, 3600); // 1 hour expiry
+        .createSignedUrl(profileData.avatar_url, 3600);
 
       if (error) {
         console.error("Error creating signed URL:", error);
-        // Fallback to public URL
         const { data: publicData } = await supabase.storage
           .from("avatars")
           .getPublicUrl(profileData.avatar_url);
@@ -55,11 +45,6 @@ export default async function StudentProfilePage() {
       }
     } catch (err: any) {
       console.error("Unexpected error creating signed URL:", err);
-      // Check if it's a timeout or network error and handle appropriately
-      if (err?.message?.includes('timeout') || err?.status === 500) {
-        console.warn('Storage timeout or server error - using fallback avatar');
-      }
-      // Fallback to public URL
       try {
         const { data: publicData } = await supabase.storage
           .from("avatars")
@@ -67,48 +52,45 @@ export default async function StudentProfilePage() {
         avatarPublicUrl = publicData?.publicUrl || null;
       } catch (publicUrlError: any) {
         console.error("Error getting public URL:", publicUrlError);
-        avatarPublicUrl = null; // If both methods fail, set to null
+        avatarPublicUrl = null;
       }
     }
   }
 
   // Verify user has student role
   const userRole = profileData.role?.toLowerCase() || user.user_metadata?.role?.toLowerCase() || "student";
-  
+
   if (userRole !== "student") {
-    // Redirect to their correct dashboard if they don't have the right role
     redirect(`/dashboard/${userRole}`);
   }
 
-  // Pass the avatar URL to the client component
+  // Pass avatar URL to client component
   const profileDataWithAvatarUrl = {
     ...profileData,
     avatar_url: avatarPublicUrl || profileData.avatar_url,
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12 items-center">
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="py-6 font-bold text-center bg-background backdrop-blur-sm border-b border-border">
-          Student Profile Settings
+    <div className="flex-1 w-full flex flex-col items-center min-h-screen bg-gradient-to-br from-background via-violet-50/20 to-background dark:via-violet-950/20">
+      {/* Header */}
+      <div className="w-full bg-gradient-to-r from-violet-600 via-purple-500 to-violet-600 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+              <GraduationCap className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white tracking-tight">Student Profile</h1>
+              <p className="text-white/80 text-sm mt-1">
+                Manage your academic information and showcase your skills
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col gap-8 max-w-4xl px-3 w-full">
-        <main className="flex-1 flex flex-col gap-6 w-full">
-          <AcademicProfileDisplay />
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle className="text-2xl">Edit Profile</CardTitle>
-              <CardDescription>
-                Update your profile information below.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <UpdateProfileForm user={user} profile={profileDataWithAvatarUrl} />
-            </CardContent>
-          </Card>
-        </main>
+      <div className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+        <UpdateProfileForm user={user} profile={profileDataWithAvatarUrl} />
       </div>
     </div>
   );

@@ -112,7 +112,7 @@ export function ClusterMembersList({ clusterId, userRole, canManage }: ClusterMe
         <h3 className="text-lg font-semibold">Cluster Members</h3>
         <p className="text-sm text-muted-foreground">List of all members in this cluster</p>
       </div>
-      <div className="divide-y">
+      <div className="divide-y max-h-[400px] overflow-y-auto">
         {members.length === 0 ? (
           <div className="p-6 text-center text-muted-foreground">
             No members in this cluster yet.

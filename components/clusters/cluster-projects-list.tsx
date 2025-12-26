@@ -152,7 +152,7 @@ export function ClusterProjectsList({ clusterId, userRole, userId, isMember = fa
         <h3 className="text-lg font-semibold">Cluster Projects</h3>
         <p className="text-sm text-muted-foreground">Projects being worked on by this cluster</p>
       </div>
-      <div className="divide-y">
+      <div className="divide-y max-h-[400px] overflow-y-auto">
         {projects.length === 0 ? (
           <div className="p-6 text-center text-muted-foreground">
             No projects in this cluster yet.

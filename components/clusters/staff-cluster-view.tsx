@@ -31,6 +31,7 @@ import {
   MoreHorizontal,
   CheckCircle,
   XCircle,
+  Plus,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -76,6 +77,7 @@ interface StaffClusterViewProps {
   hasPendingRequest: boolean;
   userMembershipStatus: string | null;
   canManage: boolean;
+  canManageProjects: boolean;
   onJoin: () => void;
   onLeave: () => void;
 }
@@ -118,6 +120,7 @@ export function StaffClusterView({
   hasPendingRequest,
   userMembershipStatus,
   canManage,
+  canManageProjects,
   onJoin,
   onLeave,
 }: StaffClusterViewProps) {
@@ -199,6 +202,12 @@ export function StaffClusterView({
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>
+              )}
+              {canManageProjects && (
+                <DropdownMenuItem onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Create Project
+                </DropdownMenuItem>
               )}
               <DropdownMenuItem onClick={() => router.push("/dashboard/clusters")}>
                 Back to Clusters
@@ -370,13 +379,23 @@ export function StaffClusterView({
                 <Settings className="h-4 w-4" />
                 Edit Cluster Details
               </Button>
+              {canManageProjects && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}
+                >
+                  <FileText className="h-4 w-4" />
+                  Create New Project
+                </Button>
+              )}
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2"
-                onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}
+                onClick={() => router.push(`/dashboard/clusters/events/new?cluster_id=${cluster.id}`)}
               >
-                <FileText className="h-4 w-4" />
-                Create New Project
+                <Calendar className="h-4 w-4" />
+                Create New Event
               </Button>
             </CardContent>
           </Card>
@@ -391,7 +410,7 @@ export function StaffClusterView({
         <CardContent className="p-0">
           <Tabs defaultValue="members" className="w-full">
             <div className="px-4 sm:px-6">
-              <TabsList className="w-full sm:w-auto inline-flex h-9 items-center justify-start bg-muted/50 p-1 rounded-lg overflow-x-auto max-w-full">
+              <TabsList className="w-full sm:w-auto grid sm:inline-flex grid-cols-2 sm:h-9 h-auto items-start sm:items-center justify-start bg-muted/50 p-1 rounded-lg overflow-x-auto max-w-full">
                 <TabsTrigger value="members" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">Members</span>
@@ -427,7 +446,7 @@ export function StaffClusterView({
                 <ClusterMembersList clusterId={cluster.id} userRole={user.role} canManage={canManage} />
               </TabsContent>
               <TabsContent value="projects" className="mt-0">
-                <ClusterProjectsList clusterId={cluster.id} userRole={user.role} userId={user.id} isMember={isMember} canManage={canManage} />
+                <ClusterProjectsList clusterId={cluster.id} userRole={user.role} userId={user.id} isMember={isMember} canManage={canManageProjects} />
               </TabsContent>
               <TabsContent value="events" className="mt-0">
                 <ClusterEventsList
