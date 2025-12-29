@@ -372,7 +372,7 @@ export default function UpdateProfileForm({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Avatar & Preview */}
         <div className="lg:col-span-1">
-          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden sticky top-24">
+          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden sticky top-24">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <User className="w-5 h-5" />
@@ -444,7 +444,7 @@ export default function UpdateProfileForm({
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
-            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-foreground">
                   <User className="w-5 h-5" />
@@ -491,7 +491,7 @@ export default function UpdateProfileForm({
             </Card>
 
             {/* Academic / Professional Details */}
-            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-foreground">
                   <Building2 className="w-5 h-5" />
@@ -554,7 +554,7 @@ export default function UpdateProfileForm({
             </Card>
 
             {/* Skills */}
-            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-foreground">
                   <Sparkles className="w-5 h-5" />
@@ -616,7 +616,7 @@ export default function UpdateProfileForm({
             </Card>
 
             {/* Social Links */}
-            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+            <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-foreground">
                   <MapPin className="w-5 h-5" />
@@ -656,7 +656,7 @@ export default function UpdateProfileForm({
 
             {/* Student-Specific Details */}
             {isStudent && (
-              <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+              <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <GraduationCap className="w-5 h-5" />
@@ -883,7 +883,7 @@ export default function UpdateProfileForm({
 
             {/* Staff-Specific Details */}
             {isStaffOrAdmin && (
-              <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+              <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <Briefcase className="w-5 h-5" />

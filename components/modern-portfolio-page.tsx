@@ -302,7 +302,7 @@ export default function ModernPortfolioPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Profile Summary */}
         <div className="lg:col-span-1">
-          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden h-full sticky top-24">
+          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden h-full sticky top-24">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <User className="w-5 h-5" />
