@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bell, Menu, LogOut, Settings, User } from "lucide-react";
+import { Bell, Menu, LogOut, Settings, User, LayoutDashboard, Users, UserCog, Users2, FolderCheck, FileText, Calendar, Briefcase } from "lucide-react";
 import { ThemeSelector } from "@/components/theme-selector";
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import {
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,7 @@ interface TopNavProps {
 
 export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -90,41 +91,49 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
     {
       href: "/dashboard",
       label: "Dashboard",
+      icon: LayoutDashboard,
       roles: ["admin", "staff", "lead", "deputy", "student"],
     },
     {
       href: "/dashboard/admin/users",
       label: "Users",
+      icon: Users,
       roles: ["admin", "staff"],
     },
     {
       href: "/dashboard/admin/staff",
       label: "Staff",
+      icon: UserCog,
       roles: ["admin", "staff"],
     },
     {
       href: "/dashboard/clusters",
       label: "Clusters",
+      icon: Users2,
       roles: ["admin", "staff", "lead", "deputy"],
     },
     {
       href: "/dashboard/projects",
       label: "Projects",
+      icon: FolderCheck,
       roles: ["admin", "staff", "lead", "deputy", "student"],
     },
     {
       href: "/dashboard/portfolio",
       label: "Portfolio",
+      icon: Briefcase,
       roles: ["student"],
     },
     {
       href: "/dashboard/clusters",
       label: "Clubs",
+      icon: Users2,
       roles: ["student"],
     },
     {
       href: "/dashboard/events",
       label: "Events",
+      icon: Calendar,
       roles: ["student"],
     },
   ];
@@ -148,16 +157,26 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
           </Button>
 
           {/* Desktop Nav - Clean & Minimal */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {filteredLinks.map((link) => (
-              <Link
-                key={link.href + link.label}
-                href={link.href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+            {filteredLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href + link.label}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200",
+                    isActive 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/10"
+                  )}
+                >
+                  <Icon className={cn("w-4 h-4", isActive ? "opacity-100" : "opacity-70")} />
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -176,10 +195,11 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
                 variant="ghost" 
                 className="relative h-8 w-8 rounded-full ml-2 ring-2 ring-transparent hover:ring-border transition-all"
               >
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-8 w-8 border border-border/10">
                   <AvatarImage 
                     src={avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}`} 
                     alt={user.email} 
+                    className="object-cover"
                   />
                   <AvatarFallback>
                     <User className="h-4 w-4" />

@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -18,7 +17,6 @@ import {
   ShieldCheck,
   Sparkles,
   Code2,
-  ExternalLink,
   Github,
   Linkedin,
   MapPin,
@@ -30,31 +28,15 @@ import {
   Star,
   Users,
   FolderOpen,
-  MessageCircle,
-  Settings,
-  Copy,
   Check,
-  Download,
-  Share2,
-  Heart,
-  Eye,
+  Share,
+  BookOpen,
   Plus,
   ArrowUpRight,
-  Filter,
   Search,
   Tags,
   Globe,
-  GitBranch,
-  Lock,
-  EyeIcon,
-  EyeOff,
-  TrendingUp,
   Award,
-  Activity,
-  Layers,
-  Zap,
-  Share,
-  BookOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -76,7 +58,6 @@ type Profile = {
   bio?: string;
   email?: string;
   created_at?: string;
-  // Student-specific fields
   specialization?: string;
   gpa?: number;
   academic_standing?: string;
@@ -84,7 +65,6 @@ type Profile = {
   achievements?: string[];
   portfolio_items?: any[];
   interests?: string;
-  // Staff-specific fields
   position?: string;
   office_location?: string;
   office_hours?: string;
@@ -165,21 +145,13 @@ export default function ModernPortfolioPage({
   onEditProfile?: () => void;
 }) {
   const router = useRouter();
-
   const userRole: UserRole = (profile.role?.toLowerCase() as UserRole) || "student";
   const roleSettings = roleConfig[userRole] || roleConfig.student;
   const isStudent = userRole === "student";
 
-  const [copied, setCopied] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const handleCopyPortfolioLink = () => {
     const portfolioUrl = `${window.location.origin}/portfolio/${profile.id}`;
@@ -208,7 +180,6 @@ export default function ModernPortfolioPage({
 
   const joinDate = profile.created_at ? new Date(profile.created_at).getFullYear() : new Date().getFullYear();
 
-  // Filter projects based on active filter and search term
   const filteredProjects = projects.filter(project => {
     const matchesFilter = activeFilter === "all" || 
                           (activeFilter === "personal" && project.type === "personal") || 
@@ -229,10 +200,10 @@ export default function ModernPortfolioPage({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-7xl mx-auto"
+      className="w-full"
     >
       {/* Header Section */}
-      <div className="mb-10">
+      <div className="mb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
@@ -243,10 +214,10 @@ export default function ModernPortfolioPage({
             </p>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
             <Button
               variant="outline"
-              className="border-border text-foreground hover:bg-secondary"
+              className="border-border text-foreground hover:bg-secondary whitespace-nowrap"
               onClick={handleCopyPortfolioLink}
             >
               {linkCopied ? (
@@ -264,15 +235,15 @@ export default function ModernPortfolioPage({
 
             <Button
               variant="outline"
-              className="border-border text-foreground hover:bg-secondary"
+              className="border-border text-foreground hover:bg-secondary whitespace-nowrap"
               onClick={handleViewPublicProfile}
             >
-              <Eye className="w-4 h-4 mr-2" />
+              <User className="w-4 h-4 mr-2" />
               View Public
             </Button>
 
             {onEditProfile && (
-              <Button onClick={onEditProfile} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button onClick={onEditProfile} className="bg-primary text-primary-foreground hover:bg-primary/90 whitespace-nowrap">
                 <Edit3 className="w-4 h-4 mr-2" />
                 Edit Profile
               </Button>
@@ -282,10 +253,10 @@ export default function ModernPortfolioPage({
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <motion.div 
-          whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-border bg-card shadow-sm p-5 flex flex-col items-center text-center"
+          whileHover={{ scale: 1.02 }}
+          className="rounded-2xl border border-border bg-card/50 backdrop-blur-md shadow-sm p-5 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500 mb-2">
             <FolderOpen className="w-6 h-6" />
@@ -295,8 +266,8 @@ export default function ModernPortfolioPage({
         </motion.div>
 
         <motion.div 
-          whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-border bg-card shadow-sm p-5 flex flex-col items-center text-center"
+          whileHover={{ scale: 1.02 }}
+          className="rounded-2xl border border-border bg-card/50 backdrop-blur-md shadow-sm p-5 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-violet-500/10 text-violet-500 mb-2">
             <Code2 className="w-6 h-6" />
@@ -306,8 +277,8 @@ export default function ModernPortfolioPage({
         </motion.div>
 
         <motion.div 
-          whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-border bg-card shadow-sm p-5 flex flex-col items-center text-center"
+          whileHover={{ scale: 1.02 }}
+          className="rounded-2xl border border-border bg-card/50 backdrop-blur-md shadow-sm p-5 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 mb-2">
             <Users className="w-6 h-6" />
@@ -317,8 +288,8 @@ export default function ModernPortfolioPage({
         </motion.div>
 
         <motion.div 
-          whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-border bg-card shadow-sm p-5 flex flex-col items-center text-center"
+          whileHover={{ scale: 1.02 }}
+          className="rounded-2xl border border-border bg-card/50 backdrop-blur-md shadow-sm p-5 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 mb-2">
             <Calendar className="w-6 h-6" />
@@ -331,7 +302,7 @@ export default function ModernPortfolioPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Profile Summary */}
         <div className="lg:col-span-1">
-          <Card className="border border-border bg-card shadow-sm overflow-hidden h-full">
+          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden h-full sticky top-24">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <User className="w-5 h-5" />
@@ -341,7 +312,7 @@ export default function ModernPortfolioPage({
             <CardContent className="space-y-6">
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-4">
-                  <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-border shadow-xl">
+                  <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-background shadow-xl">
                     {profile.avatar_url ? (
                       <img
                         src={profile.avatar_url}
@@ -355,7 +326,7 @@ export default function ModernPortfolioPage({
                     )}
                   </div>
                   
-                  <div className={`absolute -bottom-2 -right-2 p-1.5 rounded-lg bg-background/80 border border-border backdrop-blur-md z-20`}>
+                  <div className={`absolute -bottom-2 -right-2 p-1.5 rounded-lg bg-background border border-border z-20`}>
                     <roleSettings.icon className="w-4 h-4 text-foreground" />
                   </div>
                 </div>
@@ -365,7 +336,7 @@ export default function ModernPortfolioPage({
                 </h2>
                 
                 <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  <Badge className={`${roleSettings.gradient} ${roleSettings.color} border`}>
+                  <Badge className={`${roleSettings.gradient} ${roleSettings.color} border bg-transparent`}>
                     <roleSettings.icon className="w-3 h-3 mr-1" />
                     {roleSettings.label}
                   </Badge>
@@ -378,7 +349,7 @@ export default function ModernPortfolioPage({
                 </div>
 
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                  {profile.bio || "No bio provided. Add a short description to let others know about your interests and expertise."}
+                  {profile.bio || "No bio provided."}
                 </p>
 
                 <div className="flex gap-2">
@@ -409,7 +380,7 @@ export default function ModernPortfolioPage({
 
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground flex-shrink-0">
+                  <div className="p-2 rounded-lg bg-secondary/30 text-muted-foreground flex-shrink-0">
                     <GraduationCap className="w-4 h-4" />
                   </div>
                   <div>
@@ -421,7 +392,7 @@ export default function ModernPortfolioPage({
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground flex-shrink-0">
+                  <div className="p-2 rounded-lg bg-secondary/30 text-muted-foreground flex-shrink-0">
                     <Building2 className="w-4 h-4" />
                   </div>
                   <div>
@@ -431,7 +402,7 @@ export default function ModernPortfolioPage({
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground flex-shrink-0">
+                  <div className="p-2 rounded-lg bg-secondary/30 text-muted-foreground flex-shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
@@ -439,52 +410,6 @@ export default function ModernPortfolioPage({
                     <p className="text-foreground">{profile.institution || "N/A"}</p>
                   </div>
                 </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground flex-shrink-0">
-                    <Calendar className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-muted-foreground text-sm">Member Since</h3>
-                    <p className="text-foreground">{memberSince}</p>
-                  </div>
-                </div>
-
-                {profile.email && (
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground flex-shrink-0">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-muted-foreground text-sm">Email</h3>
-                      <a
-                        href={`mailto:${profile.email}`}
-                        className="text-primary hover:underline break-all"
-                      >
-                        {profile.email}
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {profile.website_url && (
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground flex-shrink-0">
-                      <Globe className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-muted-foreground text-sm">Website</h3>
-                      <a
-                        href={profile.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline break-all"
-                      >
-                        {profile.website_url.replace(/^https?:\/\//, '')}
-                      </a>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <Separator className="bg-border" />
@@ -502,16 +427,6 @@ export default function ModernPortfolioPage({
                     </div>
                   )}
 
-                  {profile.gpa && (
-                    <div className="space-y-4">
-                      <h3 className="font-medium text-muted-foreground text-sm flex items-center gap-2">
-                        <Star className="w-4 h-4" />
-                        GPA
-                      </h3>
-                      <p className="text-foreground">{profile.gpa.toFixed(2)}</p>
-                    </div>
-                  )}
-
                   {profile.achievements && profile.achievements.length > 0 && (
                     <div>
                       <h3 className="font-medium text-muted-foreground text-sm mb-3 flex items-center gap-2">
@@ -520,58 +435,11 @@ export default function ModernPortfolioPage({
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {profile.achievements.slice(0, 5).map((achievement, index) => (
-                          <Badge key={index} variant="secondary" className="px-2 py-1 rounded-full bg-secondary/50 border border-border text-foreground text-xs">
+                          <Badge key={index} variant="secondary" className="px-2 py-1 rounded-full bg-secondary/30 border border-border text-foreground text-xs">
                             {achievement}
                           </Badge>
                         ))}
                       </div>
-                      {profile.achievements.length > 5 && (
-                        <p className="text-xs text-muted-foreground mt-2">+{profile.achievements.length - 5} more</p>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Staff-Specific Details */}
-              {(userRole === "staff" || userRole === "admin") && (
-                <>
-                  {profile.position && (
-                    <div className="space-y-4">
-                      <h3 className="font-medium text-muted-foreground text-sm flex items-center gap-2">
-                        <Briefcase className="w-4 h-4" />
-                        Position
-                      </h3>
-                      <p className="text-foreground">{profile.position}</p>
-                    </div>
-                  )}
-
-                  {profile.qualifications && (
-                    <div className="space-y-4">
-                      <h3 className="font-medium text-muted-foreground text-sm flex items-center gap-2">
-                        <GraduationCap className="w-4 h-4" />
-                        Qualifications
-                      </h3>
-                      <p className="text-foreground">{profile.qualifications}</p>
-                    </div>
-                  )}
-
-                  {profile.research_interests && profile.research_interests.length > 0 && (
-                    <div>
-                      <h3 className="font-medium text-muted-foreground text-sm mb-3 flex items-center gap-2">
-                        <BookOpen className="w-4 h-4" />
-                        Research Interests
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {profile.research_interests.slice(0, 5).map((interest, index) => (
-                          <Badge key={index} variant="secondary" className="px-2 py-1 rounded-full bg-secondary/50 border border-border text-foreground text-xs">
-                            {interest}
-                          </Badge>
-                        ))}
-                      </div>
-                      {profile.research_interests.length > 5 && (
-                        <p className="text-xs text-muted-foreground mt-2">+{profile.research_interests.length - 5} more</p>
-                      )}
                     </div>
                   )}
                 </>
@@ -587,7 +455,7 @@ export default function ModernPortfolioPage({
                 <div className="flex flex-wrap gap-2">
                   {profile.skills && profile.skills.length > 0 ? (
                     profile.skills.slice(0, 6).map((skill, index) => (
-                      <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-secondary/50 border border-border text-foreground">
+                      <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-secondary/30 border border-border text-foreground">
                         {skill}
                       </Badge>
                     ))
@@ -595,48 +463,6 @@ export default function ModernPortfolioPage({
                     <span className="text-muted-foreground text-sm italic">No skills added yet.</span>
                   )}
                 </div>
-                {profile.skills && profile.skills.length > 6 && (
-                  <p className="text-xs text-muted-foreground mt-2">+{profile.skills.length - 6} more skills</p>
-                )}
-
-                {(userRole === "student" || userRole === "lead" || userRole === "deputy") && profile.portfolio_items && profile.portfolio_items.length > 0 && (
-                  <div>
-                    <h3 className="font-medium text-muted-foreground text-sm mb-3 flex items-center gap-2">
-                      <FolderOpen className="w-4 h-4" />
-                      Portfolio Items
-                    </h3>
-                    <div className="space-y-3">
-                      {profile.portfolio_items.slice(0, 3).map((item: any, index: number) => (
-                        <div key={index} className="p-3 bg-card border border-border rounded-lg shadow-sm">
-                          <div className="flex justify-between">
-                            <h4 className="font-medium text-foreground text-sm">{item.title}</h4>
-                            {item.url && (
-                              <a
-                                href={item.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline text-xs"
-                              >
-                                View
-                              </a>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{item.description}</p>
-                          <div className="flex gap-2 mt-2">
-                            <Badge variant="outline" className="border-border text-muted-foreground bg-secondary/30 text-xs">
-                              {item.type}
-                            </Badge>
-                            {item.date && (
-                              <Badge variant="outline" className="border-border text-muted-foreground bg-secondary/30 text-xs">
-                                {item.date}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -644,7 +470,7 @@ export default function ModernPortfolioPage({
 
         {/* Right Column - Projects */}
         <div className="lg:col-span-2">
-          <Card className="border border-border bg-card shadow-sm overflow-hidden">
+          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
             <CardHeader className="pb-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <CardTitle className="flex items-center gap-2 text-foreground">
@@ -652,13 +478,13 @@ export default function ModernPortfolioPage({
                   My Projects
                 </CardTitle>
                 
-                <div className="flex gap-2 flex-wrap">
-                  <div className="relative">
+                <div className="flex gap-2 flex-wrap w-full sm:w-auto">
+                  <div className="relative flex-1 sm:flex-initial">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <input
                       type="text"
                       placeholder="Search projects..."
-                      className="pl-10 pr-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full pl-10 pr-4 py-2 bg-background/50 border border-input rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -709,11 +535,11 @@ export default function ModernPortfolioPage({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
-                      <Card className="h-full border border-border bg-card hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                      <Card className="h-full border border-border bg-card hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 overflow-hidden group">
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="text-lg font-bold text-foreground mb-1">{project.name}</h3>
+                            <div className="min-w-0">
+                              <h3 className="text-lg font-bold text-foreground mb-1 truncate">{project.name}</h3>
                               <div className="flex items-center gap-2">
                                 <Badge variant="outline" className={`border-border ${project.visibility === 'public' ? 'text-emerald-500 bg-emerald-500/10' : 'text-muted-foreground bg-secondary'}`}>
                                   {project.visibility}
@@ -724,18 +550,18 @@ export default function ModernPortfolioPage({
                               </div>
                             </div>
                             
-                            <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-500">
+                            <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 opacity-80 group-hover:opacity-100 transition-opacity">
                               <Code2 className="w-5 h-5" />
                             </div>
                           </div>
                         </CardHeader>
                         
                         <CardContent className="pb-4">
-                          <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                          <p className="text-muted-foreground text-sm mb-4 line-clamp-2 h-10">
                             {project.description}
                           </p>
                           
-                          <div className="flex flex-wrap gap-2 mb-4">
+                          <div className="flex flex-wrap gap-2">
                             {project.project_tags?.slice(0, 3).map((tag, i) => (
                               <span key={i} className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md flex items-center gap-1">
                                 <Tags className="w-3 h-3" />
@@ -745,25 +571,23 @@ export default function ModernPortfolioPage({
                           </div>
                         </CardContent>
                         
-                        <CardFooter className="flex justify-between pt-0">
+                        <CardFooter className="flex justify-between pt-2 border-t border-border/50">
                           <div className="flex gap-2">
                             {project.repository_url && (
-                              <Button size="sm" variant="outline" className="border-border text-foreground hover:bg-secondary">
-                                <Github className="w-4 h-4 mr-2" />
-                                Code
+                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+                                <Github className="w-4 h-4" />
                               </Button>
                             )}
                             
                             {project.demo_url && (
-                              <Button size="sm" variant="outline" className="border-border text-foreground hover:bg-secondary">
-                                <Globe className="w-4 h-4 mr-2" />
-                                Demo
+                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+                                <Globe className="w-4 h-4" />
                               </Button>
                             )}
                           </div>
                           
-                          <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-secondary">
-                            <ArrowUpRight className="w-4 h-4" />
+                          <Button size="sm" variant="ghost" className="text-xs text-muted-foreground hover:text-primary p-0 h-auto hover:bg-transparent">
+                            View Details <ArrowUpRight className="w-3 h-3 ml-1" />
                           </Button>
                         </CardFooter>
                       </Card>
@@ -772,7 +596,7 @@ export default function ModernPortfolioPage({
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mx-auto mb-4">
                     <FolderOpen className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <h3 className="text-lg font-medium text-foreground mb-2">No Projects Found</h3>

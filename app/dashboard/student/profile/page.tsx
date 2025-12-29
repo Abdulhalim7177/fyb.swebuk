@@ -55,7 +55,7 @@ export default async function StudentProfilePage() {
   };
 
   return (
-    <div className="w-full px-6 py-8">
+    <div className="w-full px-2 py-4 md:px-6 md:py-8">
       <UpdateProfileForm user={user} profile={profileDataWithAvatarUrl} />
     </div>
   );
