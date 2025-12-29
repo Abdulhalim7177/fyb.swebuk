@@ -300,7 +300,7 @@ export function DashboardNav({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 shrink-0 border-r border-border/10 bg-background/30 backdrop-blur-xl transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-64 shrink-0 border-r border-border/10 bg-background/[0.02] backdrop-blur-md transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
