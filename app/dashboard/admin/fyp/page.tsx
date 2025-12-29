@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { FileText, User, Calendar, Download, UserPlus } from "lucide-react";
+import { FileText, User, Calendar, Download, UserPlus, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import {
   getAllFYPsForAdmin,
@@ -12,10 +13,12 @@ import {
   getAllSupervisors,
   getSupervisorWorkload,
   getAdminDashboardStats,
+  getLevel400StudentsForAssignment,
 } from "@/lib/supabase/fyp-admin-actions";
 import { AdminMetrics } from "@/components/fyp/admin/admin-metrics";
 import { SupervisorWorkload } from "@/components/fyp/admin/supervisor-workload";
 import { UnassignedProjectCard } from "@/components/fyp/admin/unassigned-project-card";
+import { AssignmentView } from "@/components/fyp/admin/assignment-view";
 
 function getStatusBadge(status: string) {
   const statusConfig: Record<string, { variant: any; label: string; className: string }> = {
@@ -79,12 +82,13 @@ export default async function AdminFYPPage() {
     redirect("/dashboard");
   }
 
-  const [fyps, unassignedFYPs, supervisors, workload, stats] = await Promise.all([
+  const [fyps, unassignedFYPs, supervisors, workload, stats, students] = await Promise.all([
     getAllFYPsForAdmin(),
     getUnassignedFYPs(),
     getAllSupervisors(),
     getSupervisorWorkload(),
     getAdminDashboardStats(),
+    getLevel400StudentsForAssignment(),
   ]);
 
   return (
@@ -108,83 +112,112 @@ export default async function AdminFYPPage() {
       {/* Metrics */}
       <AdminMetrics stats={stats} />
 
-      {/* Supervisor Workload */}
-      <SupervisorWorkload workload={workload} />
+      {/* Tabs for different views */}
+      <Tabs defaultValue="projects" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="projects">
+            <FileText className="h-4 w-4 mr-2" />
+            Projects
+          </TabsTrigger>
+          <TabsTrigger value="assignment">
+            <Users className="h-4 w-4 mr-2" />
+            Student Assignment
+          </TabsTrigger>
+          <TabsTrigger value="workload">
+            <UserPlus className="h-4 w-4 mr-2" />
+            Workload
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Unassigned Projects */}
-      {unassignedFYPs.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-900/10 dark:border-orange-900">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-900 dark:text-orange-300">
-              <UserPlus className="h-5 w-5" />
-              Unassigned Projects ({unassignedFYPs.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {unassignedFYPs.map((fyp: any) => (
-                <UnassignedProjectCard key={fyp.id} fyp={fyp} supervisors={supervisors} />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* All Projects */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Projects ({fyps.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {fyps.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-4 opacity-20" />
-              <p>No FYP submissions yet</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {fyps.map((fyp: any) => (
-                <Link
-                  key={fyp.id}
-                  href={`/dashboard/staff/fyp/${fyp.id}`}
-                  className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1 min-w-0">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={fyp.student?.avatar_url || undefined} />
-                        <AvatarFallback>{fyp.student?.full_name?.charAt(0) || "S"}</AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg truncate">{fyp.title}</h3>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            <span>{fyp.student?.full_name || "Unknown Student"}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>{new Date(fyp.created_at).toLocaleDateString()}</span>
-                          </div>
-                          {fyp.supervisor && (
-                            <div className="flex items-center gap-1">
-                              <FileText className="h-3 w-3" />
-                              <span>Supervisor: {fyp.supervisor.full_name}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>{getStatusBadge(fyp.status)}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+        <TabsContent value="projects" className="space-y-4">
+          {/* Unassigned Projects */}
+          {unassignedFYPs.length > 0 && (
+            <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-900/10 dark:border-orange-900">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-900 dark:text-orange-300">
+                  <UserPlus className="h-5 w-5" />
+                  Unassigned Projects ({unassignedFYPs.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {unassignedFYPs.map((fyp: any) => (
+                    <UnassignedProjectCard key={fyp.id} fyp={fyp} supervisors={supervisors} />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+
+          {/* All Projects */}
+          <Card>
+            <CardHeader>
+              <CardTitle>All Projects ({fyps.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {fyps.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                  <p>No FYP submissions yet</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {fyps.map((fyp: any) => (
+                    <Link
+                      key={fyp.id}
+                      href={`/dashboard/staff/fyp/${fyp.id}`}
+                      className="block p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={fyp.student?.avatar_url || undefined} />
+                            <AvatarFallback>{fyp.student?.full_name?.charAt(0) || "S"}</AvatarFallback>
+                          </Avatar>
+
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-lg truncate">{fyp.title}</h3>
+                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <User className="h-3 w-3" />
+                                <span>{fyp.student?.full_name || "Unknown Student"}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                <span>{new Date(fyp.created_at).toLocaleDateString()}</span>
+                              </div>
+                              {fyp.supervisor && (
+                                <div className="flex items-center gap-1">
+                                  <FileText className="h-3 w-3" />
+                                  <span>Supervisor: {fyp.supervisor.full_name}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>{getStatusBadge(fyp.status)}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="assignment">
+          <AssignmentView
+            students={students}
+            supervisors={supervisors}
+            fyps={unassignedFYPs}
+          />
+        </TabsContent>
+
+        <TabsContent value="workload">
+          <SupervisorWorkload workload={workload} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

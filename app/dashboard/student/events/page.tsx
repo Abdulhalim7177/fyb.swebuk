@@ -35,7 +35,7 @@ function StatsSkeleton() {
   return (
     <div className="grid gap-4 md:grid-cols-4">
       {[...Array(4)].map((_, i) => (
-        <Skeleton key={i} className="h-24" />
+        <div key={i} className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 animate-pulse h-24" />
       ))}
     </div>
   );
@@ -45,7 +45,7 @@ function EventsSkeleton() {
   return (
     <div className="space-y-4">
       {[...Array(3)].map((_, i) => (
-        <Skeleton key={i} className="h-32" />
+        <div key={i} className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 animate-pulse h-32" />
       ))}
     </div>
   );
@@ -60,30 +60,22 @@ async function EventStats() {
 
   return (
     <div className="grid gap-4 md:grid-cols-4">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Registrations</CardDescription>
-          <CardTitle className="text-3xl">{stats.total_registrations}</CardTitle>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Upcoming Events</CardDescription>
-          <CardTitle className="text-3xl">{stats.upcoming}</CardTitle>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Events Attended</CardDescription>
-          <CardTitle className="text-3xl">{stats.attended}</CardTitle>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Certificates Earned</CardDescription>
-          <CardTitle className="text-3xl">{stats.certificates_earned}</CardTitle>
-        </CardHeader>
-      </Card>
+      <div className="rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
+        <p className="text-sm font-medium text-slate-400 mb-2">Total Registrations</p>
+        <p className="text-4xl font-bold text-white">{stats.total_registrations}</p>
+      </div>
+      <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
+        <p className="text-sm font-medium text-slate-400 mb-2">Upcoming Events</p>
+        <p className="text-4xl font-bold text-white">{stats.upcoming}</p>
+      </div>
+      <div className="rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
+        <p className="text-sm font-medium text-slate-400 mb-2">Events Attended</p>
+        <p className="text-4xl font-bold text-white">{stats.attended}</p>
+      </div>
+      <div className="rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
+        <p className="text-sm font-medium text-slate-400 mb-2">Certificates Earned</p>
+        <p className="text-4xl font-bold text-white">{stats.certificates_earned}</p>
+      </div>
     </div>
   );
 }
@@ -93,10 +85,10 @@ async function UpcomingEvents() {
 
   if (registrations.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold mb-2">No upcoming events</h3>
-        <p className="text-muted-foreground mb-4">
+      <div className="text-center py-16 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+        <Calendar className="h-16 w-16 mx-auto text-slate-500 mb-4" />
+        <h3 className="text-xl font-bold text-white mb-2">No upcoming events</h3>
+        <p className="text-slate-400 mb-4">
           You haven&apos;t registered for any upcoming events yet.
         </p>
         <Button asChild>

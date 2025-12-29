@@ -77,9 +77,9 @@ export default async function DeputyProfilePage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12 items-center">
+    <div className="flex-1 w-full flex flex-col gap-12 items-center bg-black text-white">
       <div className="w-full max-w-4xl mx-auto">
-        <div className="py-6 font-bold text-center bg-[oklch(92.2% 0 0)]/[0.7] backdrop-blur-sm border-b border-border">
+        <div className="py-6 font-bold text-center bg-pink-600/20 backdrop-blur-sm border-b border-white/10">
           Deputy Profile Settings
         </div>
       </div>

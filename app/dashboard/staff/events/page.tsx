@@ -216,7 +216,7 @@ async function EventStats() {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
       <Card>
         <CardHeader className="pb-2">
           <CardDescription>Total Events</CardDescription>
@@ -265,7 +265,7 @@ export default function StaffEventsPage() {
 
       <Suspense
         fallback={
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <Skeleton key={i} className="h-24" />
             ))}

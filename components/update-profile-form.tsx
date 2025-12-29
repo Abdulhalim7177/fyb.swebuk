@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
@@ -9,7 +8,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Badge } from "./ui/badge";
 import {
   Camera,
@@ -24,30 +23,20 @@ import {
   MapPin,
   Mail,
   Sparkles,
-  Crown,
   ShieldCheck,
-  ArrowUpRight,
+  Save,
+  Loader2,
   Plus,
+  Trash2,
+  ExternalLink,
+  Copy,
+  CheckCircle,
+  AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Separator } from "./ui/separator";
-import { Progress } from "./ui/progress";
-
-type Profile = {
-  id: string;
-  full_name: string;
-  avatar_url: string;
-  role?: string;
-  registration_number?: string;
-  staff_number?: string;
-  academic_level?: string;
-  department?: string;
-  faculty?: string;
-  institution?: string;
-  linkedin_url?: string;
-  github_url?: string;
-  skills?: string[];
-  bio?: string;
-};
+import { Profile } from "@/lib/supabase/storage-utils";
 
 type UserRole = "student" | "staff" | "admin" | "lead" | "deputy";
 
@@ -55,42 +44,42 @@ const roleConfig: Record<UserRole, { label: string; icon: any; color: string; gr
   student: {
     label: "Student",
     icon: GraduationCap,
-    color: "from-violet-500 to-purple-500",
-    gradient: "from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20"
+    color: "text-violet-500",
+    gradient: "from-violet-500/10 to-purple-500/10 border-violet-200/20"
   },
   staff: {
     label: "Staff",
     icon: Briefcase,
-    color: "from-blue-500 to-cyan-500",
-    gradient: "from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20"
+    color: "text-blue-500",
+    gradient: "from-blue-500/10 to-cyan-500/10 border-blue-200/20"
   },
   admin: {
     label: "Administrator",
     icon: ShieldCheck,
-    color: "from-emerald-500 to-teal-500",
-    gradient: "from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20"
+    color: "text-emerald-500",
+    gradient: "from-emerald-500/10 to-teal-500/10 border-emerald-200/20"
   },
   lead: {
     label: "Cluster Lead",
-    icon: Crown,
-    color: "from-amber-500 to-orange-500",
-    gradient: "from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20"
+    icon: Sparkles,
+    color: "text-amber-500",
+    gradient: "from-amber-500/10 to-orange-500/10 border-amber-200/20"
   },
   deputy: {
     label: "Cluster Deputy",
-    icon: Crown,
-    color: "from-pink-500 to-rose-500",
-    gradient: "from-pink-50 to-rose-50 dark:from-pink-950/20 dark:to-rose-950/20"
+    icon: Sparkles,
+    color: "text-pink-500",
+    gradient: "from-pink-500/10 to-rose-500/10 border-pink-200/20"
   },
 };
 
 const academicLevelOptions = [
-  { value: "student", label: "New Student", color: "bg-slate-100 text-slate-700" },
-  { value: "level_100", label: "Level 100 (Freshman)", color: "bg-green-100 text-green-700" },
-  { value: "level_200", label: "Level 200 (Sophomore)", color: "bg-teal-100 text-teal-700" },
-  { value: "level_300", label: "Level 300 (Junior)", color: "bg-blue-100 text-blue-700" },
-  { value: "level_400", label: "Level 400 (Senior)", color: "bg-purple-100 text-purple-700" },
-  { value: "alumni", label: "Alumni", color: "bg-amber-100 text-amber-700" },
+  { value: "student", label: "New Student" },
+  { value: "level_100", label: "Level 100 (Freshman)" },
+  { value: "level_200", label: "Level 200 (Sophomore)" },
+  { value: "level_300", label: "Level 300 (Junior)" },
+  { value: "level_400", label: "Level 400 (Senior)" },
+  { value: "alumni", label: "Alumni" },
 ];
 
 const departmentOptions = [
@@ -109,8 +98,6 @@ const suggestedSkills = [
   "HTML", "CSS", "Tailwind CSS", "Vue.js", "Angular", "PHP", "Laravel",
   "PostgreSQL", "MongoDB", "MySQL", "Docker", "Git", "AWS", "Azure",
   "Machine Learning", "AI", "Data Analysis", "UI/UX Design", "Figma",
-  "Mobile Development", "Flutter", "React Native", "Swift", "Kotlin",
-  "Cybersecurity", "DevOps", "Testing", "REST APIs", "GraphQL"
 ];
 
 export default function UpdateProfileForm({
@@ -122,712 +109,929 @@ export default function UpdateProfileForm({
 }) {
   const supabase = createClient();
   const router = useRouter();
-  const [fullName, setFullName] = useState(profile.full_name || "");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [academicLevel, setAcademicLevel] = useState(profile.academic_level || "student");
-  const [department, setDepartment] = useState(profile.department || "Software Engineering");
-  const [faculty, setFaculty] = useState(profile.faculty || "Faculty of Computing");
-  const [institution, setInstitution] = useState(profile.institution || "Bayero University");
-  const [linkedinUrl, setLinkedinUrl] = useState(profile.linkedin_url || "");
-  const [githubUrl, setGithubUrl] = useState(profile.github_url || "");
-  const [skills, setSkills] = useState<string[]>(profile.skills || []);
-  const [bio, setBio] = useState(profile.bio || "");
-  const [registrationNumber, setRegistrationNumber] = useState(profile.registration_number || "");
-  const [staffNumber, setStaffNumber] = useState(profile.staff_number || "");
-  const [newSkill, setNewSkill] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // State initialization
+  const [formData, setFormData] = useState({
+    fullName: profile.full_name || "",
+    academicLevel: profile.academic_level || "student",
+    department: profile.department || "Software Engineering",
+    faculty: profile.faculty || "Faculty of Computing",
+    institution: profile.institution || "Bayero University",
+    linkedinUrl: profile.linkedin_url || "",
+    githubUrl: profile.github_url || "",
+    bio: profile.bio || "",
+    registrationNumber: profile.registration_number || "",
+    staffNumber: profile.staff_number || "",
+    // Student-specific fields
+    specialization: profile.specialization || "",
+    gpa: profile.gpa || null,
+    academicStanding: profile.academic_standing || "Good",
+    interests: profile.interests || "",
+    websiteUrl: profile.website_url || "",
+    // Staff-specific fields
+    position: profile.position || "",
+    officeLocation: profile.office_location || "",
+    officeHours: profile.office_hours || "",
+    departmentRole: profile.department_role || "",
+    qualifications: profile.qualifications || "",
+  });
+
+  const [currentCourses, setCurrentCourses] = useState<string[]>(profile.current_courses || []);
+  const [newCourse, setNewCourse] = useState("");
+  const [achievements, setAchievements] = useState<string[]>(profile.achievements || []);
+  const [newAchievement, setNewAchievement] = useState("");
+  const [researchInterests, setResearchInterests] = useState<string[]>(profile.research_interests || []);
+  const [newResearchInterest, setNewResearchInterest] = useState("");
+
+  const [portfolioItems, setPortfolioItems] = useState<any[]>(profile.portfolio_items || []);
+  const [newPortfolioItem, setNewPortfolioItem] = useState({
+    title: "",
+    description: "",
+    url: "",
+    type: "project"
+  });
+
+  const [skills, setSkills] = useState<string[]>(profile.skills || []);
+  const [newSkill, setNewSkill] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | null, message: string | null }>({ type: null, message: null });
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const userRole: UserRole = (profile.role?.toLowerCase() as UserRole) || "student";
   const isStaffOrAdmin = userRole === "staff" || userRole === "admin";
-  const isStudent = userRole === "student";
+  const isStudent = userRole === "student" || userRole === "lead" || userRole === "deputy";
   const roleSettings = roleConfig[userRole] || roleConfig.student;
 
-  // Profile completion calculation
-  const getProfileCompletion = () => {
-    let completed = 0;
-    let total = 5;
-    if (fullName) completed++;
-    if (avatarUrl) completed++;
-    if (bio && bio.length > 10) completed++;
-    if (linkedinUrl) completed++;
-    if (githubUrl) completed++;
-    if (isStaffOrAdmin && staffNumber) { completed++; total++; }
-    if (isStudent && registrationNumber) { completed++; total++; }
-    if (isStudent && academicLevel && academicLevel !== "student") { completed++; total++; }
-    if (skills.length > 0) { completed++; total++; }
-    return Math.round((completed / total) * 100);
-  };
-
-  const completionPercentage = getProfileCompletion();
-
+  // Handle Avatar URL logic
   useEffect(() => {
-    if (profile.avatar_url && profile.avatar_url.startsWith("http")) {
-      setAvatarUrl(profile.avatar_url);
-    } else if (profile.avatar_url) {
-      const fetchAvatarUrl = async () => {
-        try {
-          const { data, error } = await supabase.storage
-            .from("avatars")
-            .createSignedUrl(profile.avatar_url, 3600);
-
-          if (error) {
-            try {
-              const { data: publicData } = await supabase.storage
-                .from("avatars")
-                .getPublicUrl(profile.avatar_url);
-              const normalizedUrl = publicData?.publicUrl?.replace("localhost", "127.0.0.1") || null;
-              setAvatarUrl(normalizedUrl);
-            } catch {
-              setAvatarUrl(null);
-            }
-          } else if (data?.signedUrl) {
-            const normalizedUrl = data.signedUrl.replace("localhost", "127.0.0.1");
-            setAvatarUrl(normalizedUrl);
-          } else {
-            try {
-              const { data: publicData } = await supabase.storage
-                .from("avatars")
-                .getPublicUrl(profile.avatar_url);
-              const normalizedUrl = publicData?.publicUrl?.replace("localhost", "127.0.0.1") || null;
-              setAvatarUrl(normalizedUrl);
-            } catch {
-              setAvatarUrl(null);
-            }
-          }
-        } catch {
-          try {
-            const { data: publicData } = await supabase.storage
-              .from("avatars")
-              .getPublicUrl(profile.avatar_url);
-            const normalizedUrl = publicData?.publicUrl?.replace("localhost", "127.0.0.1") || null;
-            setAvatarUrl(normalizedUrl);
-          } catch {
-            setAvatarUrl(null);
-          }
-        }
-      };
-      fetchAvatarUrl();
-    } else {
-      setAvatarUrl(null);
-    }
+    const resolveAvatar = async () => {
+       if (profile.avatar_url?.startsWith("http")) {
+         setAvatarUrl(profile.avatar_url);
+       } else if (profile.avatar_url) {
+         const { data } = supabase.storage.from("avatars").getPublicUrl(profile.avatar_url);
+         setAvatarUrl(data.publicUrl);
+       }
+    };
+    resolveAvatar();
   }, [profile.avatar_url, supabase]);
 
-  useEffect(() => {
-    setFullName(profile.full_name || "");
-    setAcademicLevel(profile.academic_level || "student");
-    setDepartment(profile.department || "Software Engineering");
-    setFaculty(profile.faculty || "Faculty of Computing");
-    setInstitution(profile.institution || "Bayero University");
-    setLinkedinUrl(profile.linkedin_url || "");
-    setGithubUrl(profile.github_url || "");
-    setSkills(profile.skills || []);
-    setBio(profile.bio || "");
-    setRegistrationNumber(profile.registration_number || "");
-    setStaffNumber(profile.staff_number || "");
-  }, [profile]);
-
-  const handleUpload: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
-    try {
-      setUploading(true);
-      setError(null);
-      setSuccessMessage(null);
-
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error("You must select an image to upload.");
-      }
-
-      const file = event.target.files[0];
-      setAvatarFile(file);
-      setAvatarUrl(URL.createObjectURL(file));
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Error uploading avatar.");
-    } finally {
-      setUploading(false);
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
 
-  const removeAvatar = async () => {
-    try {
-      setUploading(true);
-      setError(null);
-      setSuccessMessage(null);
-
-      if (profile.avatar_url) {
-        const { error: deleteError } = await supabase.storage
-          .from("avatars")
-          .remove([profile.avatar_url]);
-        if (deleteError) console.error("Error deleting old avatar:", deleteError);
-      }
-
-      await supabase
-        .from("profiles")
-        .update({ avatar_url: null })
-        .eq("id", user.id);
-
-      setAvatarUrl(null);
-      setAvatarFile(null);
-      router.refresh();
-      setSuccessMessage("Profile picture removed successfully!");
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Error removing profile picture.");
-    } finally {
-      setUploading(false);
-    }
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) return;
+    const file = event.target.files[0];
+    setAvatarFile(file);
+    setAvatarUrl(URL.createObjectURL(file));
   };
 
-  const addSkill = (skill: string) => {
-    const trimmedSkill = skill.trim();
-    if (trimmedSkill && !skills.includes(trimmedSkill)) {
-      setSkills([...skills, trimmedSkill]);
+  const addSkill = (skillToAdd: string) => {
+    const skill = skillToAdd.trim();
+    if (skill && !skills.includes(skill)) {
+      setSkills([...skills, skill]);
       setNewSkill("");
     }
   };
 
-  const removeSkill = (skill: string) => {
-    setSkills(skills.filter((s) => s !== skill));
+  const removeSkill = (skillToRemove: string) => {
+    setSkills(skills.filter(s => s !== skillToRemove));
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      setUploading(true);
-      setError(null);
-      setSuccessMessage(null);
+  const addCourse = (courseToAdd: string) => {
+    const course = courseToAdd.trim();
+    if (course && !currentCourses.includes(course)) {
+      setCurrentCourses([...currentCourses, course]);
+      setNewCourse("");
+    }
+  };
 
-      let avatar_url = profile.avatar_url;
+  const removeCourse = (courseToRemove: string) => {
+    setCurrentCourses(currentCourses.filter(c => c !== courseToRemove));
+  };
+
+  const addAchievement = (achievementToAdd: string) => {
+    const achievement = achievementToAdd.trim();
+    if (achievement && !achievements.includes(achievement)) {
+      setAchievements([...achievements, achievement]);
+      setNewAchievement("");
+    }
+  };
+
+  const removeAchievement = (achievementToRemove: string) => {
+    setAchievements(achievements.filter(a => a !== achievementToRemove));
+  };
+
+  const addResearchInterest = (interestToAdd: string) => {
+    const interest = interestToAdd.trim();
+    if (interest && !researchInterests.includes(interest)) {
+      setResearchInterests([...researchInterests, interest]);
+      setNewResearchInterest("");
+    }
+  };
+
+  const removeResearchInterest = (interestToRemove: string) => {
+    setResearchInterests(researchInterests.filter(r => r !== interestToRemove));
+  };
+
+  const addPortfolioItem = () => {
+    if (newPortfolioItem.title.trim() && newPortfolioItem.description.trim()) {
+      const item = {
+        id: Date.now().toString(),
+        title: newPortfolioItem.title.trim(),
+        description: newPortfolioItem.description.trim(),
+        url: newPortfolioItem.url.trim(),
+        type: newPortfolioItem.type,
+        date: new Date().toISOString().split('T')[0]
+      };
+      setPortfolioItems([...portfolioItems, item]);
+      setNewPortfolioItem({
+        title: "",
+        description: "",
+        url: "",
+        type: "project"
+      });
+    }
+  };
+
+  const removePortfolioItem = (id: string) => {
+    setPortfolioItems(portfolioItems.filter(item => item.id !== id));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUploading(true);
+    setFeedback({ type: null, message: null });
+
+    try {
+      let finalAvatarUrl = profile.avatar_url;
 
       if (avatarFile) {
-        if (profile.avatar_url) {
-          const { error: deleteError } = await supabase.storage
-            .from("avatars")
-            .remove([profile.avatar_url]);
-          if (deleteError) console.error("Error deleting old avatar:", deleteError);
-        }
-
-        const fileExt = avatarFile.name.split(".").pop()?.toLowerCase();
-        const fileName = `${user.id}-${Math.random()}`;
-        const filePath = fileExt ? `${fileName}.${fileExt}` : fileName;
-
-        const { error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(filePath, avatarFile);
-
+        const fileExt = avatarFile.name.split(".").pop();
+        const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, avatarFile);
         if (uploadError) throw uploadError;
-        avatar_url = filePath;
+        finalAvatarUrl = fileName;
       }
 
-      const updateData: any = {
-        full_name: fullName,
-        avatar_url,
-        linkedin_url: linkedinUrl,
-        github_url: githubUrl,
-        skills: skills,
-        bio: bio,
+      const updates: any = {
+        full_name: formData.fullName,
+        avatar_url: finalAvatarUrl,
+        linkedin_url: formData.linkedinUrl,
+        github_url: formData.githubUrl,
+        skills,
+        bio: formData.bio,
+        department: formData.department,
+        faculty: formData.faculty,
+        institution: formData.institution,
+        // updated_at: new Date().toISOString(), // This will be handled by the DB trigger
       };
 
+      // Add student-specific fields if they exist in the schema
+      if (formData.specialization !== undefined) updates.specialization = formData.specialization;
+      if (formData.gpa !== undefined) updates.gpa = formData.gpa;
+      if (formData.academicStanding !== undefined) updates.academic_standing = formData.academicStanding;
+      if (currentCourses !== undefined) updates.current_courses = currentCourses;
+      if (achievements !== undefined) updates.achievements = achievements;
+      if (portfolioItems !== undefined) updates.portfolio_items = portfolioItems;
+      if (formData.interests !== undefined) updates.interests = formData.interests;
+      if (formData.websiteUrl !== undefined) updates.website_url = formData.websiteUrl;
+
+      // Add staff-specific fields if they exist in the schema
+      if (formData.position !== undefined) updates.position = formData.position;
+      if (formData.officeLocation !== undefined) updates.office_location = formData.officeLocation;
+      if (formData.officeHours !== undefined) updates.office_hours = formData.officeHours;
+      if (researchInterests !== undefined) updates.research_interests = researchInterests;
+      if (formData.departmentRole !== undefined) updates.department_role = formData.departmentRole;
+      if (formData.qualifications !== undefined) updates.qualifications = formData.qualifications;
+
       if (isStudent) {
-        updateData.academic_level = academicLevel;
-        updateData.department = department;
-        updateData.faculty = faculty;
-        updateData.institution = institution;
-        updateData.registration_number = registrationNumber;
-        updateData.staff_number = null;
+        updates.academic_level = formData.academicLevel;
+        updates.registration_number = formData.registrationNumber;
       } else if (isStaffOrAdmin) {
-        updateData.academic_level = null;
-        updateData.department = department;
-        updateData.faculty = faculty;
-        updateData.institution = institution;
-        updateData.staff_number = staffNumber;
-        updateData.registration_number = null;
+        updates.staff_number = formData.staffNumber;
       }
 
-      await supabase
-        .from("profiles")
-        .update(updateData)
-        .eq("id", user.id);
+      const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
+      if (error) throw error;
 
-      if (avatar_url && avatar_url !== profile.avatar_url) {
-        const { data: urlData, error: urlError } = await supabase.storage
-          .from("avatars")
-          .createSignedUrl(avatar_url, 3600);
-        if (!urlError && urlData?.signedUrl) {
-          setAvatarUrl(urlData.signedUrl.replace("localhost", "127.0.0.1"));
-        } else {
-          const { data: publicData } = await supabase.storage
-            .from("avatars")
-            .getPublicUrl(avatar_url);
-          setAvatarUrl(publicData?.publicUrl?.replace("localhost", "127.0.0.1") || avatar_url);
-        }
-      } else if (!avatar_url && profile.avatar_url) {
-        setAvatarUrl(null);
-      }
-
+      setFeedback({ type: 'success', message: 'Profile updated successfully!' });
       router.refresh();
-      setSuccessMessage("Profile updated successfully!");
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Error updating profile.");
+    } catch (error: any) {
+      setFeedback({ type: 'error', message: error.message || 'An error occurred' });
     } finally {
       setUploading(false);
     }
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const RoleIcon = roleConfig[userRole]?.icon || User;
-  const roleLabel = roleConfig[userRole]?.label || "User";
+  const completionRate = [
+    formData.fullName,
+    avatarUrl,
+    formData.bio?.length > 10,
+    skills.length > 0,
+    formData.linkedinUrl || formData.githubUrl,
+    isStudent ? formData.registrationNumber : formData.staffNumber
+  ].filter(Boolean).length / 6 * 100;
 
   return (
-    <div className="space-y-6">
-      {/* Profile Completion Card */}
-      <div className={`rounded-2xl p-6 bg-gradient-to-r ${roleSettings.gradient} border border-white/20 shadow-lg`}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Sparkles className={`w-5 h-5 bg-gradient-to-r ${roleSettings.color} text-white p-1 rounded-lg`} />
-            <div>
-              <p className="text-sm font-semibold text-foreground">Profile Completion</p>
-              <p className="text-xs text-muted-foreground">
-                {completionPercentage === 100
-                  ? "Your profile is complete!"
-                  : "Complete your profile to stand out"}
-              </p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-5xl mx-auto"
+    >
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-white/20 text-white hover:bg-white/10"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Edit Profile</h1>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-white mb-1">{formData.fullName || "Your Name"}</h2>
+            <div className="flex items-center gap-2">
+              <Badge className={`${roleSettings.gradient} ${roleSettings.color} border`}>
+                <roleSettings.icon className="w-3 h-3 mr-1" />
+                {roleSettings.label}
+              </Badge>
             </div>
           </div>
-          <div className={`text-3xl font-bold bg-gradient-to-r ${roleSettings.color} bg-clip-text text-transparent`}>
-            {completionPercentage}%
+
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-slate-400">
+              <span className="text-white font-medium">{Math.round(completionRate)}%</span> complete
+            </div>
+            <div className="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-500 rounded-full ${completionRate === 100 ? 'bg-emerald-500' : 'bg-primary'}`}
+                style={{ width: `${completionRate}%` }}
+              />
+            </div>
           </div>
-        </div>
-        <div className="h-2 bg-white/30 rounded-full overflow-hidden">
-          <div
-            className={`h-full bg-gradient-to-r ${roleSettings.color} rounded-full transition-all duration-500 ease-out`}
-            style={{ width: `${completionPercentage}%` }}
-          />
         </div>
       </div>
 
-      {/* Profile Header Card */}
-      <Card className="border-2 shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
-        <div className={`h-36 bg-gradient-to-r ${roleSettings.color}`} />
-        <CardContent className="relative px-8 pb-8 -mt-20">
-          <div className="relative inline-block mb-4 group">
-            <Avatar className="w-32 h-32 border-4 border-white shadow-2xl">
-              <AvatarImage src={avatarUrl || undefined} alt={fullName} />
-              <AvatarFallback className={`text-3xl bg-gradient-to-br ${roleSettings.color} text-white font-bold`}>
-                {getInitials(fullName)}
-              </AvatarFallback>
-            </Avatar>
-            <label
-              htmlFor="avatar-upload"
-              className="absolute bottom-1 right-1 p-3 bg-white text-foreground rounded-xl shadow-lg cursor-pointer hover:scale-110 hover:shadow-xl transition-all duration-200"
-            >
-              <Camera className="w-4 h-4" />
-            </label>
-            <input
-              id="avatar-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleUpload}
-              disabled={uploading}
-              className="hidden"
-            />
-            {avatarUrl && (
-              <button
-                type="button"
-                onClick={removeAvatar}
-                disabled={uploading}
-                className="absolute top-1 right-1 p-2 bg-red-500 text-white rounded-xl shadow-lg cursor-pointer hover:bg-red-600 hover:scale-110 transition-all duration-200"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex-1">
-              <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                {fullName || "Your Name"}
-              </h2>
-              <div className="flex flex-wrap items-center gap-2.5 mt-2.5">
-                <Badge className={`gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r ${roleSettings.color} text-white font-medium border-0 shadow-md`}>
-                  <RoleIcon className="w-3.5 h-3.5" />
-                  {roleLabel}
-                </Badge>
-                {user.email && (
-                  <Badge variant="outline" className="gap-2 px-3.5 py-1.5 rounded-full bg-background/50 backdrop-blur-sm">
-                    <Mail className="w-3.5 h-3.5" />
-                    {user.email}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {bio && (
-            <p className="text-muted-foreground mt-3 text-sm leading-relaxed line-clamp-2">{bio}</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Edit Form */}
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <Card className="shadow-lg border-muted/50">
-          <CardContent className="p-8 space-y-8">
-            {/* Basic Info Section */}
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
-                  <User className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground">Basic Information</h3>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2">
-                <div className="space-y-2.5">
-                  <Label htmlFor="fullName" className="text-sm font-semibold text-foreground ml-0.5">
-                    Full Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    required
-                    className="h-12 text-base border-muted/200 focus-visible:ring-2 focus-visible:ring-offset-0"
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Avatar & Preview */}
+        <div className="lg:col-span-1">
+          <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-white">
+                <User className="w-5 h-5" />
+                Profile Preview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-6">
+                  <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white/20 shadow-xl">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt="Avatar Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${roleSettings.gradient.split(' ')[0]} ${roleSettings.gradient.split(' ')[1]}`}>
+                        <span className="text-2xl font-bold text-white">{formData.fullName?.slice(0, 2).toUpperCase()}</span>
+                      </div>
+                    )}
+                  </div>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-2 right-2 p-2.5 bg-primary text-primary-foreground rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarChange}
                   />
                 </div>
 
-                {isStudent ? (
-                  <div className="space-y-2.5">
-                    <Label htmlFor="registrationNumber" className="text-sm font-semibold text-foreground ml-0.5">
-                      Registration Number
-                    </Label>
-                    <Input
-                      id="registrationNumber"
-                      type="text"
-                      value={registrationNumber}
-                      onChange={(e) => setRegistrationNumber(e.target.value)}
-                      placeholder="e.g., 24/12345"
-                      className="h-12 text-base border-muted/200"
-                    />
-                  </div>
-                ) : (
-                  <div className="space-y-2.5">
-                    <Label htmlFor="staffNumber" className="text-sm font-semibold text-foreground ml-0.5">
-                      Staff Number <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="staffNumber"
-                      type="text"
-                      value={staffNumber}
-                      onChange={(e) => setStaffNumber(e.target.value)}
-                      placeholder="e.g., STF-001"
-                      required={!isStudent}
-                      className="h-12 text-base border-muted/200"
-                    />
-                  </div>
-                )}
+                <h2 className="text-xl font-bold text-white mb-1">{formData.fullName || "Your Name"}</h2>
 
-                <div className="space-y-2.5 md:col-span-2">
-                  <Label htmlFor="bio" className="text-sm font-semibold text-foreground ml-0.5">
-                    Bio
-                  </Label>
+                <div className="flex items-center gap-2 mb-4">
+                  <Badge className={`${roleSettings.gradient} ${roleSettings.color} border`}>
+                    <roleSettings.icon className="w-3 h-3 mr-1" />
+                    {roleSettings.label}
+                  </Badge>
+                </div>
+
+                <p className="text-slate-400 text-sm mb-4 line-clamp-2">
+                  {formData.bio || "No bio provided. Add a short description to let others know about your interests and expertise."}
+                </p>
+
+                <div className="flex gap-2">
+                  {formData.linkedinUrl && (
+                    <a href={formData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-[#0077b5]/20 hover:text-[#0077b5] rounded-xl transition-colors border border-white/5">
+                      <Linkedin className="w-4 h-4" />
+                    </a>
+                  )}
+                  {formData.githubUrl && (
+                    <a href={formData.githubUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-white/20 hover:text-white rounded-xl transition-colors border border-white/5">
+                      <Github className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Form */}
+        <div className="lg:col-span-2">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information */}
+            <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <User className="w-5 h-5" />
+                  Basic Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className="text-slate-300">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      placeholder="John Doe"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={isStudent ? "registrationNumber" : "staffNumber"} className="text-slate-300">
+                      {isStudent ? "Registration Number" : "Staff Number"}
+                    </Label>
+                    <Input
+                      id={isStudent ? "registrationNumber" : "staffNumber"}
+                      value={isStudent ? formData.registrationNumber : formData.staffNumber}
+                      onChange={handleInputChange}
+                      placeholder={isStudent ? "e.g., U/21/CS/1234" : "e.g., STF/001"}
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bio" className="text-slate-300">Bio</Label>
                   <Textarea
                     id="bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Tell us about yourself, your interests, and what you're passionate about..."
-                    className="min-h-[120px] text-base border-muted/200 resize-none"
-                    maxLength={500}
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    placeholder="Tell us a bit about yourself..."
+                    className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 min-h-[120px]"
                   />
-                  <p className="text-xs text-muted-foreground text-right mt-1.5">
-                    {bio.length}/500
-                  </p>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            <Separator className="bg-muted/100" />
+            {/* Academic / Professional Details */}
+            <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Building2 className="w-5 h-5" />
+                  {isStudent ? "Academic Details" : "Professional Details"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {isStudent && (
+                    <div className="space-y-2">
+                      <Label htmlFor="academicLevel" className="text-slate-300">Level</Label>
+                      <select
+                        id="academicLevel"
+                        className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={formData.academicLevel}
+                        onChange={handleInputChange}
+                      >
+                        {academicLevelOptions.map(opt => (
+                          <option key={opt.value} value={opt.value} className="bg-slate-800">{opt.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-            {/* Academic/Professional Section */}
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
-                  <Building2 className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground">
-                  {isStudent ? "Academic Information" : "Professional Information"}
-                </h3>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2">
-                {isStudent && (
-                  <div className="space-y-2.5">
-                    <Label htmlFor="academicLevel" className="text-sm font-semibold text-foreground ml-0.5">
-                      Academic Level
-                    </Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="department" className="text-slate-300">Department</Label>
                     <select
-                      id="academicLevel"
-                      value={academicLevel}
-                      onChange={(e) => setAcademicLevel(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-muted/200 bg-background px-4 text-base focus:ring-2 focus:ring-offset-0"
+                      id="department"
+                      className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                      value={formData.department}
+                      onChange={handleInputChange}
                     >
-                      {academicLevelOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
+                      {departmentOptions.map(d => (
+                        <option key={d} value={d} className="bg-slate-800">{d}</option>
                       ))}
                     </select>
                   </div>
-                )}
 
-                <div className="space-y-2.5">
-                  <Label htmlFor="department" className="text-sm font-semibold text-foreground ml-0.5">
-                    Department
-                  </Label>
-                  <select
-                    id="department"
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    className="h-12 w-full rounded-xl border border-muted/200 bg-background px-4 text-base focus:ring-2 focus:ring-offset-0"
-                  >
-                    {departmentOptions.map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label htmlFor="faculty" className="text-sm font-semibold text-foreground ml-0.5">Faculty</Label>
-                  <Input
-                    id="faculty"
-                    type="text"
-                    value={faculty}
-                    onChange={(e) => setFaculty(e.target.value)}
-                    placeholder="Enter faculty"
-                    className="h-12 text-base border-muted/200"
-                  />
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label htmlFor="institution" className="text-sm font-semibold text-foreground ml-0.5">
-                    Institution
-                  </Label>
-                  <Input
-                    id="institution"
-                    type="text"
-                    value={institution}
-                    onChange={(e) => setInstitution(e.target.value)}
-                    placeholder="Enter institution"
-                    className="h-12 text-base border-muted/200"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator className="bg-muted/100" />
-
-            {/* Skills Section */}
-            <div className="space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
-                    <GraduationCap className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Skills & Expertise</h3>
-                </div>
-                <Badge variant="outline" className="px-3.5 py-1.5 rounded-full bg-background/50 backdrop-blur-sm">
-                  {skills.length} skill{skills.length !== 1 ? "s" : ""}
-                </Badge>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex gap-2.5">
-                  <div className="relative flex-1">
+                  <div className="space-y-2">
+                    <Label htmlFor="faculty" className="text-slate-300">Faculty</Label>
                     <Input
-                      id="newSkill"
-                      type="text"
-                      value={newSkill}
-                      onChange={(e) => {
-                        setNewSkill(e.target.value);
-                        setShowSuggestions(e.target.value.length > 0);
-                      }}
-                      placeholder="Add a skill (e.g. JavaScript, React, Python)"
-                      className="h-12 text-base border-muted/200 pr-12"
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          addSkill(newSkill);
-                          setShowSuggestions(false);
-                        }
-                      }}
-                      onFocus={() => setShowSuggestions(newSkill.length > 0)}
-                      onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                      id="faculty"
+                      value={formData.faculty}
+                      onChange={handleInputChange}
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
                     />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        addSkill(newSkill);
-                        setShowSuggestions(false);
-                      }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="institution" className="text-slate-300">Institution</Label>
+                    <Input
+                      id="institution"
+                      value={formData.institution}
+                      onChange={handleInputChange}
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Skills */}
+            <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Sparkles className="w-5 h-5" />
+                  Skills & Expertise
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-slate-300">Add Skills</Label>
+                  <div className="relative">
+                    <div className="flex gap-2">
+                      <Input
+                        value={newSkill}
+                        onChange={(e) => { setNewSkill(e.target.value); setShowSuggestions(true); }}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill(newSkill))}
+                        placeholder="Add a skill (e.g. React, Python)"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                      <Button type="button" onClick={() => addSkill(newSkill)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+
                     {showSuggestions && newSkill && (
-                      <div className="absolute top-full left-0 right-0 z-20 mt-2 bg-background border border-muted/200 rounded-2xl shadow-2xl max-h-56 overflow-y-auto">
+                      <div className="absolute top-full left-0 z-10 w-full bg-slate-800 text-white shadow-lg rounded-md border border-white/10 mt-1 p-1 max-h-60 overflow-y-auto">
                         {suggestedSkills
-                          .filter((s) => s.toLowerCase().includes(newSkill.toLowerCase()))
-                          .map((suggestion) => (
-                            <button
-                              key={suggestion}
-                              type="button"
-                              onClick={() => {
-                                addSkill(suggestion);
-                                setShowSuggestions(false);
-                              }}
-                              className="w-full px-4 py-3 text-left text-base hover:bg-muted/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
+                          .filter(s => s.toLowerCase().includes(newSkill.toLowerCase()))
+                          .slice(0, 5)
+                          .map(s => (
+                            <div
+                              key={s}
+                              className="px-3 py-2 hover:bg-white/10 rounded-sm cursor-pointer text-sm"
+                              onClick={() => { addSkill(s); setShowSuggestions(false); }}
                             >
-                              {suggestion}
-                            </button>
+                              {s}
+                            </div>
                           ))}
                       </div>
                     )}
                   </div>
                 </div>
 
-                {skills.length > 0 ? (
-                  <div className="flex flex-wrap gap-2.5">
-                    {skills.map((skill, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className={`gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-gradient-to-r ${roleSettings.gradient} hover:opacity-90 transition-opacity border border-white/20 cursor-default`}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {skills.map(skill => (
+                    <Badge key={skill} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => removeSkill(skill)}
+                        className="ml-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5"
                       >
-                        {skill}
-                        <button
-                          type="button"
-                          onClick={() => removeSkill(skill)}
-                          className="ml-1.5 hover:text-red-500 transition-colors"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </Badge>
-                    ))}
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {skills.length === 0 && <span className="text-slate-500 italic">No skills added yet.</span>}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social Links */}
+            <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <MapPin className="w-5 h-5" />
+                  Social Links
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="linkedinUrl" className="flex items-center gap-2 text-slate-300">
+                      <Linkedin className="w-4 h-4 text-[#0077b5]" /> LinkedIn
+                    </Label>
+                    <Input
+                      id="linkedinUrl"
+                      value={formData.linkedinUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://linkedin.com/in/..."
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                    />
                   </div>
-                ) : (
-                  <div className="text-center py-8 rounded-2xl bg-muted/30 border-2 border-dashed border-muted/40">
-                    <GraduationCap className="w-10 h-10 mx-auto text-muted-foreground/50 mb-3" />
-                    <p className="text-sm text-muted-foreground">
-                      No skills added yet. Add your skills to showcase your expertise.
-                    </p>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="githubUrl" className="flex items-center gap-2 text-slate-300">
+                      <Github className="w-4 h-4" /> GitHub
+                    </Label>
+                    <Input
+                      id="githubUrl"
+                      value={formData.githubUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://github.com/..."
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                    />
                   </div>
-                )}
-              </div>
-            </div>
-
-            <Separator className="bg-muted/100" />
-
-            {/* Social Links Section */}
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
-                  <MapPin className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground">Social Profiles</h3>
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                <div className="space-y-2.5">
-                  <Label htmlFor="linkedinUrl" className="text-sm font-semibold text-foreground ml-0.5 flex items-center gap-2">
-                    <Linkedin className="w-4 h-4 text-blue-600" />
-                    LinkedIn Profile URL
-                  </Label>
-                  <Input
-                    id="linkedinUrl"
-                    type="url"
-                    value={linkedinUrl}
-                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                    placeholder="https://linkedin.com/in/your-profile"
-                    className="h-12 text-base border-muted/200"
-                  />
+            {/* Student-Specific Details */}
+            {isStudent && (
+              <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <GraduationCap className="w-5 h-5" />
+                    Student Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="specialization" className="text-slate-300">Specialization/Major</Label>
+                      <Input
+                        id="specialization"
+                        value={formData.specialization}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Software Engineering, Data Science"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="gpa" className="text-slate-300">GPA (Optional)</Label>
+                      <Input
+                        id="gpa"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="5"
+                        value={formData.gpa || ""}
+                        onChange={(e) => setFormData({...formData, gpa: e.target.value ? parseFloat(e.target.value) : null})}
+                        placeholder="e.g., 4.50"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="academicStanding" className="text-slate-300">Academic Standing</Label>
+                    <select
+                      id="academicStanding"
+                      className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                      value={formData.academicStanding}
+                      onChange={handleInputChange}
+                    >
+                      <option value="Good" className="bg-slate-800">Good</option>
+                      <option value="Probation" className="bg-slate-800">Probation</option>
+                      <option value="Dean's List" className="bg-slate-800">Dean's List</option>
+                      <option value="Graduated" className="bg-slate-800">Graduated</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="interests" className="text-slate-300">Interests</Label>
+                    <Textarea
+                      id="interests"
+                      value={formData.interests}
+                      onChange={handleInputChange}
+                      placeholder="What are your academic and professional interests?"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 min-h-[80px]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="websiteUrl" className="text-slate-300">Personal Website (Optional)</Label>
+                    <Input
+                      id="websiteUrl"
+                      value={formData.websiteUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://your-website.com"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Current Courses</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newCourse}
+                        onChange={(e) => setNewCourse(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCourse(newCourse))}
+                        placeholder="Add a course (e.g. Software Engineering, Data Structures)"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                      <Button type="button" onClick={() => addCourse(newCourse)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {currentCourses.map(course => (
+                        <Badge key={course} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                          {course}
+                          <button
+                            type="button"
+                            onClick={() => removeCourse(course)}
+                            className="ml-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                      {currentCourses.length === 0 && <span className="text-slate-500 italic">No courses added yet.</span>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Achievements</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newAchievement}
+                        onChange={(e) => setNewAchievement(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAchievement(newAchievement))}
+                        placeholder="Add an achievement (e.g. Dean's List, Hackathon Winner)"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                      <Button type="button" onClick={() => addAchievement(newAchievement)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {achievements.map(achievement => (
+                        <Badge key={achievement} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                          {achievement}
+                          <button
+                            type="button"
+                            onClick={() => removeAchievement(achievement)}
+                            className="ml-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                      {achievements.length === 0 && <span className="text-slate-500 italic">No achievements added yet.</span>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Portfolio Items</Label>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Input
+                            value={newPortfolioItem.title}
+                            onChange={(e) => setNewPortfolioItem({...newPortfolioItem, title: e.target.value})}
+                            placeholder="Project title"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <select
+                            value={newPortfolioItem.type}
+                            onChange={(e) => setNewPortfolioItem({...newPortfolioItem, type: e.target.value})}
+                            className="w-full bg-white/5 border border-white/10 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
+                            <option value="project" className="bg-slate-800">Project</option>
+                            <option value="certification" className="bg-slate-800">Certification</option>
+                            <option value="award" className="bg-slate-800">Award</option>
+                            <option value="publication" className="bg-slate-800">Publication</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Textarea
+                          value={newPortfolioItem.description}
+                          onChange={(e) => setNewPortfolioItem({...newPortfolioItem, description: e.target.value})}
+                          placeholder="Description"
+                          className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 min-h-[80px]"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Input
+                          value={newPortfolioItem.url}
+                          onChange={(e) => setNewPortfolioItem({...newPortfolioItem, url: e.target.value})}
+                          placeholder="URL (optional)"
+                          className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                        />
+                      </div>
+
+                      <Button type="button" onClick={addPortfolioItem} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Portfolio Item
+                      </Button>
+                    </div>
+
+                    <div className="space-y-3 mt-4">
+                      {portfolioItems.map(item => (
+                        <div key={item.id} className="p-3 bg-white/5 border border-white/10 rounded-lg">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium text-white">{item.title}</h4>
+                              <p className="text-sm text-slate-400 mt-1">{item.description}</p>
+                              {item.url && (
+                                <a
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-primary hover:underline mt-1 inline-block"
+                                >
+                                  View Project
+                                </a>
+                              )}
+                              <div className="flex gap-2 mt-2">
+                                <Badge variant="outline" className="border-white/10 text-slate-400 bg-white/10 text-xs">
+                                  {item.type}
+                                </Badge>
+                                <Badge variant="outline" className="border-white/10 text-slate-400 bg-white/10 text-xs">
+                                  {item.date}
+                                </Badge>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removePortfolioItem(item.id)}
+                              className="p-1.5 rounded-md hover:bg-white/10 text-slate-400 hover:text-red-400"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {portfolioItems.length === 0 && <span className="text-slate-500 italic">No portfolio items added yet.</span>}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Staff-Specific Details */}
+            {isStaffOrAdmin && (
+              <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Briefcase className="w-5 h-5" />
+                    Staff Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="position" className="text-slate-300">Position/Title</Label>
+                      <Input
+                        id="position"
+                        value={formData.position}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Senior Lecturer, Department Head"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="officeLocation" className="text-slate-300">Office Location</Label>
+                      <Input
+                        id="officeLocation"
+                        value={formData.officeLocation}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Room 205, Block A"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="officeHours" className="text-slate-300">Office Hours</Label>
+                      <Input
+                        id="officeHours"
+                        value={formData.officeHours}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Mon-Wed 10am-12pm"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="departmentRole" className="text-slate-300">Department Role</Label>
+                      <Input
+                        id="departmentRole"
+                        value={formData.departmentRole}
+                        onChange={handleInputChange}
+                        placeholder="e.g., FYP Supervisor, Cluster Manager"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="qualifications" className="text-slate-300">Qualifications</Label>
+                      <Input
+                        id="qualifications"
+                        value={formData.qualifications}
+                        onChange={handleInputChange}
+                        placeholder="e.g., PhD Computer Science"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="websiteUrl" className="text-slate-300">Personal Website (Optional)</Label>
+                      <Input
+                        id="websiteUrl"
+                        value={formData.websiteUrl}
+                        onChange={handleInputChange}
+                        placeholder="https://your-website.com"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Research Interests</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newResearchInterest}
+                        onChange={(e) => setNewResearchInterest(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addResearchInterest(newResearchInterest))}
+                        placeholder="Add a research interest (e.g. AI, Cybersecurity)"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
+                      />
+                      <Button type="button" onClick={() => addResearchInterest(newResearchInterest)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {researchInterests.map(interest => (
+                        <Badge key={interest} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                          {interest}
+                          <button
+                            type="button"
+                            onClick={() => removeResearchInterest(interest)}
+                            className="ml-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                      {researchInterests.length === 0 && <span className="text-slate-500 italic">No research interests added yet.</span>}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              {feedback.message && (
+                <div className={`mb-4 p-4 rounded-lg flex items-center gap-2 ${feedback.type === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                  {feedback.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                  {feedback.message}
                 </div>
+              )}
 
-                <div className="space-y-2.5">
-                  <Label htmlFor="githubUrl" className="text-sm font-semibold text-foreground ml-0.5 flex items-center gap-2">
-                    <Github className="w-4 h-4 text-foreground" />
-                    GitHub Profile URL
-                  </Label>
-                  <Input
-                    id="githubUrl"
-                    type="url"
-                    value={githubUrl}
-                    onChange={(e) => setGithubUrl(e.target.value)}
-                    placeholder="https://github.com/your-profile"
-                    className="h-12 text-base border-muted/200"
-                  />
-                </div>
-              </div>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-lg"
+                disabled={uploading}
+              >
+                {uploading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />}
+                {uploading ? "Saving Changes..." : "Save Profile"}
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Messages */}
-        {error && (
-          <div className="p-5 bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-900 rounded-2xl flex items-start gap-4 shadow-lg">
-            <div className="p-2 bg-red-500 text-white rounded-xl flex-shrink-0">
-              <X className="w-4 h-4" />
-            </div>
-            <p className="text-sm font-medium text-red-800 dark:text-red-200">{error}</p>
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="p-5 bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200 dark:border-emerald-900 rounded-2xl flex items-start gap-4 shadow-lg">
-            <div className="p-2 bg-emerald-500 text-white rounded-xl flex-shrink-0">
-              <Check className="w-4 h-4" />
-            </div>
-            <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200">{successMessage}</p>
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          className={`w-full h-14 text-base font-semibold bg-gradient-to-r ${roleSettings.color} hover:opacity-90 text-white shadow-xl shadow-black/10 transition-all duration-300 hover:shadow-2xl hover:shadow-black/20 hover:scale-[1.01] rounded-2xl`}
-          disabled={uploading}
-        >
-          {uploading ? (
-            <span className="flex items-center gap-3">
-              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              Saving Changes...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              Save Profile Changes
-              <ArrowUpRight className="w-4 h-4" />
-            </span>
-          )}
-        </Button>
-      </form>
-    </div>
+          </form>
+        </div>
+      </div>
+    </motion.div>
   );
 }

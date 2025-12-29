@@ -142,7 +142,99 @@ export async function GET() {
         updateData.staff_number = u.staff_number;
       }
 
-      await supabase.from('profiles').update(updateData).eq('id', data.user.id);
+      // Add role-specific fields
+      try {
+        if (u.role === 'student') {
+          updateData.specialization = u.academic_level === 'level_400' ? 'Software Engineering' :
+                                    u.academic_level === 'level_300' ? 'Web Development' :
+                                    u.academic_level === 'level_200' ? 'Programming Fundamentals' :
+                                    'Introduction to CS';
+          updateData.gpa = u.academic_level === 'level_400' ? 4.75 :
+                          u.academic_level === 'level_300' ? 4.50 :
+                          u.academic_level === 'level_200' ? 4.25 :
+                          4.00;
+          updateData.academic_standing = 'Good';
+          updateData.current_courses = u.academic_level === 'level_400' ? ['FYP', 'Advanced Software Engineering', 'Cloud Computing'] :
+                                      u.academic_level === 'level_300' ? ['Software Engineering', 'Database Systems', 'Web Development'] :
+                                      u.academic_level === 'level_200' ? ['Data Structures', 'Algorithms', 'OOP'] :
+                                      ['Programming Logic', 'Intro to CS', 'Mathematics'];
+          updateData.achievements = u.academic_level === 'level_400' ? ['Dean\'s List', 'Hackathon Winner'] :
+                                   u.academic_level === 'level_300' ? ['Dean\'s List'] :
+                                   u.academic_level === 'level_200' ? ['Programming Contest Winner'] :
+                                   ['Outstanding Freshman'];
+          updateData.interests = u.academic_level === 'level_400' ? 'Full-stack development, Cloud Architecture, DevOps' :
+                               u.academic_level === 'level_300' ? 'Web Development, UI/UX Design, APIs' :
+                               u.academic_level === 'level_200' ? 'Programming, Algorithms, Problem Solving' :
+                               'Learning to code, Software Development';
+          updateData.website_url = `https://${u.name.toLowerCase().replace(/\s+/g, '')}.com`;
+          updateData.portfolio_items = [
+            {
+              id: '1',
+              title: u.academic_level === 'level_400' ? 'Final Year Project' :
+                    u.academic_level === 'level_300' ? 'Software Engineering Project' :
+                    u.academic_level === 'level_200' ? 'Data Structures Project' :
+                    'Intro to Programming Project',
+              description: 'Major project showcasing skills in the field',
+              url: `https://github.com/${u.name.toLowerCase().replace(/\s+/g, '')}/project`,
+              type: 'project',
+              date: new Date().toISOString().split('T')[0]
+            },
+            {
+              id: '2',
+              title: 'Personal Portfolio Website',
+              description: 'Showcasing projects and skills',
+              url: `https://${u.name.toLowerCase().replace(/\s+/g, '')}.com`,
+              type: 'project',
+              date: new Date().toISOString().split('T')[0]
+            }
+          ];
+        } else if (u.role === 'staff' || u.role === 'admin') {
+          // For staff and admin roles
+          updateData.position = u.role === 'admin' ? 'System Administrator' :
+                               u.name.includes('Prof.') ? 'Professor' :
+                               u.name.includes('Dr.') ? 'Senior Lecturer' :
+                               'Lecturer';
+          updateData.office_location = u.role === 'admin' ? 'Admin Office, Main Building' :
+                                     u.name.includes('Johnson') ? 'Room 205, CS Building' :
+                                     u.name.includes('Chen') ? 'Room 301, Engineering Building' :
+                                   'Room 102, CS Building';
+          updateData.office_hours = u.role === 'admin' ? 'Mon-Fri 8am-4pm' :
+                                u.name.includes('Johnson') ? 'Mon-Wed 10am-12pm' :
+                                u.name.includes('Chen') ? 'Tue-Thu 2pm-4pm' :
+                              'Mon-Fri 9am-11am';
+          updateData.research_interests = u.role === 'admin' ? ['System Administration', 'Security', 'DevOps'] :
+                                        u.name.includes('Johnson') ? ['Web Technologies', 'UI/UX', 'Human-Computer Interaction'] :
+                                        u.name.includes('Chen') ? ['Machine Learning', 'AI', 'Data Science'] :
+                                      ['Mobile Development', 'Security', 'Software Engineering'];
+          updateData.department_role = u.role === 'admin' ? 'System Admin' : 'FYP Supervisor';
+          updateData.qualifications = u.role === 'admin' ? 'MSc Information Technology' :
+                                    u.name.includes('Prof.') ? 'PhD Computer Science' :
+                                    u.name.includes('Dr.') ? 'PhD Software Engineering' :
+                                  'MSc Computer Science';
+          updateData.website_url = `https://${u.name.toLowerCase().replace(/\s+/g, '')}.com`;
+        }
+
+        await supabase.from('profiles').update(updateData).eq('id', data.user.id);
+      } catch (error) {
+        console.warn(`Warning: Could not update all profile fields for user ${u.email}. This may be due to schema not being updated yet. Error:`, error);
+
+        // Try updating only the basic fields that are definitely in the schema
+        const basicUpdateData: Record<string, any> = {
+          role: updateData.role,
+          full_name: updateData.full_name,
+          department: updateData.department,
+          faculty: updateData.faculty,
+          institution: updateData.institution,
+          skills: updateData.skills,
+          bio: updateData.bio,
+        };
+
+        if (u.academic_level) basicUpdateData.academic_level = u.academic_level;
+        if (u.registration_number) basicUpdateData.registration_number = u.registration_number;
+        if (u.staff_number) basicUpdateData.staff_number = u.staff_number;
+
+        await supabase.from('profiles').update(basicUpdateData).eq('id', data.user.id);
+      }
     }
 
     // 2. Create Clusters

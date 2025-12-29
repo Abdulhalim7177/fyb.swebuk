@@ -65,10 +65,10 @@ export default function DashboardPage() {
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen bg-black">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Redirecting to your dashboard...</p>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500 mx-auto mb-4"></div>
+        <p className="text-slate-400">Redirecting to your dashboard...</p>
       </div>
     </div>
   );

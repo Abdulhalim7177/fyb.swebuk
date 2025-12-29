@@ -15,6 +15,37 @@ export interface Profile {
   created_at: string;
   updated_at: string;
   avatar_url: string | null;
+  // Additional profile fields
+  registration_number?: string | null;
+  staff_number?: string | null;
+  bio?: string | null;
+  skills?: string[] | null;
+  // Student-specific fields
+  specialization?: string | null;
+  gpa?: number | null;
+  academic_standing?: string | null;
+  current_courses?: string[] | null;
+  achievements?: string[] | null;
+  portfolio_items?: PortfolioItem[] | null;
+  interests?: string | null;
+  website_url?: string | null;
+  // Staff-specific fields
+  position?: string | null;
+  office_location?: string | null;
+  office_hours?: string | null;
+  research_interests?: string[] | null;
+  department_role?: string | null;
+  staff_profile?: Record<string, any> | null;
+  qualifications?: string | null;
+}
+
+export interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  type: "project" | "certification" | "award" | "publication";
+  date: string;
 }
 
 // Updated table types to include new fields

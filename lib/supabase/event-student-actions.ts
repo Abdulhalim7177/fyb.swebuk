@@ -608,7 +608,8 @@ export async function getMyCertificates() {
       .order("issued_at", { ascending: false });
 
     if (certError) {
-      console.error("Error fetching certificates:", certError);
+      // Table might not exist or RLS issue - return empty gracefully
+      console.warn("Certificates table not accessible:", certError.message);
       return [];
     }
 
@@ -624,7 +625,7 @@ export async function getMyCertificates() {
       .in("id", eventIds);
 
     if (eventsError) {
-      console.error("Error fetching event details:", eventsError);
+      console.warn("Error fetching event details:", eventsError.message);
       // Return certificates without event details rather than failing completely
       return certificates;
     }
@@ -636,7 +637,7 @@ export async function getMyCertificates() {
       events: eventsMap.get(cert.event_id) || null,
     }));
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.warn("Unexpected error fetching certificates:", error);
     return [];
   }
 }

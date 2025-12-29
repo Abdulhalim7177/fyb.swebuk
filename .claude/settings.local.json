@@ -32,7 +32,12 @@
       "Bash(if exist .next rmdir /s /q .next)",
       "WebFetch(domain:www.figma.com)",
       "WebFetch(domain:www.behance.net)",
-      "WebFetch(domain:www.awwwards.com)"
+      "WebFetch(domain:www.awwwards.com)",
+      "Bash(timeout:*)",
+      "Bash(dir \"C:\\\\Users\\\\abdul\\\\Herd\\\\fyb.swebuk\\\\components\\\\fyp\\\\admin\"\")",
+      "Bash(del \"C:\\\\Users\\\\abdul\\\\Herd\\\\fyb.swebuk\\\\supabase\\\\migrations\\\\20251227000000_add_email_to_profiles.sql\")",
+      "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\abdul\\\\Herd\\\\fyb.swebuk\\\\supabase\\\\migrations\\\\20251227000000_add_email_to_profiles.sql''\")",
+      "Bash(del /Q \"C:\\\\Users\\\\abdul\\\\Herd\\\\fyb.swebuk\\\\.next\\\\dev\\\\lock\")"
     ],
     "deny": [],
     "ask": []

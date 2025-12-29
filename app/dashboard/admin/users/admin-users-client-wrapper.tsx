@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Users, UserCheck, UserX, ShieldCheck, UserSquare } from "lucide-react";
+import { Users, UserCheck, UserX, ShieldCheck, UserSquare, GraduationCap, BookOpen, Users2 } from "lucide-react";
 import { UserProfile } from "./page"; // Import the shared interface from page.tsx
 
 interface AdminUsersClientWrapperProps {
@@ -31,6 +31,8 @@ export default function AdminUsersClientWrapper({
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [levelFilter, setLevelFilter] = useState("all");
 
   const handleUpdate = () => {
     // Re-fetches server component data
@@ -41,6 +43,8 @@ export default function AdminUsersClientWrapper({
     setSearchTerm("");
     setRoleFilter("all");
     setStatusFilter("all");
+    setDepartmentFilter("all");
+    setLevelFilter("all");
   };
 
   const filteredProfiles = useMemo(() => {
@@ -56,6 +60,14 @@ export default function AdminUsersClientWrapper({
         return true;
       })
       .filter((profile) => {
+        if (departmentFilter === "all") return true;
+        return profile.department === departmentFilter;
+      })
+      .filter((profile) => {
+        if (levelFilter === "all") return true;
+        return (profile.academic_level || "student") === levelFilter;
+      })
+      .filter((profile) => {
         if (!searchTerm) return true;
         const name = profile.full_name || "";
         const email = profile.email || "";
@@ -64,7 +76,7 @@ export default function AdminUsersClientWrapper({
           email.toLowerCase().includes(searchTerm.toLowerCase())
         );
       });
-  }, [initialProfiles, searchTerm, roleFilter, statusFilter]);
+  }, [initialProfiles, searchTerm, roleFilter, statusFilter, departmentFilter, levelFilter]);
 
   const stats = useMemo(() => {
     const totalUsers = initialProfiles.length;
@@ -74,12 +86,35 @@ export default function AdminUsersClientWrapper({
       acc[profile.role] = (acc[profile.role] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    return { totalUsers, activeUsers, pendingUsers, roleCounts };
+    const academicLevelCounts = initialProfiles.reduce((acc, profile) => {
+      const level = profile.academic_level || "student";
+      acc[level] = (acc[level] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    const departmentCounts = initialProfiles.reduce((acc, profile) => {
+      if (profile.department) {
+        acc[profile.department] = (acc[profile.department] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+    return { totalUsers, activeUsers, pendingUsers, roleCounts, academicLevelCounts, departmentCounts };
   }, [initialProfiles]);
 
   const uniqueRoles = useMemo(() => {
     const roles = new Set(initialProfiles.map(p => p.role));
     return Array.from(roles);
+  }, [initialProfiles]);
+
+  const uniqueAcademicLevels = useMemo(() => {
+    const levels = new Set(initialProfiles.map(p => p.academic_level || "student"));
+    return Array.from(levels);
+  }, [initialProfiles]);
+
+  const uniqueDepartments = useMemo(() => {
+    const departments = new Set(
+      initialProfiles.map(p => p.department).filter(Boolean) as string[]
+    );
+    return Array.from(departments).sort();
   }, [initialProfiles]);
 
   return (
@@ -148,7 +183,7 @@ export default function AdminUsersClientWrapper({
             className="w-full"
           />
         </div>
-        <div className="flex gap-2 w-full md:w-auto">
+        <div className="flex gap-2 w-full md:w-auto flex-wrap">
           <Select value={roleFilter} onValueChange={setRoleFilter}>
             <SelectTrigger className="w-full md:w-[160px]">
               <SelectValue placeholder="Filter by role" />
@@ -170,6 +205,34 @@ export default function AdminUsersClientWrapper({
               <SelectItem value="pending">Pending</SelectItem>
             </SelectContent>
           </Select>
+          {uniqueDepartments.length > 0 && (
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="All Departments" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Departments</SelectItem>
+                {uniqueDepartments.map(dept => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {uniqueAcademicLevels.length > 0 && (
+            <Select value={levelFilter} onValueChange={setLevelFilter}>
+              <SelectTrigger className="w-full md:w-[160px]">
+                <SelectValue placeholder="All Levels" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Levels</SelectItem>
+                {uniqueAcademicLevels.map(level => (
+                  <SelectItem key={level} value={level}>
+                    {level === "student" ? "Student" : level.replace("level_", "Level ")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Button variant="outline" onClick={handleResetFilters}>Reset</Button>
         </div>
         <CreateUserDialog

@@ -27,15 +27,15 @@ function BlogGridSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card key={i} className="overflow-hidden border-0">
-          <Skeleton className="aspect-[16/10] w-full" />
+        <div key={i} className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl overflow-hidden animate-pulse">
+          <div className="aspect-[16/10] w-full bg-white/10" />
           <div className="p-5 space-y-3">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
+            <div className="h-4 w-24 bg-white/10 rounded" />
+            <div className="h-6 w-full bg-white/10 rounded" />
+            <div className="h-4 w-full bg-white/10 rounded" />
+            <div className="h-4 w-2/3 bg-white/10 rounded" />
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );
@@ -43,40 +43,41 @@ function BlogGridSkeleton() {
 
 function HeroSection({ featuredBlog, isAuthenticated }: { featuredBlog?: DetailedBlog; isAuthenticated?: boolean }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 border-b">
+    <section className="relative overflow-hidden bg-black border-b border-white/10">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left - Text Content */}
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-sm font-medium">
               <Sparkles className="w-4 h-4" />
               Community Blog
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Stories, Insights &{" "}
-              <span className="text-primary">Knowledge</span>
+              <span className="bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent">
+                Stories, Insights & Knowledge
+              </span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-lg">
+            <p className="text-lg text-slate-300 max-w-lg">
               Discover tutorials, project showcases, career tips, and community stories from software engineering students.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" asChild>
-                <a href="#posts">
+              <a href="#posts">
+                <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105 shadow-lg shadow-emerald-500/10">
                   Explore Posts
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </a>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href={isAuthenticated ? "/dashboard/blog/new" : "/auth/login"}>
+                  <ArrowRight className="ml-2 w-4 h-4 inline" />
+                </button>
+              </a>
+              <Link href={isAuthenticated ? "/dashboard/blog/new" : "/auth/login"}>
+                <button className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium transition-all duration-300 hover:scale-105">
                   Write a Post
-                </Link>
-              </Button>
+                </button>
+              </Link>
             </div>
           </div>
 

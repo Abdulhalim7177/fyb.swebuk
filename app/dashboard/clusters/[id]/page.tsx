@@ -207,9 +207,9 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading cluster information...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading cluster information...</p>
         </div>
       </div>
     );
@@ -218,16 +218,16 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center p-8 bg-destructive/10 rounded-lg border border-destructive/30 max-w-md">
-          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-destructive">Cluster Not Found</h3>
-          <p className="text-muted-foreground mt-2">{error}</p>
-          <Button
-            className="mt-4"
+        <div className="text-center p-8 rounded-2xl bg-red-500/10 border border-red-500/30 max-w-md">
+          <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-white">Cluster Not Found</h3>
+          <p className="text-slate-400 mt-2">{error}</p>
+          <button
+            className="mt-4 px-6 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105"
             onClick={() => router.push("/dashboard/clusters")}
           >
             Back to Clusters
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -236,9 +236,9 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
   if (!cluster || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading cluster information...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading cluster information...</p>
         </div>
       </div>
     );

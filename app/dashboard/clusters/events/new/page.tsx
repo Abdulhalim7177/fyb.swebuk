@@ -211,9 +211,9 @@ export default function CreateClusterEventPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <p className="mt-4">Loading...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading...</p>
         </div>
       </div>
     );
@@ -222,62 +222,56 @@ export default function CreateClusterEventPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          asChild
-          onClick={() => clusterId && router.push(`/dashboard/clusters/${clusterId}`)}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Create New Event</h1>
-          <p className="text-muted-foreground">
-            {cluster
-              ? `for ${cluster.name}`
-              : "for your cluster"}
-          </p>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-blue-500/20 border border-white/10 backdrop-blur-xl p-6">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="relative flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => clusterId && router.push(`/dashboard/clusters/${clusterId}`)}
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all duration-200 hover:scale-105"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent">Create New Event</h1>
+              <p className="text-slate-300 mt-1">
+                {cluster ? `for ${cluster.name}` : "for your cluster"}
+              </p>
+            </div>
+          </div>
+          <button
+            disabled={loading}
+            formAction="submit"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Save className="h-4 w-4" />
+            Publish Event
+          </button>
         </div>
-        <Button
-          asChild
-          disabled={loading}
-          formAction="submit"
-          className="gap-2"
-        >
-          <Save className="h-4 w-4" />
-          Publish Event
-        </Button>
       </div>
 
       {/* Cluster Info Card - shown when cluster_id is provided */}
       {cluster && (
-        <Card className="bg-gradient-to-br from-blue-50/10 to-purple-50/10 border-blue-500/20">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center">
-                  <Users className="h-6 w-6" />
-                </div>
-                <div>
-                  <CardTitle className="text-white">{cluster.name}</CardTitle>
-                  <CardDescription className="text-blue-100">
-                    Creating event for this cluster
-                  </CardDescription>
-                </div>
+        <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10 backdrop-blur-xl p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <Users className="h-7 w-7 text-white" />
               </div>
-              <Badge variant="secondary" className="ml-2">
-                {cluster.status === "active" ? "Active" : cluster.status}
-              </Badge>
+              <div>
+                <h3 className="text-xl font-bold text-white">{cluster.name}</h3>
+                <p className="text-slate-300 text-sm">Creating event for this cluster</p>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              You are creating an event that will be associated with <strong>{cluster.name}</strong>.
-              The event will be visible to all cluster members once published.
-            </p>
-          </CardContent>
-        </Card>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`}>
+              {cluster.status === "active" ? "Active" : cluster.status}
+            </span>
+          </div>
+          <p className="text-sm text-slate-400 mt-4">
+            You are creating an event that will be associated with <strong className="text-white">{cluster.name}</strong>.
+            The event will be visible to all cluster members once published.
+          </p>
+        </div>
       )}
 
       {/* Event Details Form */}

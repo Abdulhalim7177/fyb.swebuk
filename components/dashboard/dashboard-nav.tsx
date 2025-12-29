@@ -200,12 +200,12 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
   const NavContent = () => (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-white/10">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <ShieldCheck className="h-6 w-6" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
+            <ShieldCheck className="h-6 w-6 text-white" />
           </div>
-          <span className="text-xl font-bold text-foreground">{getDashboardTitle()}</span>
+          <span className="text-xl font-bold text-white">{getDashboardTitle()}</span>
         </Link>
       </div>
 
@@ -218,7 +218,7 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
           return (
             <div key={sectionTitle}>
               {sectionIndex > 0 && (
-                <div className="border-t border-border/50 my-3" />
+                <div className="border-t border-white/10 my-3" />
               )}
               <div className="space-y-1">
               {isProjectsSection ? (
@@ -227,8 +227,8 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
                   <button
                     onClick={() => setIsProjectsOpen(!isProjectsOpen)}
                     className={cn(
-                      "flex w-full items-center justify-between rounded-lg px-4 py-2.5 font-medium transition-all duration-200 group",
-                      "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      "flex w-full items-center justify-between rounded-lg px-4 py-2.5 font-medium transition-all duration-300 group",
+                      "text-slate-400 hover:bg-white/10 hover:text-white"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -258,15 +258,15 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
                           href={item.href}
                           onClick={() => setIsProjectsOpen(false)}
                           className={cn(
-                            "flex items-center gap-2.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
+                            "flex items-center gap-2.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300",
                             "transform hover:translate-x-1",
-                            "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                            "text-slate-400 hover:bg-white/10 hover:text-white"
                           )}
                           style={{
                             transitionDelay: isProjectsOpen ? `${index * 30}ms` : '0ms'
                           }}
                         >
-                          <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 transition-all duration-200" />
+                          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500/60 transition-all duration-200" />
                           <span>{item.label}</span>
                         </Link>
                       );
@@ -284,13 +284,16 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium transition-all duration-200",
+                          "flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium transition-all duration-300 group",
                           isActive
-                            ? "bg-primary text-primary-foreground shadow-sm"
-                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                            ? "bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-white border-l-4 border-emerald-500 shadow-lg shadow-emerald-500/20"
+                            : "text-slate-400 hover:bg-white/10 hover:text-white"
                         )}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon className={cn(
+                          "h-5 w-5 transition-transform duration-200",
+                          !isActive && "group-hover:scale-110"
+                        )} />
                         <span>{item.label}</span>
                       </Link>
                     );
@@ -310,14 +313,14 @@ export function DashboardNav({ userId, userProfileRole, userAcademicLevel, isSid
       {/* Mobile Sidebar */}
       <div
         className={cn(
-          "fixed inset-0 z-40 bg-background/50 backdrop-blur-sm md:hidden",
-          isSidebarOpen ? "block" : "hidden"
+          "fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden transition-opacity duration-300",
+          isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={() => setIsSidebarOpen(false)}
       />
       <aside
         className={cn(
-          "gh-card fixed top-0 left-0 z-50 h-full w-64 shrink-0 flex-col overflow-y-auto border-r border-[var(--color-neutral)]/20 transition-transform md:relative md:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-64 shrink-0 flex-col overflow-y-auto border-r border-white/10 bg-black/95 backdrop-blur-xl transition-transform md:relative md:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

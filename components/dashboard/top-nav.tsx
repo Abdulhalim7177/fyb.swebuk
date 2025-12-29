@@ -115,7 +115,7 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
 
   return (
     <>
-      <header className="gh-card flex h-16 shrink-0 items-center justify-between border-b border-[var(--color-neutral)]/20 px-6 sticky top-0 z-30">
+      <header className="gh-card flex h-16 shrink-0 items-center justify-between border-b border-border/20 px-6 sticky top-0 z-30 bg-background/20 backdrop-blur-xl">
         {/* Left Side: Mobile Menu Button & Desktop Nav */}
         <div className="flex items-center gap-4">
           {/* Mobile Menu Button */}

@@ -3,26 +3,50 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin-actions";
 
-export async function updateUserProfile(userId: string, fullName: string, role: string, academicLevel?: string, department?: string, faculty?: string, institution?: string, linkedinUrl?: string, githubUrl?: string) {
-  // Using createClient from server which should have proper permissions for admin operations
+export interface ProfileUpdateData {
+  full_name?: string;
+  role?: string;
+  academic_level?: string;
+  department?: string;
+  faculty?: string;
+  institution?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  avatar_url?: string;
+  bio?: string;
+  registration_number?: string;
+  staff_number?: string;
+  skills?: string[];
+  // Student-specific
+  specialization?: string;
+  gpa?: number;
+  academic_standing?: string;
+  current_courses?: string[];
+  achievements?: string[];
+  portfolio_items?: any[];
+  interests?: string;
+  website_url?: string;
+  // Staff-specific
+  position?: string;
+  office_location?: string;
+  office_hours?: string;
+  research_interests?: string[];
+  department_role?: string;
+  qualifications?: string;
+}
+
+export async function updateUserProfile(userId: string, data: ProfileUpdateData) {
   const supabase = await createClient();
 
   try {
-    // Prepare update object with only provided values
-    const updateObj: any = {
-      full_name: fullName,
-      role: role,
-    };
+    // Remove undefined values
+    const updateObj: any = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined) {
+        updateObj[key] = value;
+      }
+    });
 
-    // Add academic fields if they are provided
-    if (academicLevel !== undefined) updateObj.academic_level = academicLevel;
-    if (department !== undefined) updateObj.department = department;
-    if (faculty !== undefined) updateObj.faculty = faculty;
-    if (institution !== undefined) updateObj.institution = institution;
-    if (linkedinUrl !== undefined) updateObj.linkedin_url = linkedinUrl;
-    if (githubUrl !== undefined) updateObj.github_url = githubUrl;
-
-    // Update the profile table with new information
     const { error: profileError } = await supabase
       .from("profiles")
       .update(updateObj)
@@ -41,11 +65,9 @@ export async function updateUserProfile(userId: string, fullName: string, role: 
 }
 
 export async function deleteUser(userId: string) {
-  // Using createClient from server which should have proper permissions for admin operations
   const supabase = await createClient();
 
   try {
-    // Then delete the auth user using the admin client first to avoid referential integrity issues
     const { error: authError } = await (supabase.auth as any).admin.deleteUser(userId);
 
     if (authError) {
@@ -70,17 +92,31 @@ export async function createUser(
   faculty?: string,
   institution?: string,
   linkedinUrl?: string,
-  githubUrl?: string
+  githubUrl?: string,
+  registrationNumber?: string,
+  staffNumber?: string,
+  bio?: string,
+  skills?: string[],
+  // Student-specific
+  specialization?: string,
+  gpa?: number,
+  academicStanding?: string,
+  interests?: string,
+  websiteUrl?: string,
+  // Staff-specific
+  position?: string,
+  officeLocation?: string,
+  officeHours?: string,
+  departmentRole?: string,
+  qualifications?: string
 ) {
-  // Use the admin client with service role key for admin operations
   const supabase = await createAdminClient();
 
   try {
-    // Create user in auth using admin client
     const { data: authData, error: authError } = await (supabase.auth as any).admin.createUser({
       email: email,
       password: password,
-      email_confirm: true, // Automatically confirm email
+      email_confirm: true,
       user_metadata: {
         full_name: fullName,
       },
@@ -92,22 +128,38 @@ export async function createUser(
     }
 
     if (authData.user) {
-      // Prepare profile object with all fields
       const profileObj: any = {
         id: authData.user.id,
         full_name: fullName,
         role: role,
       };
 
-      // Add academic fields if they are provided
+      // Add basic fields if provided
       if (academicLevel !== undefined) profileObj.academic_level = academicLevel;
       if (department !== undefined) profileObj.department = department;
       if (faculty !== undefined) profileObj.faculty = faculty;
       if (institution !== undefined) profileObj.institution = institution;
       if (linkedinUrl !== undefined) profileObj.linkedin_url = linkedinUrl;
       if (githubUrl !== undefined) profileObj.github_url = githubUrl;
+      if (registrationNumber !== undefined) profileObj.registration_number = registrationNumber;
+      if (staffNumber !== undefined) profileObj.staff_number = staffNumber;
+      if (bio !== undefined) profileObj.bio = bio;
+      if (skills !== undefined) profileObj.skills = skills;
 
-      // Create or update profile record using upsert
+      // Student-specific fields
+      if (specialization !== undefined) profileObj.specialization = specialization;
+      if (gpa !== undefined) profileObj.gpa = gpa;
+      if (academicStanding !== undefined) profileObj.academic_standing = academicStanding;
+      if (interests !== undefined) profileObj.interests = interests;
+      if (websiteUrl !== undefined) profileObj.website_url = websiteUrl;
+
+      // Staff-specific fields
+      if (position !== undefined) profileObj.position = position;
+      if (officeLocation !== undefined) profileObj.office_location = officeLocation;
+      if (officeHours !== undefined) profileObj.office_hours = officeHours;
+      if (departmentRole !== undefined) profileObj.department_role = departmentRole;
+      if (qualifications !== undefined) profileObj.qualifications = qualifications;
+
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert(profileObj);
@@ -171,12 +223,46 @@ export async function getUserClusters(userId: string) {
   }
 }
 
-export async function createStaffMember(email: string, password: string, fullName: string, role: string) {
-  // Check permissions using a user client first
+export async function getProfile(userId: string) {
+  const supabase = await createClient();
+
+  try {
+    const { data: profileData, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    return profileData;
+  } catch (error) {
+    console.error("Unexpected error getting profile:", error);
+    return null;
+  }
+}
+
+export async function createStaffMember(
+  email: string,
+  password: string,
+  fullName: string,
+  role: string,
+  position?: string,
+  department?: string,
+  officeLocation?: string,
+  officeHours?: string,
+  departmentRole?: string,
+  qualifications?: string,
+  linkedinUrl?: string,
+  githubUrl?: string,
+  bio?: string
+) {
   const userClient = await createClient();
 
   try {
-    // Check if the current user has permission to create staff members
     const {
       data: { user },
     } = await (userClient.auth as any).getUser();
@@ -185,7 +271,6 @@ export async function createStaffMember(email: string, password: string, fullNam
       throw new Error("No authenticated user found");
     }
 
-    // Verify the current user's role
     const { data: profileData, error: profileError } = await userClient
       .from("profiles")
       .select("role")
@@ -199,8 +284,6 @@ export async function createStaffMember(email: string, password: string, fullNam
 
     const currentUserRole = profileData.role;
 
-    // Determine if user has permission based on their role
-    // Admins can create any staff role, staff can create other staff
     const hasPermission =
       currentUserRole === "admin" ||
       (currentUserRole === "staff" && role === "staff");
@@ -209,14 +292,12 @@ export async function createStaffMember(email: string, password: string, fullNam
       throw new Error("You don't have permission to create users with this role");
     }
 
-    // Use the admin client for actual creation (with service role key)
     const adminClient = await createAdminClient();
 
-    // Create user in auth using admin client
     const { data: authData, error: authError } = await (adminClient.auth as any).admin.createUser({
       email: email,
       password: password,
-      email_confirm: true, // Automatically confirm email
+      email_confirm: true,
       user_metadata: {
         full_name: fullName,
       },
@@ -228,18 +309,29 @@ export async function createStaffMember(email: string, password: string, fullNam
     }
 
     if (authData.user) {
-      // Create or update profile record using upsert
+      const profileObj: any = {
+        id: authData.user.id,
+        full_name: fullName,
+        role: role,
+      };
+
+      // Add staff-specific fields
+      if (position !== undefined) profileObj.position = position;
+      if (department !== undefined) profileObj.department = department;
+      if (officeLocation !== undefined) profileObj.office_location = officeLocation;
+      if (officeHours !== undefined) profileObj.office_hours = officeHours;
+      if (departmentRole !== undefined) profileObj.department_role = departmentRole;
+      if (qualifications !== undefined) profileObj.qualifications = qualifications;
+      if (linkedinUrl !== undefined) profileObj.linkedin_url = linkedinUrl;
+      if (githubUrl !== undefined) profileObj.github_url = githubUrl;
+      if (bio !== undefined) profileObj.bio = bio;
+
       const { error: profileError } = await adminClient
         .from("profiles")
-        .upsert({
-          id: authData.user.id,
-          full_name: fullName,
-          role: role,
-        });
+        .upsert(profileObj);
 
       if (profileError) {
         console.error("Error creating profile:", profileError);
-        // Clean up by deleting the auth user if profile creation fails
         await (adminClient.auth as any).admin.deleteUser(authData.user.id);
         throw new Error(`Failed to create user profile: ${profileError.message}`);
       }

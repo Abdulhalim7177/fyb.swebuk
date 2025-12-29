@@ -24,7 +24,7 @@ interface EventsPageProps {
 
 function EventsSkeleton() {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
       {[...Array(6)].map((_, i) => (
         <div key={i} className="space-y-3">
           <Skeleton className="h-40 w-full rounded-lg" />
@@ -41,7 +41,7 @@ function SectionSkeleton() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-8 w-48" />
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="space-y-3">
             <Skeleton className="h-40 w-full rounded-lg" />
@@ -120,7 +120,7 @@ async function UpcomingEventsSection() {
         )}
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
         {upcomingEvents.map((event) => (
           <EventCardWithStatus key={event.id} event={event} />
         ))}
@@ -172,7 +172,7 @@ async function RecentPastEventsSection() {
         )}
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
         {data.map((event: any) => (
           <EventCardWithStatus key={event.id} event={event} />
         ))}
@@ -265,7 +265,7 @@ async function PastEventsSection() {
         </Link>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
         {data.map((event: any) => (
           <EventCardWithStatus key={event.id} event={event} />
         ))}
@@ -323,7 +323,7 @@ async function EventsList({
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event: any) => (
                 <EventCardWithStatus key={event.id} event={event} />
               ))}
@@ -377,7 +377,7 @@ async function EventsList({
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event: any) => (
                 <EventCardWithStatus key={event.id} event={event} />
               ))}
@@ -441,7 +441,7 @@ async function EventsList({
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
             <EventCardWithStatus key={event.id} event={event} />
           ))}

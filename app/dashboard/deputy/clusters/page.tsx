@@ -71,7 +71,10 @@ export default function DeputyClustersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -79,55 +82,61 @@ export default function DeputyClustersPage() {
   if (!authorized) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">Access denied</div>
+        <div className="text-center p-8 rounded-2xl bg-red-500/10 border border-red-500/30 max-w-md">
+          <p className="text-red-300 font-medium">Access denied</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">My Clusters</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage the clusters you assist with and support cluster members.
-        </p>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-rose-500/20 border border-white/10 backdrop-blur-xl p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="relative text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent">My Clusters</h1>
+          <p className="text-slate-300 mt-2">
+            Manage the clusters you assist with and support cluster members.
+          </p>
+        </div>
       </div>
 
       {/* Search and Filter Section */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-        <div className="relative flex-1 sm:flex-initial sm:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-600" />
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
           <Input
             placeholder="Search clusters by name, staff, or leaders..."
-            className="pl-9 pr-4 py-2 w-full sm:w-full md:w-full lg:w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-100 dark:border-gray-700 dark:focus:border-emerald-400 dark:focus:ring-emerald-900/20 min-w-[200px]"
+            className="pl-9 pr-4 py-2 w-full bg-white/5 border border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 text-white placeholder:text-slate-400"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full sm:w-[200px] border-gray-200 focus:border-emerald-500 focus:ring-emerald-100 dark:border-gray-700 dark:focus:border-emerald-400 dark:focus:ring-emerald-900/20">
+          <SelectTrigger className="w-full sm:w-[200px] bg-white/5 border border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 text-white">
             <SelectValue placeholder="Filter by Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="flex items-center gap-2">
+            <SelectItem value="all">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                 All Statuses
               </div>
             </SelectItem>
-            <SelectItem value="active" className="flex items-center gap-2">
+            <SelectItem value="active">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
                 Active
               </div>
             </SelectItem>
-            <SelectItem value="inactive" className="flex items-center gap-2">
+            <SelectItem value="inactive">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-amber-600"></div>
+                <div className="w-2 h-2 rounded-full bg-amber-400"></div>
                 Inactive
               </div>
             </SelectItem>
-            <SelectItem value="archived" className="flex items-center gap-2">
+            <SelectItem value="archived">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                 Archived

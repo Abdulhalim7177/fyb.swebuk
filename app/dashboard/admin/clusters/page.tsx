@@ -135,93 +135,82 @@ export default function AdminClustersPage() {
 
 
   if (loading) {
-
     return (
-
       <div className="flex items-center justify-center min-h-screen">
-
-        <div className="text-center">Loading...</div>
-
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading...</p>
+        </div>
       </div>
-
     );
-
   }
-
-
 
   if (!authorized) {
-
     return (
-
       <div className="flex items-center justify-center min-h-screen">
-
-        <div className="text-center">Access denied</div>
-
+        <div className="text-center p-8 rounded-2xl bg-red-500/10 border border-red-500/30 max-w-md">
+          <p className="text-red-300 font-medium">Access denied</p>
+        </div>
       </div>
-
     );
-
   }
 
-
-
   return (
-
     <div className="space-y-6">
-
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Cluster Management</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage clusters, assign leaders, and oversee student participation.
-        </p>
-      </div>
-
-      {/* Centered Creation Button */}
-      <div className="flex justify-center">
-        <CreateClusterDialog onClusterCreated={() => window.location.reload()}>
-          <Button className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg px-8 py-2 text-sm md:text-base">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Cluster
-          </Button>
-        </CreateClusterDialog>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500/20 via-purple-500/20 to-blue-500/20 border border-white/10 backdrop-blur-xl p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="relative text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-red-100 to-purple-100 bg-clip-text text-transparent">Cluster Management</h1>
+          <p className="text-slate-300 mt-2">
+            Manage clusters, assign leaders, and oversee student participation.
+          </p>
+          <div className="mt-6">
+            <CreateClusterDialog onClusterCreated={() => window.location.reload()}>
+              <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105 mx-auto">
+                <Plus className="h-4 w-4" />
+                Create Cluster
+              </button>
+            </CreateClusterDialog>
+          </div>
+        </div>
       </div>
 
       {/* Search and Filter Section */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-        <div className="relative flex-1 sm:flex-initial sm:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-600" />
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
           <Input
             placeholder="Search clusters by name, staff, or leaders..."
-            className="pl-9 pr-4 py-2 w-full sm:w-full md:w-full lg:w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-100 dark:border-gray-700 dark:focus:border-emerald-400 dark:focus:ring-emerald-900/20 min-w-[200px]"
+            className="pl-9 pr-4 py-2 w-full bg-white/5 border border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 text-white placeholder:text-slate-400"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full sm:w-[200px] border-gray-200 focus:border-emerald-500 focus:ring-emerald-100 dark:border-gray-700 dark:focus:border-emerald-400 dark:focus:ring-emerald-900/20">
+          <SelectTrigger className="w-full sm:w-[200px] bg-white/5 border border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 text-white">
             <SelectValue placeholder="Filter by Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="flex items-center gap-2">
+            <SelectItem value="all">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                 All Statuses
               </div>
             </SelectItem>
-            <SelectItem value="active" className="flex items-center gap-2">
+            <SelectItem value="active">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
                 Active
               </div>
             </SelectItem>
-            <SelectItem value="inactive" className="flex items-center gap-2">
+            <SelectItem value="inactive">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-amber-600"></div>
+                <div className="w-2 h-2 rounded-full bg-amber-400"></div>
                 Inactive
               </div>
             </SelectItem>
-            <SelectItem value="archived" className="flex items-center gap-2">
+            <SelectItem value="archived">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                 Archived

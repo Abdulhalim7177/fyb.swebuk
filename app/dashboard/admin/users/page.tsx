@@ -19,6 +19,26 @@ export interface UserProfile {
   created_at: string;
   email_confirmed_at: string | null | undefined;
   avatar_url?: string | null;
+  // Additional profile fields
+  registration_number?: string | null;
+  staff_number?: string | null;
+  bio?: string | null;
+  skills?: string[] | null;
+  // Student-specific fields
+  specialization?: string | null;
+  gpa?: number | null;
+  academic_standing?: string | null;
+  current_courses?: string[] | null;
+  achievements?: string[] | null;
+  interests?: string | null;
+  // Staff-specific fields
+  position?: string | null;
+  office_location?: string | null;
+  office_hours?: string | null;
+  research_interests?: string[] | null;
+  department_role?: string | null;
+  qualifications?: string | null;
+  website_url?: string | null;
 }
 
 export default async function UsersPage() {
@@ -86,6 +106,23 @@ export default async function UsersPage() {
         created_at: authUser.created_at,
         email_confirmed_at: authUser.email_confirmed_at,
         avatar_url: userProfile?.avatar_url || null,
+        // Additional fields
+        registration_number: userProfile?.registration_number || null,
+        bio: userProfile?.bio || null,
+        skills: userProfile?.skills || null,
+        specialization: userProfile?.specialization || null,
+        gpa: userProfile?.gpa || null,
+        academic_standing: userProfile?.academic_standing || null,
+        current_courses: userProfile?.current_courses || null,
+        achievements: userProfile?.achievements || null,
+        interests: userProfile?.interests || null,
+        position: userProfile?.position || null,
+        office_location: userProfile?.office_location || null,
+        office_hours: userProfile?.office_hours || null,
+        research_interests: userProfile?.research_interests || null,
+        department_role: userProfile?.department_role || null,
+        qualifications: userProfile?.qualifications || null,
+        website_url: userProfile?.website_url || null,
       };
     });
 

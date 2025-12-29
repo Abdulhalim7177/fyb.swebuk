@@ -192,302 +192,230 @@ export function AdminClusterView({
 
   return (
     <div className="space-y-6">
-      {/* Admin Header */}
-      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-red-500 via-purple-600 to-blue-600 flex items-center justify-center text-white font-bold text-2xl shadow-xl">
-            {cluster.name.charAt(0)}
-          </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{cluster.name}</h1>
-              <Badge variant={cluster.status === "active" ? "default" : cluster.status === "inactive" ? "secondary" : "destructive"}>
-                {cluster.status}
-              </Badge>
-              <Badge variant="outline" className="border-red-500/50 text-red-600 dark:text-red-400">
-                <Shield className="h-3 w-3 mr-1" />
-                Admin View
-              </Badge>
+      {/* Admin Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500/20 via-purple-500/20 to-blue-500/20 border border-white/10 backdrop-blur-xl">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="relative p-6 sm:p-8">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-red-100 to-purple-100 bg-clip-text text-transparent">{cluster.name}</h1>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`}>
+                    {cluster.status}
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 flex items-center gap-1">
+                    <Shield className="h-3 w-3" />
+                    Admin View
+                  </span>
+                </div>
+                <p className="text-slate-300 mt-2 max-w-2xl">{cluster.description || "No description provided."}</p>
+                <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    Created {new Date(cluster.created_at).toLocaleDateString()}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    ID: {cluster.id.slice(0, 8)}...
+                  </span>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground mt-1 max-w-2xl">{cluster.description || "No description provided."}</p>
-            <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                Created {new Date(cluster.created_at).toLocaleDateString()}
-              </span>
-              <span className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                ID: {cluster.id.slice(0, 8)}...
-              </span>
-            </div>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Admin Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)}>
-                <Settings className="h-4 w-4 mr-2" />
-                Cluster Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Details
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {canManageProjects && (
-                <DropdownMenuItem onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Create Project
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem onClick={() => router.push(`/dashboard/events/create?cluster_id=${cluster.id}`)}>
-                <Calendar className="h-4 w-4 mr-2" />
-                Create Event
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => setDeleteDialogOpen(true)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Cluster
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button
-            variant="outline"
-            onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)}
-            className="gap-2"
-          >
-            <Settings className="h-4 w-4" />
-            Settings
-          </Button>
-          <Button onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)} className="gap-2">
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <button onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-300 font-medium transition-all duration-300 hover:scale-105">
+                <Settings className="h-4 w-4" />
+                Settings
+              </button>
+              <button onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105">
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
+              <button onClick={() => setDeleteDialogOpen(true)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 font-medium transition-all duration-300 hover:scale-105">
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Admin Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Members</CardTitle>
-            <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{cluster.members_count}</div>
-            <p className="text-xs text-muted-foreground">Total members</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Projects</CardTitle>
-            <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.projects}</div>
-            <p className="text-xs text-muted-foreground">Active projects</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Events</CardTitle>
-            <Calendar className="h-4 w-4 text-green-600 dark:text-green-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.events}</div>
-            <p className="text-xs text-muted-foreground">Upcoming events</p>
-          </CardContent>
-        </Card>
-        <Card className={stats.pendingRequests > 0 ? "border-amber-500/50 bg-amber-500/5" : ""}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <AlertCircle className={`h-4 w-4 ${stats.pendingRequests > 0 ? "text-amber-600 animate-pulse" : "text-muted-foreground"}`} />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingRequests}</div>
-            <p className="text-xs text-muted-foreground">Requests to review</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Created</CardTitle>
-            <TrendingUp className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold">
-              {new Date(cluster.created_at).toLocaleDateString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {new Date(cluster.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
-            <Activity className={`h-4 w-4 ${cluster.status === 'active' ? "text-green-600" : cluster.status === 'inactive' ? "text-amber-600" : "text-red-600"}`} />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <div className={`h-2 w-2 rounded-full ${cluster.status === 'active' ? "bg-green-500" : cluster.status === 'inactive' ? "bg-amber-500" : "bg-red-500"}`} />
-              <span className="font-medium capitalize">{cluster.status}</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {cluster.status === 'active' ? 'Cluster is operational' : cluster.status === 'inactive' ? 'Temporarily paused' : 'Marked for deletion'}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-purple-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <Users className="h-6 w-6 text-purple-500" />
+          </div>
+          <p className="text-3xl font-bold text-white mb-1">{cluster.members_count}</p>
+          <p className="text-sm font-medium text-slate-400">Total Members</p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-blue-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <FileText className="h-6 w-6 text-blue-500" />
+          </div>
+          <p className="text-3xl font-bold text-white mb-1">{stats.projects}</p>
+          <p className="text-sm font-medium text-slate-400">Active Projects</p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-emerald-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <Calendar className="h-6 w-6 text-emerald-500" />
+          </div>
+          <p className="text-3xl font-bold text-white mb-1">{stats.events}</p>
+          <p className="text-sm font-medium text-slate-400">Upcoming Events</p>
+        </div>
+
+        <div className={`rounded-2xl border backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105 ${stats.pendingRequests > 0 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/10'}`}>
+          <div className={`p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300 ${stats.pendingRequests > 0 ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-500/10 text-slate-400'}`}>
+            <AlertCircle className={`h-6 w-6 ${stats.pendingRequests > 0 ? 'animate-pulse' : ''}`} />
+          </div>
+          <p className="text-3xl font-bold text-white mb-1">{stats.pendingRequests}</p>
+          <p className="text-sm font-medium text-slate-400">Pending Requests</p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-cyan-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <TrendingUp className="h-6 w-6 text-cyan-500" />
+          </div>
+          <p className="text-lg font-bold text-white mb-1">{new Date(cluster.created_at).toLocaleDateString()}</p>
+          <p className="text-sm font-medium text-slate-400">Created On</p>
+        </div>
+
+        <div className={`rounded-2xl border backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105 ${cluster.status === 'active' ? 'bg-green-500/10 border-green-500/30' : cluster.status === 'inactive' ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+          <div className={`p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300 ${cluster.status === 'active' ? 'bg-green-500/20 text-green-500' : cluster.status === 'inactive' ? 'bg-amber-500/20 text-amber-500' : 'bg-red-500/20 text-red-500'}`}>
+            <Activity className="h-6 w-6" />
+          </div>
+          <p className="text-xl font-bold text-white mb-1 capitalize">{cluster.status}</p>
+          <p className="text-sm font-medium text-slate-400">Status</p>
+        </div>
       </div>
 
       {/* Management Actions & Leadership */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="lg:col-span-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <Settings className="h-5 w-5" />
               Quick Management Actions
-            </CardTitle>
-            <CardDescription>Fast access to common administrative tasks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {stats.pendingRequests > 0 && (
-                <Button
-                  variant="outline"
-                  className="justify-start gap-3 h-auto py-4 border-amber-500/50 hover:bg-amber-500/10"
-                  onClick={() => {
-                    const requestsTrigger = document.querySelector('[value="requests"]') as HTMLElement;
-                    requestsTrigger?.click();
-                  }}
-                >
-                  <div className="h-10 w-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <AlertCircle className="h-5 w-5 text-amber-600" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold">Review Requests</div>
-                    <div className="text-xs text-muted-foreground">{stats.pendingRequests} pending</div>
-                  </div>
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                className="justify-start gap-3 h-auto py-4"
-                onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)}
+            </h2>
+            <p className="text-slate-400 text-sm mt-1">Fast access to common administrative tasks</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {stats.pendingRequests > 0 && (
+              <button
+                className="flex items-start justify-start gap-3 p-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-left transition-all duration-200 hover:scale-105"
+                onClick={() => {
+                  const requestsTrigger = document.querySelector('[value="requests"]') as HTMLElement;
+                  requestsTrigger?.click();
+                }}
               >
-                <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                  <Edit className="h-5 w-5 text-blue-600" />
+                <div className="h-10 w-10 rounded-lg bg-amber-500/30 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-amber-300" />
                 </div>
-                <div className="text-left">
-                  <div className="font-semibold">Edit Cluster</div>
-                  <div className="text-xs text-muted-foreground">Update details & settings</div>
+                <div>
+                  <div className="font-semibold text-amber-300">Review Requests</div>
+                  <div className="text-xs text-amber-400/70">{stats.pendingRequests} pending</div>
                 </div>
-              </Button>
-              {canManageProjects && (
-                <Button
-                  variant="outline"
-                  className="justify-start gap-3 h-auto py-4"
-                  onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}
-                >
-                  <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold">New Project</div>
-                    <div className="text-xs text-muted-foreground">Create for this cluster</div>
-                  </div>
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                className="justify-start gap-3 h-auto py-4"
-                onClick={() => router.push(`/dashboard/clusters/events/new?cluster_id=${cluster.id}`)}
-              >
-                <div className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="text-left">
-                  <div className="font-semibold">Schedule Event</div>
-                  <div className="text-xs text-muted-foreground">Plan a cluster event</div>
-                </div>
-              </Button>
-            </div>
-
-          </CardContent>
-        </Card>
-
-        {/* Leadership Team */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Leadership
-            </CardTitle>
-            <CardDescription>Assigned managers</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
-              <Avatar>
-                <AvatarFallback className="bg-gradient-to-br from-amber-500 to-orange-500 text-white">
-                  {cluster.lead_name?.charAt(0) || "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate text-sm">{cluster.lead_name || "Not assigned"}</p>
-                <p className="text-xs text-muted-foreground truncate">{cluster.lead_email || "—"}</p>
-              </div>
-              <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
-              <Avatar>
-                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
-                  {cluster.deputy_name?.charAt(0) || "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate text-sm">{cluster.deputy_name || "Not assigned"}</p>
-                <p className="text-xs text-muted-foreground truncate">{cluster.deputy_email || "—"}</p>
-              </div>
-              <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
-              <Avatar>
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
-                  {cluster.staff_manager_name?.charAt(0) || "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate text-sm">{cluster.staff_manager_name || "Not assigned"}</p>
-                <p className="text-xs text-muted-foreground truncate">{cluster.staff_manager_email || "—"}</p>
-              </div>
-              <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full mt-2"
+              </button>
+            )}
+            <button
+              className="flex items-start justify-start gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all duration-200 hover:scale-105"
               onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)}
             >
-              <Edit className="h-4 w-4 mr-2" />
+              <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <Edit className="h-5 w-5 text-blue-400" />
+              </div>
+              <div>
+                <div className="font-semibold text-white">Edit Cluster</div>
+                <div className="text-xs text-slate-400">Update details & settings</div>
+              </div>
+            </button>
+            {canManageProjects && (
+              <button
+                className="flex items-start justify-start gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all duration-200 hover:scale-105"
+                onClick={() => router.push(`/dashboard/projects/create?cluster_id=${cluster.id}`)}
+              >
+                <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <FileText className="h-5 w-5 text-purple-400" />
+                </div>
+                <div>
+                  <div className="font-semibold text-white">New Project</div>
+                  <div className="text-xs text-slate-400">Create for this cluster</div>
+                </div>
+              </button>
+            )}
+            <button
+              className="flex items-start justify-start gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all duration-200 hover:scale-105"
+              onClick={() => router.push(`/dashboard/clusters/events/new?cluster_id=${cluster.id}`)}
+            >
+              <div className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                <Calendar className="h-5 w-5 text-green-400" />
+              </div>
+              <div>
+                <div className="font-semibold text-white">Schedule Event</div>
+                <div className="text-xs text-slate-400">Plan a cluster event</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Leadership Team */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Leadership
+            </h2>
+            <p className="text-slate-400 text-sm mt-1">Assigned managers</p>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-semibold">
+                {cluster.lead_name?.charAt(0) || "?"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate text-sm text-white">{cluster.lead_name || "Not assigned"}</p>
+                <p className="text-xs text-slate-400 truncate">{cluster.lead_email || "—"}</p>
+              </div>
+              <Crown className="h-4 w-4 text-amber-400" />
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
+                {cluster.deputy_name?.charAt(0) || "?"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate text-sm text-white">{cluster.deputy_name || "Not assigned"}</p>
+                <p className="text-xs text-slate-400 truncate">{cluster.deputy_email || "—"}</p>
+              </div>
+              <Shield className="h-4 w-4 text-purple-400" />
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold">
+                {cluster.staff_manager_name?.charAt(0) || "?"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate text-sm text-white">{cluster.staff_manager_name || "Not assigned"}</p>
+                <p className="text-xs text-slate-400 truncate">{cluster.staff_manager_email || "—"}</p>
+              </div>
+              <Shield className="h-4 w-4 text-blue-400" />
+            </div>
+            <button
+              className="w-full mt-2 flex items-center justify-center gap-2 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all duration-200 hover:scale-105"
+              onClick={() => router.push(`/dashboard/clusters/${cluster.id}/settings`)}
+            >
+              <Edit className="h-4 w-4" />
               Edit Assignments
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
-      <Card>
+      <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
         <CardHeader className="pb-3">
           <CardTitle>Cluster Activities</CardTitle>
           <CardDescription>Manage all cluster content and memberships</CardDescription>

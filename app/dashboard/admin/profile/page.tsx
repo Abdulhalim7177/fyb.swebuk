@@ -71,9 +71,9 @@ export default async function AdminProfilePage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col items-center min-h-screen bg-gradient-to-br from-background via-emerald-50/20 to-background dark:via-emerald-950/20">
+    <div className="flex-1 w-full flex flex-col items-center min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="w-full bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 border-b border-white/10">
+      <div className="w-full bg-emerald-600/20 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">

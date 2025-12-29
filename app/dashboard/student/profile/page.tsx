@@ -71,9 +71,9 @@ export default async function StudentProfilePage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col items-center min-h-screen bg-gradient-to-br from-background via-violet-50/20 to-background dark:via-violet-950/20">
+    <div className="flex-1 w-full flex flex-col items-center min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="w-full bg-gradient-to-r from-violet-600 via-purple-500 to-violet-600 border-b border-white/10">
+      <div className="w-full bg-violet-600/20 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">

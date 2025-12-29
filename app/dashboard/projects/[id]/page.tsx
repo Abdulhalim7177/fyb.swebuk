@@ -219,6 +219,41 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
     try {
       const supabase = createClient();
+
+      // Check if this is a cluster project and if user is a member of that cluster
+      if (project?.type === "cluster" && project?.cluster_id) {
+        const { data: clusterMembership, error: membershipError } = await supabase
+          .from("cluster_members")
+          .select("id, status")
+          .eq("cluster_id", project.cluster_id)
+          .eq("user_id", user.id)
+          .single();
+
+        if (membershipError || !clusterMembership) {
+          toast.error(
+            "You must be a member of the cluster to join this project.",
+            {
+              description: `Please join the "${project.cluster_name}" cluster first before requesting to join this project.`,
+              duration: 6000,
+            }
+          );
+          setJoinDialogOpen(false);
+          return;
+        }
+
+        if (clusterMembership.status !== "approved") {
+          toast.error(
+            "Your cluster membership is pending approval.",
+            {
+              description: `Wait for your membership to "${project.cluster_name}" cluster to be approved first.`,
+              duration: 6000,
+            }
+          );
+          setJoinDialogOpen(false);
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from("project_members")
         .insert({

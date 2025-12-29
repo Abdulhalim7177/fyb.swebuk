@@ -502,9 +502,9 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading cluster settings...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading cluster settings...</p>
         </div>
       </div>
     );
@@ -513,14 +513,15 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center p-8 bg-destructive/10 rounded-lg border border-destructive/30 max-w-md">
-          <p className="text-destructive">{error}</p>
-          <Button
-            className="mt-4"
+        <div className="text-center p-8 rounded-2xl bg-red-500/10 border border-red-500/30 max-w-md">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-red-300 font-medium">{error}</p>
+          <button
+            className="mt-4 px-6 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105"
             onClick={() => router.push("/dashboard/clusters")}
           >
             Back to Clusters
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -529,9 +530,9 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
   if (!cluster) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading cluster settings...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading cluster settings...</p>
         </div>
       </div>
     );
@@ -540,14 +541,15 @@ export default function ClusterSettingsPage({ params }: { params: { id: string }
   if (!canManage) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center p-8 bg-destructive/10 rounded-lg border border-destructive/30 max-w-md">
-          <p className="text-destructive">You don't have permission to manage this cluster</p>
-          <Button
-            className="mt-4"
+        <div className="text-center p-8 rounded-2xl bg-red-500/10 border border-red-500/30 max-w-md">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-red-300 font-medium">You don't have permission to manage this cluster</p>
+          <button
+            className="mt-4 px-6 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105"
             onClick={() => router.push(`/dashboard/clusters/${params.id}`)}
           >
             Back to Cluster
-          </Button>
+          </button>
         </div>
       </div>
     );

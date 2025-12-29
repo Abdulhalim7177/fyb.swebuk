@@ -70,11 +70,18 @@ export function DashboardWrapper({ children }: DashboardWrapperProps) {
   }, []);
 
   if (loading || !user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-black text-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <p className="text-slate-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[oklch(92.2% 0 0)]">
+    <div className="flex h-screen overflow-hidden bg-black text-white">
       {/* Desktop Sidebar */}
       <DashboardNav
         userId={user.id}
@@ -93,8 +100,10 @@ export function DashboardWrapper({ children }: DashboardWrapperProps) {
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          {children}
+        <main className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -56,8 +56,8 @@ export function BlogCard({
   if (variant === "featured") {
     return (
       <Link href={`/blog/${blog.slug}`} className="group block h-full">
-        <Card className="h-full bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border-border/50 hover:border-primary/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 overflow-hidden">
-          <CardContent className="p-0 h-full flex flex-col">
+        <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-[1.02] overflow-hidden">
+          <div className="p-0 h-full flex flex-col">
             {/* Image or Gradient Placeholder */}
             {hasImage ? (
               <div className="h-48 overflow-hidden">
@@ -68,8 +68,8 @@ export function BlogCard({
                 />
               </div>
             ) : (
-              <div className="h-48 bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
-                <BookOpen className="w-12 h-12 text-primary/50" />
+              <div className="h-48 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                <BookOpen className="w-12 h-12 text-emerald-400/50" />
               </div>
             )}
 
@@ -121,8 +121,8 @@ export function BlogCard({
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </Link>
     );
   }
