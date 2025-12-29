@@ -140,7 +140,7 @@ export default async function PublicPortfolioPage({
   }
 
   // Fetch email from auth.users table
-  const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+  const { data: authUser } = await (supabase.auth as any).admin.getUserById(userId);
 
   // Pass avatar URL and email to client component
   const profileDataWithAvatarUrl = {

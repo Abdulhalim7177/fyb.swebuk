@@ -244,62 +244,52 @@ export function AdminClusterView({
 
       {/* Admin Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
-        <div className="rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Members</p>
-            <Users className="h-5 w-5 text-purple-400" />
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-purple-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <Users className="h-6 w-6 text-purple-500" />
           </div>
-          <p className="text-3xl font-bold text-white">{cluster.members_count}</p>
-          <p className="text-xs text-slate-400 mt-1">Total members</p>
+          <p className="text-3xl font-bold text-white mb-1">{cluster.members_count}</p>
+          <p className="text-sm font-medium text-slate-400">Total Members</p>
         </div>
-        <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Projects</p>
-            <FileText className="h-5 w-5 text-blue-400" />
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-blue-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <FileText className="h-6 w-6 text-blue-500" />
           </div>
-          <p className="text-3xl font-bold text-white">{stats.projects}</p>
-          <p className="text-xs text-slate-400 mt-1">Active projects</p>
+          <p className="text-3xl font-bold text-white mb-1">{stats.projects}</p>
+          <p className="text-sm font-medium text-slate-400">Active Projects</p>
         </div>
-        <div className="rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Events</p>
-            <Calendar className="h-5 w-5 text-emerald-400" />
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-emerald-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <Calendar className="h-6 w-6 text-emerald-500" />
           </div>
-          <p className="text-3xl font-bold text-white">{stats.events}</p>
-          <p className="text-xs text-slate-400 mt-1">Upcoming events</p>
+          <p className="text-3xl font-bold text-white mb-1">{stats.events}</p>
+          <p className="text-sm font-medium text-slate-400">Upcoming Events</p>
         </div>
-        <div className={`rounded-2xl border backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 ${stats.pendingRequests > 0 ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-500/30' : 'bg-gradient-to-br from-slate-500/20 to-gray-500/20 border-white/10'}`}>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Pending</p>
-            <AlertCircle className={`h-5 w-5 ${stats.pendingRequests > 0 ? 'text-amber-400 animate-pulse' : 'text-slate-400'}`} />
+
+        <div className={`rounded-2xl border backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105 ${stats.pendingRequests > 0 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/10'}`}>
+          <div className={`p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300 ${stats.pendingRequests > 0 ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-500/10 text-slate-400'}`}>
+            <AlertCircle className={`h-6 w-6 ${stats.pendingRequests > 0 ? 'animate-pulse' : ''}`} />
           </div>
-          <p className="text-3xl font-bold text-white">{stats.pendingRequests}</p>
-          <p className="text-xs text-slate-400 mt-1">Requests to review</p>
+          <p className="text-3xl font-bold text-white mb-1">{stats.pendingRequests}</p>
+          <p className="text-sm font-medium text-slate-400">Pending Requests</p>
         </div>
-        <div className="rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Created</p>
-            <TrendingUp className="h-5 w-5 text-cyan-400" />
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-cyan-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <TrendingUp className="h-6 w-6 text-cyan-500" />
           </div>
-          <p className="text-lg font-bold text-white">
-            {new Date(cluster.created_at).toLocaleDateString()}
-          </p>
-          <p className="text-xs text-slate-400 mt-1">
-            {new Date(cluster.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </p>
+          <p className="text-lg font-bold text-white mb-1">{new Date(cluster.created_at).toLocaleDateString()}</p>
+          <p className="text-sm font-medium text-slate-400">Created On</p>
         </div>
-        <div className={`rounded-2xl border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300 ${cluster.status === 'active' ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20' : cluster.status === 'inactive' ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20' : 'bg-gradient-to-br from-red-500/20 to-rose-500/20'}`}>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Status</p>
-            <Activity className={`h-5 w-5 ${cluster.status === 'active' ? 'text-green-400' : cluster.status === 'inactive' ? 'text-amber-400' : 'text-red-400'}`} />
+
+        <div className={`rounded-2xl border backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105 ${cluster.status === 'active' ? 'bg-green-500/10 border-green-500/30' : cluster.status === 'inactive' ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+          <div className={`p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300 ${cluster.status === 'active' ? 'bg-green-500/20 text-green-500' : cluster.status === 'inactive' ? 'bg-amber-500/20 text-amber-500' : 'bg-red-500/20 text-red-500'}`}>
+            <Activity className="h-6 w-6" />
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${cluster.status === 'active' ? 'bg-green-400' : cluster.status === 'inactive' ? 'bg-amber-400' : 'bg-red-400'}`} />
-            <span className="font-medium capitalize text-white">{cluster.status}</span>
-          </div>
-          <p className="text-xs text-slate-400 mt-1">
-            {cluster.status === 'active' ? 'Operational' : cluster.status === 'inactive' ? 'Paused' : 'Deleted'}
-          </p>
+          <p className="text-xl font-bold text-white mb-1 capitalize">{cluster.status}</p>
+          <p className="text-sm font-medium text-slate-400">Status</p>
         </div>
       </div>
 
@@ -425,7 +415,7 @@ export function AdminClusterView({
       </div>
 
       {/* Tabs */}
-      <Card>
+      <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
         <CardHeader className="pb-3">
           <CardTitle>Cluster Activities</CardTitle>
           <CardDescription>Manage all cluster content and memberships</CardDescription>

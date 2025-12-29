@@ -32,9 +32,15 @@ interface StudentDashboardProps {
   }>;
   featuredProjects: Array<any>;
   memberProjects: Array<any>;
+  upcomingEvents: Array<{
+    id: string;
+    title: string;
+    start_date: string;
+    cluster_name: string | null;
+  }>;
 }
 
-export function StudentDashboard({ user, fullName, academicLevel, stats, recentProjects, popularClusters, featuredProjects, memberProjects }: StudentDashboardProps) {
+export function StudentDashboard({ user, fullName, academicLevel, stats, recentProjects, popularClusters, featuredProjects, memberProjects, upcomingEvents }: StudentDashboardProps) {
   const statsDisplay = [
     { title: "My Clubs", value: stats.myClubs.toString(), icon: Users2, iconBg: "bg-primary/10 text-primary" },
     { title: "Active Projects", value: stats.activeProjects.toString(), icon: Code2, iconBg: "bg-green-500/10 text-green-500" },
@@ -51,11 +57,36 @@ export function StudentDashboard({ user, fullName, academicLevel, stats, recentP
     { iconBg: "bg-orange-500/10 text-orange-500", tagBg: "bg-orange-500/10 text-orange-500" },
   ];
   
-  const events = [
-      { day: "TOM", date: "25", title: "React Workshop", club: "Frontend Club", time: "Tomorrow, 2:00 PM" },
-      { day: "FRI", date: "27", title: "ML Model Deployment", club: "AI/ML Club", time: "Friday, 5:00 PM" },
-      { day: "MON", date: "30", title: "API Design Patterns", club: "Backend Club", time: "Next Monday, 3:00 PM" },
-  ];
+  // Format events for display
+  const formattedEvents = upcomingEvents.map(event => {
+    const eventDate = new Date(event.start_date);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    let dayLabel = eventDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+    let dateLabel = eventDate.getDate().toString();
+
+    if (eventDate.toDateString() === today.toDateString()) {
+      dayLabel = "TODAY";
+    } else if (eventDate.toDateString() === tomorrow.toDateString()) {
+      dayLabel = "TOM";
+    }
+
+    const timeLabel = eventDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    return {
+      day: dayLabel,
+      date: dateLabel,
+      title: event.title,
+      club: event.cluster_name || "General Event",
+      time: `${eventDate.toLocaleDateString('en-US', { weekday: 'long' })}, ${timeLabel}`
+    };
+  });
 
   const isFypEligible = academicLevel === "level_400" || academicLevel === "400";
 
@@ -83,21 +114,16 @@ export function StudentDashboard({ user, fullName, academicLevel, stats, recentP
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {statsDisplay.map((stat, index) => {
           const Icon = stat.icon;
-          const gradients = [
-            "from-emerald-500/20 to-teal-500/20",
-            "from-green-500/20 to-emerald-500/20",
-            "from-violet-500/20 to-purple-500/20",
-            "from-orange-500/20 to-red-500/20"
-          ];
           return (
-            <div key={index} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradients[index]} border border-white/10 backdrop-blur-xl p-6 group hover:border-white/20 transition-all duration-300 hover:scale-105`}>
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-medium text-slate-400">{stat.title}</p>
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.iconBg} group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="h-6 w-6" />
-                </div>
+            <div 
+              key={index} 
+              className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105"
+            >
+              <div className={`p-3 rounded-xl ${stat.iconBg} mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                <Icon className="h-6 w-6" />
               </div>
-              <p className="text-4xl font-bold text-white">{stat.value}</p>
+              <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+              <p className="text-sm font-medium text-slate-400">{stat.title}</p>
             </div>
           );
         })}
@@ -221,7 +247,7 @@ export function StudentDashboard({ user, fullName, academicLevel, stats, recentP
             </div>
             <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
               {featuredProjects.length > 0 ? (
-                featuredProjects.slice(0, 4).map((project, index) => (
+                featuredProjects.slice(0, 2).map((project, index) => (
                   <div key={project.id} className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
                     <div className="p-0">
                       <div className="flex items-start justify-between gap-2 mb-3">
@@ -321,19 +347,26 @@ export function StudentDashboard({ user, fullName, academicLevel, stats, recentP
           <div className="sticky top-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6">
             <h3 className="text-xl font-bold text-white mb-6">Upcoming Events</h3>
             <div className="space-y-5">
-              {events.map((event, index) => (
-                <div key={index} className="flex gap-4 group">
-                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-xs font-medium text-emerald-300">{event.day}</span>
-                    <span className="text-lg font-bold text-white">{event.date}</span>
+              {formattedEvents.length > 0 ? (
+                formattedEvents.map((event, index) => (
+                  <div key={event.id || index} className="flex gap-4 group">
+                    <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-xs font-medium text-emerald-300">{event.day}</span>
+                      <span className="text-lg font-bold text-white">{event.date}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white group-hover:text-emerald-400 transition-colors duration-200">{event.title}</h4>
+                      <p className="text-sm text-slate-400">{event.club}</p>
+                      <p className="text-xs text-slate-500 mt-1">{event.time}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-white group-hover:text-emerald-400 transition-colors duration-200">{event.title}</h4>
-                    <p className="text-sm text-slate-400">{event.club}</p>
-                    <p className="text-xs text-slate-500 mt-1">{event.time}</p>
-                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <CalendarCheck className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+                  <p className="text-slate-400">No upcoming events</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </aside>

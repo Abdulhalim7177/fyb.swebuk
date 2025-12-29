@@ -36,40 +36,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Separator } from "./ui/separator";
-
-type Profile = {
-  id: string;
-  full_name: string;
-  avatar_url: string;
-  role?: string;
-  registration_number?: string;
-  staff_number?: string;
-  academic_level?: string;
-  department?: string;
-  faculty?: string;
-  institution?: string;
-  linkedin_url?: string;
-  github_url?: string;
-  skills?: string[];
-  bio?: string;
-  // Student-specific fields
-  specialization?: string;
-  gpa?: number;
-  academic_standing?: string;
-  current_courses?: string[];
-  achievements?: string[];
-  portfolio_items?: any[];
-  interests?: string;
-  // Staff-specific fields
-  position?: string;
-  office_location?: string;
-  office_hours?: string;
-  research_interests?: string[];
-  department_role?: string;
-  staff_profile?: any;
-  qualifications?: string;
-  website_url?: string;
-};
+import { Profile } from "@/lib/supabase/storage-utils";
 
 type UserRole = "student" | "staff" | "admin" | "lead" | "deputy";
 

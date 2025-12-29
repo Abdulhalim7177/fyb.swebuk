@@ -219,7 +219,7 @@ export async function GET() {
         console.warn(`Warning: Could not update all profile fields for user ${u.email}. This may be due to schema not being updated yet. Error:`, error);
 
         // Try updating only the basic fields that are definitely in the schema
-        const basicUpdateData = {
+        const basicUpdateData: Record<string, any> = {
           role: updateData.role,
           full_name: updateData.full_name,
           department: updateData.department,

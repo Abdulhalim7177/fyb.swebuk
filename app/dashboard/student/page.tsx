@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StudentDashboard } from "@/components/dashboard/student-dashboard";
-import { getStudentDashboardStats, getRecentProjects, getPopularClusters, getFeaturedProjects, getUserMemberProjects } from "@/lib/supabase/dashboard-actions";
+import { getStudentDashboardStats, getRecentProjects, getPopularClusters, getFeaturedProjects, getUserMemberProjects, getUpcomingEventsForUser } from "@/lib/supabase/dashboard-actions";
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
@@ -42,8 +42,9 @@ export default async function StudentDashboardPage() {
   const stats = await getStudentDashboardStats(user.id);
   const recentProjects = await getRecentProjects(user.id, 3);
   const popularClusters = await getPopularClusters(4);
-  const featuredProjects = await getFeaturedProjects(6);
+  const featuredProjects = await getFeaturedProjects(2); // Changed from 6 to 2
   const memberProjects = await getUserMemberProjects(user.id, 6);
+  const upcomingEvents = await getUpcomingEventsForUser(user.id, 3);
 
   return (
     <StudentDashboard
@@ -55,6 +56,7 @@ export default async function StudentDashboardPage() {
       popularClusters={popularClusters}
       featuredProjects={featuredProjects}
       memberProjects={memberProjects}
+      upcomingEvents={upcomingEvents}
     />
   );
 }

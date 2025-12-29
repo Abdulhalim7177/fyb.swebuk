@@ -50,21 +50,20 @@ export function StudentClusterStats({ clusterId }: StudentClusterStatsProps) {
 
   return (
     <>
-      <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm font-medium text-slate-400">Projects</p>
-          <FileText className="h-5 w-5 text-blue-400" />
+      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+        <div className="p-3 rounded-xl bg-blue-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+          <FileText className="h-6 w-6 text-blue-500" />
         </div>
-        <p className="text-3xl font-bold text-white">{loading ? "—" : stats.projects}</p>
-        <p className="text-xs text-slate-400 mt-1">Active projects</p>
+        <p className="text-3xl font-bold text-white mb-1">{loading ? "—" : stats.projects}</p>
+        <p className="text-sm font-medium text-slate-400">Active Projects</p>
       </div>
-      <div className="rounded-2xl bg-gradient-to-br from-green-500/20 to-teal-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm font-medium text-slate-400">Events</p>
-          <Calendar className="h-5 w-5 text-green-400" />
+
+      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+        <div className="p-3 rounded-xl bg-emerald-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+          <Calendar className="h-6 w-6 text-emerald-500" />
         </div>
-        <p className="text-3xl font-bold text-white">{loading ? "—" : stats.events}</p>
-        <p className="text-xs text-slate-400 mt-1">Upcoming events</p>
+        <p className="text-3xl font-bold text-white mb-1">{loading ? "—" : stats.events}</p>
+        <p className="text-sm font-medium text-slate-400">Upcoming Events</p>
       </div>
     </>
   );

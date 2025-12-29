@@ -133,33 +133,30 @@ export function StudentClusterView({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Members</p>
-            <Users className="h-5 w-5 text-purple-400" />
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-purple-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <Users className="h-6 w-6 text-purple-500" />
           </div>
-          <p className="text-3xl font-bold text-white">{cluster.members_count}</p>
+          <p className="text-3xl font-bold text-white mb-1">{cluster.members_count}</p>
+          <p className="text-sm font-medium text-slate-400">Members</p>
         </div>
+
         <StudentClusterStats clusterId={cluster.id} />
-        <div className="rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Status</p>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`}>
-              {cluster.status}
-            </span>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className={`p-3 rounded-xl ${cluster.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'} mb-3 group-hover:scale-110 transition-transform duration-300`}>
+            <AlertCircle className="h-6 w-6" />
           </div>
-          <p className="text-sm text-slate-300">
-            {cluster.status === "active" ? "Open for new members" : "Currently inactive"}
-          </p>
+          <p className="text-xl font-bold text-white mb-1 uppercase">{cluster.status}</p>
+          <p className="text-sm font-medium text-slate-400">Cluster Status</p>
         </div>
-        <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-slate-400">Created</p>
-            <Calendar className="h-5 w-5 text-blue-400" />
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 flex flex-col items-center text-center group hover:border-white/20 transition-all duration-300 hover:scale-105">
+          <div className="p-3 rounded-xl bg-blue-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
+            <Calendar className="h-6 w-6 text-blue-500" />
           </div>
-          <p className="text-sm font-medium text-white">
-            {new Date(cluster.created_at).toLocaleDateString()}
-          </p>
+          <p className="text-lg font-bold text-white mb-1">{new Date(cluster.created_at).toLocaleDateString()}</p>
+          <p className="text-sm font-medium text-slate-400">Created On</p>
         </div>
       </div>
 
@@ -201,7 +198,7 @@ export function StudentClusterView({
       </div>
 
       {/* Tabs */}
-      <Card>
+      <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
         <CardHeader className="pb-3">
           <CardTitle>Cluster Activities</CardTitle>
         </CardHeader>

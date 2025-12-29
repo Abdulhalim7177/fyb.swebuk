@@ -27,8 +27,8 @@ export async function getStudentDashboardStats(userId: string) {
 
     const activeProjects = (ownedProjectsCount || 0) + (memberProjectsCount || 0);
 
-    // Get upcoming events (placeholder for now - will be implemented in event system)
-    const upcomingEvents = 0;
+    // Get upcoming events for the user
+    const upcomingEvents = await getUpcomingEventsForUser(userId);
 
     // Get total project contributions (total projects user is part of)
     const { count: totalContributions } = await supabase
@@ -40,7 +40,7 @@ export async function getStudentDashboardStats(userId: string) {
     return {
       myClubs: clustersCount || 0,
       activeProjects,
-      upcomingEvents,
+      upcomingEvents: upcomingEvents.length,
       contributions: totalContributions || 0,
     };
   } catch (error) {
@@ -199,6 +199,71 @@ export async function getUserMemberProjects(userId: string, limit: number = 6) {
     return data || [];
   } catch (error) {
     console.error("Error fetching user member projects:", error);
+    return [];
+  }
+}
+
+/**
+ * Get upcoming events for a user - either general events or events related to clusters they're a member of
+ */
+export async function getUpcomingEventsForUser(userId: string, limit: number = 3) {
+  const supabase = await createClient();
+
+  try {
+    // First, get the cluster IDs that the user is a member of
+    const { data: clusterMemberships, error: clusterError } = await supabase
+      .from("cluster_members")
+      .select("cluster_id")
+      .eq("user_id", userId)
+      .eq("status", "approved");
+
+    if (clusterError) throw clusterError;
+
+    const clusterIds = clusterMemberships?.map(cm => cm.cluster_id) || [];
+
+    // Execute the query for general/public events
+    const { data: generalEvents, error: generalError } = await supabase
+      .from("detailed_events")
+      .select("*")
+      .eq("status", "published")
+      .gte("start_date", new Date().toISOString()) // Only upcoming events
+      .or(`cluster_id.is.null,is_public.eq.true`) // Either no cluster (general) or is public
+      .order("start_date", { ascending: true });
+
+    if (generalError) throw generalError;
+
+    let allEvents = [...generalEvents];
+
+    // If user is a member of any clusters, also get events from those clusters
+    if (clusterIds.length > 0) {
+      const { data: clusterEvents, error: clusterEventsError } = await supabase
+        .from("detailed_events")
+        .select("*")
+        .eq("status", "published")
+        .gte("start_date", new Date().toISOString()) // Only upcoming events
+        .in("cluster_id", clusterIds)
+        .order("start_date", { ascending: true });
+
+      if (clusterEventsError) throw clusterEventsError;
+
+      // Combine and deduplicate events
+      const eventIds = new Set();
+      allEvents = [...generalEvents, ...clusterEvents].filter(event => {
+        if (eventIds.has(event.id)) {
+          return false;
+        }
+        eventIds.add(event.id);
+        return true;
+      });
+
+      // Sort by start date
+      allEvents.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+    }
+
+    // Limit the results
+    return allEvents.slice(0, limit);
+  } catch (error) {
+    console.error("Error fetching upcoming events for user:", error);
     return [];
   }
 }
