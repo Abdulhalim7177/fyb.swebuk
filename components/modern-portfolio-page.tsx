@@ -470,7 +470,7 @@ export default function ModernPortfolioPage({
 
         {/* Right Column - Projects */}
         <div className="lg:col-span-2">
-          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border-0 bg-transparent shadow-none overflow-hidden">
+          <Card className="md:border md:border-border md:bg-card/50 md:backdrop-blur-md border border-border/40 bg-transparent shadow-none overflow-hidden">
             <CardHeader className="pb-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <CardTitle className="flex items-center gap-2 text-foreground">

@@ -261,7 +261,7 @@ export function StaffFYPActions({ fyp, currentUserId }: StaffFYPActionsProps) {
               variant="default"
               className="w-full bg-green-600 hover:bg-green-700"
               size="sm"
-              onClick={() => handleStatusUpdate("proposal_approved")}
+              onClick={() => handleStatusUpdate("in_progress")}
               disabled={isUpdating}
             >
               <CheckCircle className="w-4 h-4 mr-2" />
@@ -299,20 +299,6 @@ export function StaffFYPActions({ fyp, currentUserId }: StaffFYPActionsProps) {
               </DialogContent>
             </Dialog>
           </>
-        )}
-
-        {/* Mark as In Progress */}
-        {fyp.status === "proposal_approved" && (
-          <Button
-            variant="outline"
-            className="w-full"
-            size="sm"
-            onClick={() => handleStatusUpdate("in_progress")}
-            disabled={isUpdating}
-          >
-            <FileCheck className="w-4 h-4 mr-2" />
-            Mark as In Progress
-          </Button>
         )}
 
         {/* Mark as Ready for Review */}

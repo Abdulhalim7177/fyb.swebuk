@@ -15,6 +15,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface ProjectOverviewProps {
   fyp: {
@@ -139,12 +140,22 @@ export function ProjectOverview({ fyp, submissions }: ProjectOverviewProps) {
         <CardContent className="space-y-4">
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">Title</p>
-            <p className="font-semibold text-lg">{fyp.title}</p>
+            <p className={cn(
+              "font-semibold text-lg",
+              !fyp.title && "text-muted-foreground italic font-normal"
+            )}>
+              {fyp.title || "Proposal not yet approved"}
+            </p>
           </div>
 
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">Description</p>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{fyp.description}</p>
+            <p className={cn(
+              "text-sm leading-relaxed whitespace-pre-wrap",
+              !fyp.description && "text-muted-foreground italic"
+            )}>
+              {fyp.description || "Project details will appear here once your proposal is approved by your supervisor."}
+            </p>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">

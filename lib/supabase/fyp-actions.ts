@@ -74,15 +74,16 @@ export async function submitFYPProposal(formData: FormData) {
       return { success: false, error: "Title and description are required" };
     }
 
-    // Create FYP project with proposal_submitted status
+    // We know existingFyp exists from the check above.
+    // Update the existing placeholder record status, but DON'T set title/description yet.
+    // They will be set in the submission and copied to the main record only on approval.
     const { data: fypData, error: fypError } = await supabase
       .from("final_year_projects")
-      .insert({
-        student_id: user.id,
-        title,
-        description,
+      .update({
         status: "proposal_submitted",
+        updated_at: new Date().toISOString(),
       })
+      .eq("id", existingFyp.id)
       .select()
       .single();
 
@@ -107,17 +108,30 @@ export async function submitFYPProposal(formData: FormData) {
         .from("fyp-documents")
         .getPublicUrl(filePath);
 
-      // Create proposal submission
+      // Create proposal submission with the proposed title and description
       const { error: submissionError } = await supabase
         .from("fyp_submissions")
         .insert({
           fyp_id: fypData.id,
           submission_type: "proposal",
-          title: "Project Proposal",
-          description: description,
+          title: title, // This is the proposed project title
+          description: description, // This is the proposed project description
           file_url: publicUrl,
           file_name: file.name,
           file_size: file.size,
+          status: "pending",
+        });
+
+      if (submissionError) throw submissionError;
+    } else {
+      // Create proposal submission without file
+      const { error: submissionError } = await supabase
+        .from("fyp_submissions")
+        .insert({
+          fyp_id: fypData.id,
+          submission_type: "proposal",
+          title: title,
+          description: description,
           status: "pending",
         });
 
@@ -162,12 +176,10 @@ export async function resubmitFYPProposal(formData: FormData) {
       return { success: false, error: "No rejected proposal found to resubmit" };
     }
 
-    // Update FYP with new proposal data and reset status
+    // Update FYP status only
     const { error: updateError } = await supabase
       .from("final_year_projects")
       .update({
-        title,
-        description,
         status: "proposal_submitted",
         feedback: null, // Clear previous feedback
       })
@@ -194,14 +206,14 @@ export async function resubmitFYPProposal(formData: FormData) {
         .from("fyp-documents")
         .getPublicUrl(filePath);
 
-      // Create new proposal submission (version 2+)
+      // Create new proposal submission
       const { error: submissionError } = await supabase
         .from("fyp_submissions")
         .insert({
           fyp_id: existingFyp.id,
           submission_type: "proposal",
-          title: `Project Proposal - Resubmission`,
-          description: description,
+          title: title, // Proposed project title
+          description: description, // Proposed project description
           file_url: publicUrl,
           file_name: file.name,
           file_size: file.size,
@@ -217,7 +229,7 @@ export async function resubmitFYPProposal(formData: FormData) {
         .insert({
           fyp_id: existingFyp.id,
           submission_type: "proposal",
-          title: `Project Proposal - Resubmission`,
+          title: title,
           description: description,
           status: "pending",
           version_number: 2,

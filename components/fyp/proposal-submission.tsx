@@ -281,7 +281,7 @@ export function ProposalSubmission({
   }
 
   // State 3: Proposal pending review
-  if (proposalStatus === "pending") {
+  if (proposalStatus === "pending" || proposalStatus === "proposal_submitted") {
     return (
       <Card className="w-full max-w-2xl mx-auto border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
         <CardHeader>

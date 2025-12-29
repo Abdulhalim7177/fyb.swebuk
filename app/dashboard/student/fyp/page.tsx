@@ -47,77 +47,45 @@ export default async function StudentFYPPage() {
 
   const fypData = await getStudentFYPWithSubmissions();
 
-  // Check if student has been assigned a supervisor
-  const hasSupervisor = fypData?.supervisor_id || fypData?.supervisor;
+  // If FYP record exists, check if it's a placeholder (assigned supervisor but no title yet)
+  const isPlaceholder = fypData && (fypData.status === "pending" || (!fypData.title && !fypData.description));
 
-  // No FYP exists yet - check if student has a supervisor assigned
-  if (!fypData) {
+  // Check if student has been assigned a supervisor directly to their FYP project
+  const hasSupervisor = !!fypData?.supervisor_id;
+
+  // Case 1: No FYP record OR placeholder record (assigned supervisor but no proposal submitted)
+  if (!fypData || isPlaceholder) {
     // First check if there's a rejected FYP (for resubmission)
-    const { data: rejectedFyp } = await supabase
+    // Only check if it's not a newly assigned placeholder
+    const { data: rejectedFyp } = (!isPlaceholder && fypData) ? await supabase
       .from("final_year_projects")
       .select("id, title, description, feedback, supervisor_id")
       .eq("student_id", user.id)
       .eq("status", "rejected")
-      .single();
+      .single() : { data: null };
 
     if (rejectedFyp) {
-      // Has rejected proposal - can resubmit if they have a supervisor
-      if (rejectedFyp.supervisor_id) {
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Final Year Project</h1>
-              <p className="text-muted-foreground">
-                Your proposal was not approved. Please review the feedback and resubmit.
-              </p>
-            </div>
-            <ProposalSubmission
-              proposalStatus="rejected"
-              existingTitle={rejectedFyp.title || ""}
-              existingDescription={rejectedFyp.description || ""}
-              existingFeedback={rejectedFyp.feedback || ""}
-            />
+      // Has rejected proposal - can resubmit
+      return (
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Final Year Project</h1>
+            <p className="text-muted-foreground">
+              Your proposal was not approved. Please review the feedback and resubmit.
+            </p>
           </div>
-        );
-      } else {
-        // Rejected but no supervisor
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Final Year Project</h1>
-              <p className="text-muted-foreground">
-                Your proposal was not approved and you don't have a supervisor assigned yet.
-              </p>
-            </div>
-            <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
-                  <User className="h-5 w-5" />
-                  Awaiting Supervisor Assignment
-                </CardTitle>
-                <CardDescription className="text-blue-700 dark:text-blue-300">
-                  Your rejected proposal is on file. Please contact the department administrator
-                  to be assigned a supervisor so you can resubmit your proposal.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3 p-4 bg-blue-100/50 dark:bg-blue-900/40 rounded-lg">
-                  <div className="bg-blue-200 dark:bg-blue-800 p-2 rounded-full">
-                    <AlertCircle className="h-5 w-5 text-blue-700 dark:text-blue-300" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-blue-900 dark:text-blue-100">Supervisor</p>
-                    <p className="text-sm text-blue-700 dark:text-blue-400">Not assigned yet</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
-      }
+          <ProposalSubmission
+            proposalStatus="rejected"
+            existingTitle={rejectedFyp.title || ""}
+            existingDescription={rejectedFyp.description || ""}
+            existingFeedback={rejectedFyp.feedback || ""}
+            supervisorName={fypData?.supervisor?.full_name}
+          />
+        </div>
+      );
     }
 
-    // No FYP exists - check if student has a supervisor assigned (via clusters or direct assignment)
+    // No FYP exists or it's a placeholder - check if student has a supervisor assigned directly
     if (!hasSupervisor) {
       return (
         <div className="space-y-6">
@@ -136,7 +104,7 @@ export default async function StudentFYPPage() {
               </CardTitle>
               <CardDescription className="text-blue-700 dark:text-blue-300">
                 You need to be assigned a supervisor before you can submit your FYP proposal.
-                Please contact the department administrator or your cluster lead.
+                Your supervisor is assigned directly to you by the department administrator.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -153,7 +121,7 @@ export default async function StudentFYPPage() {
                 <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 text-sm text-blue-800 dark:text-blue-300">
                   <p className="font-medium mb-2">What happens next?</p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>An administrator will assign you to a supervisor</li>
+                    <li>An administrator will assign you to a supervisor directly</li>
                     <li>Once assigned, you can submit your project proposal</li>
                     <li>Your supervisor will review and approve your proposal</li>
                     <li>After approval, you can start working on your FYP chapters</li>
@@ -166,7 +134,7 @@ export default async function StudentFYPPage() {
       );
     }
 
-    // Has supervisor - can submit proposal
+    // Has supervisor (fypData exists and has supervisor_id) - can submit proposal
     return (
       <div className="space-y-6">
         <div>
@@ -176,7 +144,10 @@ export default async function StudentFYPPage() {
           </p>
         </div>
 
-        <ProposalSubmission proposalStatus="none" />
+        <ProposalSubmission 
+          proposalStatus="none" 
+          supervisorName={fypData?.supervisor?.full_name} 
+        />
       </div>
     );
   }
@@ -184,21 +155,24 @@ export default async function StudentFYPPage() {
   // FYP exists - check proposal status
   const proposalStatus = fypData.status;
 
-  // Proposal pending or rejected - show proposal status card
-  if (proposalStatus === "proposal_submitted" || proposalStatus === "rejected") {
+  // Case 2: Proposal pending or rejected - show proposal status UI ONLY
+  // This explicitly hides all other "content" (history, tracker, comments) until approved
+  if (proposalStatus === "pending" || proposalStatus === "proposal_submitted" || proposalStatus === "rejected") {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Final Year Project</h1>
+          <h1 className="text-3xl font-black tracking-tight">Final Year Project</h1>
           <p className="text-muted-foreground">
             {proposalStatus === "rejected"
               ? "Your proposal was not approved. Please review the feedback and resubmit."
-              : "Your proposal is under review."}
+              : proposalStatus === "proposal_submitted"
+                ? "Your proposal is under review."
+                : "Submit your project proposal to begin."}
           </p>
         </div>
 
         <ProposalSubmission
-          proposalStatus={proposalStatus === "proposal_submitted" ? "pending" : "rejected"}
+          proposalStatus={proposalStatus === "rejected" ? "rejected" : "proposal_submitted"}
           existingTitle={fypData.title || ""}
           existingDescription={fypData.description || ""}
           existingFeedback={fypData.feedback || ""}
@@ -208,8 +182,10 @@ export default async function StudentFYPPage() {
     );
   }
 
-  // Proposal approved - show full FYP dashboard
-  if (proposalStatus === "proposal_approved" || proposalStatus === "in_progress") {
+  // Case 3: Proposal approved/Active project - show full FYP dashboard
+  const isActive = ["in_progress", "ready_for_review", "completed", "proposal_approved"].includes(proposalStatus);
+
+  if (isActive) {
     // Fetch comments
     const comments = await getFYPComments(fypData.id);
 
@@ -291,21 +267,14 @@ export default async function StudentFYPPage() {
     );
   }
 
-  // Handle other statuses (completed, ready_for_review, etc.)
+  // Fallback for any other state
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Final Year Project</h1>
-        <p className="text-muted-foreground">
-          Status: {proposalStatus}
-        </p>
+      <div className="p-8 text-center border-2 border-dashed rounded-xl">
+        <Clock className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-20" />
+        <h2 className="text-xl font-bold">Project Status: {proposalStatus.replace('_', ' ')}</h2>
+        <p className="text-muted-foreground">Your project is currently being processed. Check back later.</p>
       </div>
-      {/* For other statuses, show the full dashboard */}
-      <ProposalSubmission
-        proposalStatus="approved"
-        existingTitle={fypData.title || ""}
-        supervisorName={fypData.supervisor?.full_name}
-      />
     </div>
   );
 }
