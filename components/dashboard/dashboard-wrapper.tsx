@@ -81,7 +81,8 @@ export function DashboardWrapper({ children }: DashboardWrapperProps) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-black text-white">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground relative">
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
       {/* Desktop Sidebar */}
       <DashboardNav
         userId={user.id}
