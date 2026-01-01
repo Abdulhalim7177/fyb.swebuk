@@ -186,6 +186,121 @@ Data access is strictly controlled via RLS policies:
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
+## 📐 System Design & Architecture Details
+
+### System Design
+The Swebuk Platform is designed as a modular online tech community. It facilitates collaboration, project management, and academic tracking for software engineering students. The system supports multiple user roles (Student, Staff, Admin) and integrates critical academic workflows like the Final Year Project (FYP) module. It follows a client-server architecture where the frontend (Next.js) communicates with a comprehensive backend service (Supabase) for real-time data, authentication, and storage.
+
+### Description of Proposed System Design
+The proposed system allows students to manage their academic lifecycle through:
+1.  **Cluster Participation**: Joining interest-based clubs.
+2.  **Project Management**: Creating and joining projects with approval workflows.
+3.  **FYP Management**: A dedicated module for Level 400 students to handle thesis submissions and supervisor feedback.
+4.  **Content Creation**: Blogging and portfolio building.
+5.  **Administrative Oversight**: Tools for staff to manage users, events, and system integrity.
+
+### Model Relationships (Class Diagram)
+The following UML Class Diagram illustrates the relationships between the core models in the system, such as Users (Profiles), Clusters, Projects, and Content.
+
+```mermaid
+classDiagram
+    class UserProfile {
+        +UUID id
+        +String full_name
+        +String role
+        +String academic_level
+        +String department
+    }
+    class Cluster {
+        +UUID id
+        +String name
+        +String description
+        +UUID lead_id
+        +UUID staff_manager_id
+    }
+    class Project {
+        +UUID id
+        +String title
+        +String visibility
+        +UUID owner_id
+    }
+    class BlogPost {
+        +UUID id
+        +String title
+        +String status
+        +UUID author_id
+    }
+    class FinalYearProject {
+        +UUID id
+        +String title
+        +String status
+        +UUID student_id
+        +UUID supervisor_id
+    }
+
+    UserProfile "1" -- "0..*" Cluster : creates
+    UserProfile "1" -- "0..*" Project : owns
+    UserProfile "1" -- "0..*" BlogPost : writes
+    UserProfile "1" -- "0..1" FinalYearProject : submits
+
+    Cluster "1" -- "0..*" UserProfile : members
+    Project "1" -- "0..*" UserProfile : members
+
+    Cluster ..> UserProfile : managed by (Lead/Staff)
+    FinalYearProject ..> UserProfile : supervised by
+```
+
+### Database Design
+The database is built on PostgreSQL, utilizing robust relational constraints. It centers on the `profiles` table which extends the standard Supabase authentication user. Key tables include `clusters`, `projects`, and `final_year_projects`, all protected by Row Level Security (RLS) policies to ensure data privacy and role-based access.
+
+**Entity-Relationship Diagram (ERD):**
+
+```mermaid
+erDiagram
+    PROFILES ||--o{ CLUSTERS : "manages/leads"
+    PROFILES ||--o{ CLUSTER_MEMBERS : "joins"
+    CLUSTERS ||--|{ CLUSTER_MEMBERS : "has"
+
+    PROFILES ||--o{ PROJECTS : "owns"
+    PROFILES ||--o{ PROJECT_MEMBERS : "contributes to"
+    PROJECTS ||--|{ PROJECT_MEMBERS : "has"
+
+    PROFILES ||--o{ BLOG_POSTS : "authors"
+    BLOG_POSTS ||--o{ COMMENTS : "receives"
+    PROFILES ||--o{ COMMENTS : "writes"
+
+    PROFILES ||--o| FINAL_YEAR_PROJECTS : "submits (student)"
+    PROFILES ||--o{ FINAL_YEAR_PROJECTS : "supervises (staff)"
+
+    PROFILES {
+        uuid id PK
+        string full_name
+        string role
+        string academic_level
+    }
+
+    CLUSTERS {
+        uuid id PK
+        string name
+        uuid lead_id FK
+        uuid staff_manager_id FK
+    }
+
+    PROJECTS {
+        uuid id PK
+        string title
+        uuid owner_id FK
+    }
+
+    FINAL_YEAR_PROJECTS {
+        uuid id PK
+        string title
+        uuid student_id FK
+        uuid supervisor_id FK
+        string status
+    }
+```
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
