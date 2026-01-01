@@ -10,12 +10,27 @@ It serves as a digital hub where students can join clubs (clusters), collaborate
 
 While this README provides a comprehensive overview, detailed documentation can be found here:
 
+### 📘 System Documentation
 | Document | Description |
 |----------|-------------|
 | **[FYP Module Guide](./FYP_README.md)** | Dedicated documentation for the Final Year Project management system. |
 | **[System Architecture](./system%20design%20and%20architecture.md)** | Deep dive into the architectural decisions, diagrams, and data flow. |
 | **[Implementation Roadmap](./IMPLEMENTATION_ROADMAP.md)** | Future plans and current progress status. |
 | **[Migration Guide](./FYP_MIGRATION_GUIDE.md)** | Instructions for database migrations. |
+
+### 🧩 Module Documentation
+| Module | Role/Purpose |
+|--------|--------------|
+| **[Authentication](./app/auth/README.md)** | Login, Signup, and Password Management. |
+| **[Admin Dashboard](./app/dashboard/admin/README.md)** | System oversight, user management, and analytics. |
+| **[Staff Dashboard](./app/dashboard/staff/README.md)** | Cluster management and FYP supervision. |
+| **[Student Dashboard](./app/dashboard/student/README.md)** | Personal workspace, projects, and academic tracking. |
+| **[Clusters](./app/dashboard/clusters/README.md)** | Club management and directory. |
+| **[Projects](./app/dashboard/projects/README.md)** | Collaborative project workspaces. |
+| **[Blog](./app/blog/README.md)** | Community article publishing and feed. |
+| **[Events](./app/events/README.md)** | Event calendar and registration. |
+| **[Portfolio](./app/portfolio/README.md)** | Student professional profiles. |
+| **[Profile](./app/profile/README.md)** | User settings and identity management. |
 
 ---
 
@@ -199,10 +214,46 @@ The proposed system allows students to manage their academic lifecycle through:
 4.  **Content Creation**: Blogging and portfolio building.
 5.  **Administrative Oversight**: Tools for staff to manage users, events, and system integrity.
 
+### System Activity Diagrams
+The following diagram illustrates the key user flows within the system, including Registration, Project Creation, and the FYP Submission process.
+
+```mermaid
+%%{init: {'theme':'neutral'}}%%
+stateDiagram-v2
+    direction LR
+
+    state "User Registration" as Reg {
+        [*] --> SignUp
+        SignUp --> CreateProfile
+        CreateProfile --> AssignRole
+        AssignRole --> [*]
+    }
+
+    state "Project Creation" as Proj {
+        [*] --> CreateDraft
+        CreateDraft --> SetupVisibility
+        SetupVisibility --> InviteMembers
+        InviteMembers --> Active
+    }
+
+    state "FYP Submission" as FYP {
+        [*] --> SubmitProposal
+        SubmitProposal --> PendingReview
+        PendingReview --> ReviewDecision
+        ReviewDecision --> Approved : if Valid
+        ReviewDecision --> NeedsRevision : if Issues
+        NeedsRevision --> SubmitProposal
+        Approved --> InProgress
+        InProgress --> FinalSubmission
+        FinalSubmission --> [*]
+    }
+```
+
 ### Model Relationships (Class Diagram)
 The following UML Class Diagram illustrates the relationships between the core models in the system, such as Users (Profiles), Clusters, Projects, and Content.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 classDiagram
     class UserProfile {
         +UUID id
@@ -256,6 +307,7 @@ The database is built on PostgreSQL, utilizing robust relational constraints. It
 **Entity-Relationship Diagram (ERD):**
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 erDiagram
     PROFILES ||--o{ CLUSTERS : "manages/leads"
     PROFILES ||--o{ CLUSTER_MEMBERS : "joins"
