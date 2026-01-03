@@ -597,6 +597,20 @@ section:last-of-type {
   overflow: hidden;
 }
 
+/* Dashboard navigation links */
+.dashboard-nav .text-sm {
+  font-size: 1rem !important;
+}
+
+.dashboard-nav a {
+  font-size: 1rem !important;
+}
+
+/* More specific selector for dashboard navigation items */
+aside nav a {
+  font-size: 1rem !important;
+}
+
 /* -------------------- Enhanced Glassmorphism Cards -------------------- */
 .glass-card {
   background: var(--card-bg);
