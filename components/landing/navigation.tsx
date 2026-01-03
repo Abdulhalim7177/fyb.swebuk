@@ -58,14 +58,10 @@ export function Navigation() {
 
           <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`} id="navLinks">
             <li><Link href="#features" className="nav-link" onClick={() => setIsMenuOpen(false)}>Features</Link></li>
-            <li><Link href="/blog" className="nav-link" onClick={() => setIsMenuOpen(false)}>Blog</Link></li>
-            <li><Link href="#testimonials" className="nav-link" onClick={() => setIsMenuOpen(false)}>Impact</Link></li>
-            <li><Link href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>About</Link></li>
-            <li className="md:hidden">
-              <div className="auth-mobile-wrapper">
-                <AuthButtonClient />
-              </div>
-            </li>
+            <li><Link href="#how-it-works" className="nav-link" onClick={() => setIsMenuOpen(false)}>How It Works</Link></li>
+            <li><Link href="#testimonials" className="nav-link" onClick={() => setIsMenuOpen(false)}>Testimonials</Link></li>
+            <li><Link href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
+
           </ul>
 
           <div className="nav-actions">
