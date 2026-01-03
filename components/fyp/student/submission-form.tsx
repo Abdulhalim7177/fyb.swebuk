@@ -20,12 +20,28 @@ import { toast } from "sonner";
 
 interface SubmissionFormProps {
   fypId: string;
+  approvedTypes?: string[];
 }
 
-export function SubmissionForm({ fypId }: SubmissionFormProps) {
+export function SubmissionForm({ fypId, approvedTypes = [] }: SubmissionFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const submissionOptions = [
+    { value: "proposal", label: "Project Proposal" },
+    { value: "chapter_1", label: "Chapter 1" },
+    { value: "chapter_2", label: "Chapter 2" },
+    { value: "chapter_3", label: "Chapter 3" },
+    { value: "chapter_4", label: "Chapter 4" },
+    { value: "chapter_5", label: "Chapter 5" },
+    { value: "final_thesis", label: "Final Thesis (Complete Project)" },
+  ];
+
+  // Filter out already approved types
+  const availableOptions = submissionOptions.filter(
+    opt => !approvedTypes.includes(opt.value)
+  );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -84,13 +100,16 @@ export function SubmissionForm({ fypId }: SubmissionFormProps) {
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="proposal">Project Proposal</SelectItem>
-                    <SelectItem value="chapter_1">Chapter 1</SelectItem>
-                    <SelectItem value="chapter_2">Chapter 2</SelectItem>
-                    <SelectItem value="chapter_3">Chapter 3</SelectItem>
-                    <SelectItem value="chapter_4">Chapter 4</SelectItem>
-                    <SelectItem value="chapter_5">Chapter 5</SelectItem>
-                    <SelectItem value="final_thesis">Final Thesis (Complete Project)</SelectItem>
+                    {availableOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                    {availableOptions.length === 0 && (
+                      <SelectItem value="none" disabled>
+                        All chapters approved
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>

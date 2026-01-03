@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FYPComments } from "@/components/fyp/fyp-comments";
 import { StaffFYPActions } from "@/components/fyp/staff-fyp-actions";
 import { SubmissionList } from "@/components/fyp/staff/submission-list";
+import { ChapterProgressTracker } from "@/components/fyp/chapter-progress-tracker";
+import { ProjectOverview } from "@/components/fyp/student/project-overview";
 import { Calendar, User, FileText, Clock } from "lucide-react";
 import { getStaffFYPDetails } from "@/lib/supabase/fyp-staff-actions";
 import { getFYPComments } from "@/lib/supabase/fyp-actions";
@@ -83,16 +85,51 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
 
   const comments = await getFYPComments(id);
 
+  // Build chapter progress data
+  const chapterTypes = [
+    { type: 'proposal', label: 'Project Proposal' },
+    { type: 'chapter_1', label: 'Chapter 1' },
+    { type: 'chapter_2', label: 'Chapter 2' },
+    { type: 'chapter_3', label: 'Chapter 3' },
+    { type: 'chapter_4', label: 'Chapter 4' },
+    { type: 'chapter_5', label: 'Chapter 5' },
+    { type: 'final_thesis', label: 'Final Thesis' },
+  ];
+
+  const chapterProgress = chapterTypes.map(chapter => {
+    const submissions = (fypData.submissions || []).filter(
+      (s: any) => s.submission_type === chapter.type && (s.is_latest_version ?? true)
+    );
+    const latest = submissions[0];
+
+    // If it's the proposal and project is already active, it's approved by definition
+    const isApprovedProposal = chapter.type === 'proposal' && 
+      ["in_progress", "ready_for_review", "completed", "proposal_approved"].includes(fypData.status);
+
+    return {
+      type: chapter.type,
+      label: chapter.label,
+      status: (isApprovedProposal || latest?.status === 'approved'
+        ? 'approved'
+        : !latest
+          ? 'not_started'
+          : latest.status === 'pending'
+            ? 'pending'
+            : 'needs_revision') as "approved" | "pending" | "needs_revision" | "not_started",
+      latestVersion: latest?.version_number,
+    };
+  });
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">{fypData.title}</h1>
+          <h1 className="text-3xl font-black tracking-tight">{fypData.title || "Untitled Project"}</h1>
           <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              <span>Submitted {new Date(fypData.created_at).toLocaleDateString()}</span>
+              <span>Started {new Date(fypData.created_at).toLocaleDateString()}</span>
             </div>
             {fypData.completed_at && (
               <div className="flex items-center gap-1">
@@ -109,13 +146,13 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Project Description */}
-          <Card>
+          <Card className="md:border md:border-border/40 md:bg-card/50 md:backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-lg">Project Description</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                {fypData.description}
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                {fypData.description || "No project description provided."}
               </p>
             </CardContent>
           </Card>
@@ -123,29 +160,29 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
           {/* Submissions */}
           <SubmissionList submissions={fypData.submissions || []} />
 
-          {/* Feedback */}
-          {fypData.feedback && (
-            <Card className="border-yellow-200 bg-yellow-50/50 dark:bg-yellow-900/10 dark:border-yellow-900">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-yellow-600" />
-                  Supervisor Feedback
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{fypData.feedback}</p>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Comments */}
           <FYPComments fypId={fypData.id} initialComments={comments} />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Progress Tracker */}
+          <ChapterProgressTracker
+            chapters={chapterProgress}
+            progressPercentage={fypData.progress_percentage || 0}
+            githubRepoUrl={fypData.github_repo_url}
+            fypId={fypData.id}
+            readOnly={true}
+          />
+
+          {/* Project Overview Stats */}
+          <ProjectOverview fyp={fypData} submissions={fypData.submissions || []} />
+
+          {/* Actions */}
+          <StaffFYPActions fyp={fypData} currentUserId={user.id} />
+
           {/* Student Info */}
-          <Card>
+          <Card className="md:border md:border-border/40 md:bg-card/50 md:backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">Student</CardTitle>
             </CardHeader>
@@ -157,23 +194,21 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
                 </Avatar>
                 <div>
                   <p className="font-medium">{fypData.student?.full_name}</p>
-                  <Badge variant="outline" className="mt-1">
-                    Level {fypData.student?.academic_level || "400"}
-                  </Badge>
+                  <p className="text-xs text-muted-foreground">Level {fypData.student?.academic_level || "400"}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Supervisor Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Supervisor
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {fypData.supervisor ? (
+          {/* Supervisor Info (if not current user) */}
+          {fypData.supervisor && fypData.supervisor_id !== user.id && (
+            <Card className="md:border md:border-border/40 md:bg-card/50 md:backdrop-blur-md">
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Co-Supervisor / Admin View
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={fypData.supervisor.avatar_url || undefined} />
@@ -184,29 +219,9 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
                     <p className="text-xs text-muted-foreground">{fypData.supervisor.email}</p>
                   </div>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-4 text-center text-muted-foreground">
-                  <User className="w-10 h-10 mb-2 opacity-20" />
-                  <p className="text-sm">No supervisor assigned yet.</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Grade */}
-          {fypData.grade && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">Grade</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-center">{fypData.grade}</div>
               </CardContent>
             </Card>
           )}
-
-          {/* Actions */}
-          <StaffFYPActions fyp={fypData} currentUserId={user.id} />
         </div>
       </div>
     </div>

@@ -53,6 +53,18 @@ export async function submitFYPProposal(formData: FormData) {
     return { success: false, error: "Only Level 400 students can submit FYP proposals." };
   }
 
+  // Check if student has been assigned a supervisor
+  const { data: existingFyp } = await supabase
+    .from("final_year_projects")
+    .select("id, supervisor_id")
+    .eq("student_id", user.id)
+    .not("supervisor_id", "is", null)
+    .single();
+
+  if (!existingFyp?.supervisor_id) {
+    return { success: false, error: "You must be assigned a supervisor before submitting a proposal. Please contact the department administrator." };
+  }
+
   try {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
@@ -62,15 +74,16 @@ export async function submitFYPProposal(formData: FormData) {
       return { success: false, error: "Title and description are required" };
     }
 
-    // Create FYP project first
+    // We know existingFyp exists from the check above.
+    // Update the existing placeholder record status, but DON'T set title/description yet.
+    // They will be set in the submission and copied to the main record only on approval.
     const { data: fypData, error: fypError } = await supabase
       .from("final_year_projects")
-      .insert({
-        student_id: user.id,
-        title,
-        description,
-        status: "in_progress",
+      .update({
+        status: "proposal_submitted",
+        updated_at: new Date().toISOString(),
       })
+      .eq("id", existingFyp.id)
       .select()
       .single();
 
@@ -95,17 +108,30 @@ export async function submitFYPProposal(formData: FormData) {
         .from("fyp-documents")
         .getPublicUrl(filePath);
 
-      // Create proposal submission
+      // Create proposal submission with the proposed title and description
       const { error: submissionError } = await supabase
         .from("fyp_submissions")
         .insert({
           fyp_id: fypData.id,
           submission_type: "proposal",
-          title: "Project Proposal",
-          description: description,
+          title: title, // This is the proposed project title
+          description: description, // This is the proposed project description
           file_url: publicUrl,
           file_name: file.name,
           file_size: file.size,
+          status: "pending",
+        });
+
+      if (submissionError) throw submissionError;
+    } else {
+      // Create proposal submission without file
+      const { error: submissionError } = await supabase
+        .from("fyp_submissions")
+        .insert({
+          fyp_id: fypData.id,
+          submission_type: "proposal",
+          title: title,
+          description: description,
           status: "pending",
         });
 
@@ -117,6 +143,106 @@ export async function submitFYPProposal(formData: FormData) {
   } catch (error: any) {
     console.error("Error submitting proposal:", error);
     return { success: false, error: error.message || "Failed to submit proposal" };
+  }
+}
+
+// Resubmit rejected proposal
+export async function resubmitFYPProposal(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await (supabase.auth as any).getUser();
+
+  if (!user) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  try {
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const file = formData.get("file") as File;
+
+    if (!title || !description) {
+      return { success: false, error: "Title and description are required" };
+    }
+
+    // Get existing FYP
+    const { data: existingFyp, error: fetchError } = await supabase
+      .from("final_year_projects")
+      .select("id")
+      .eq("student_id", user.id)
+      .eq("status", "rejected")
+      .single();
+
+    if (fetchError || !existingFyp) {
+      return { success: false, error: "No rejected proposal found to resubmit" };
+    }
+
+    // Update FYP status only
+    const { error: updateError } = await supabase
+      .from("final_year_projects")
+      .update({
+        status: "proposal_submitted",
+        feedback: null, // Clear previous feedback
+      })
+      .eq("id", existingFyp.id);
+
+    if (updateError) throw updateError;
+
+    // Upload file if provided and create new submission
+    if (file && file.size > 0) {
+      const timestamp = Date.now();
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}/${existingFyp.id}/proposal_${timestamp}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("fyp-documents")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("fyp-documents")
+        .getPublicUrl(filePath);
+
+      // Create new proposal submission
+      const { error: submissionError } = await supabase
+        .from("fyp_submissions")
+        .insert({
+          fyp_id: existingFyp.id,
+          submission_type: "proposal",
+          title: title, // Proposed project title
+          description: description, // Proposed project description
+          file_url: publicUrl,
+          file_name: file.name,
+          file_size: file.size,
+          status: "pending",
+          version_number: 2,
+        });
+
+      if (submissionError) throw submissionError;
+    } else {
+      // Create a new submission without file
+      const { error: submissionError } = await supabase
+        .from("fyp_submissions")
+        .insert({
+          fyp_id: existingFyp.id,
+          submission_type: "proposal",
+          title: title,
+          description: description,
+          status: "pending",
+          version_number: 2,
+        });
+
+      if (submissionError) throw submissionError;
+    }
+
+    revalidatePath("/dashboard/student/fyp");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error resubmitting proposal:", error);
+    return { success: false, error: error.message || "Failed to resubmit proposal" };
   }
 }
 

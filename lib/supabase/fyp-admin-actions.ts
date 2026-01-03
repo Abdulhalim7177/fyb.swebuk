@@ -617,9 +617,9 @@ export async function createFYPWithAssignment(
       .insert({
         student_id: studentId,
         supervisor_id: supervisorId,
-        title: title || "FYP Project",
+        title: title || "",
         description: description || "",
-        status: "proposal_approved",
+        status: "pending",
       });
 
     if (error) throw error;

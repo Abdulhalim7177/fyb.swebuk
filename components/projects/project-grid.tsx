@@ -188,10 +188,10 @@ export function ProjectGrid({
     return (
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 animate-pulse">
-            <div className="h-6 w-3/4 bg-white/10 rounded mb-4" />
-            <div className="h-4 w-full bg-white/10 rounded mb-2" />
-            <div className="h-20 w-full bg-white/10 rounded" />
+          <div key={i} className="rounded-2xl bg-card border border-border p-6 animate-pulse">
+            <div className="h-6 w-3/4 bg-muted rounded mb-4" />
+            <div className="h-4 w-full bg-muted rounded mb-2" />
+            <div className="h-20 w-full bg-muted rounded" />
           </div>
         ))}
       </div>
@@ -200,10 +200,10 @@ export function ProjectGrid({
 
   if (projects.length === 0) {
     return (
-      <div className="text-center py-16 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
-        <FolderGit2 className="mx-auto h-16 w-16 text-slate-500 mb-4" />
-        <h3 className="text-xl font-bold text-white">No projects found</h3>
-        <p className="text-slate-400 mt-2">
+      <div className="text-center py-16 rounded-2xl bg-card border border-border">
+        <FolderGit2 className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+        <h3 className="text-xl font-bold text-foreground">No projects found</h3>
+        <p className="text-muted-foreground mt-2">
           {searchTerm
             ? "Try adjusting your search or filters"
             : "No projects have been created yet"}
@@ -245,7 +245,7 @@ export function ProjectGrid({
         {displayMembers.map((member, index) => (
           <Avatar
             key={member.user_id}
-            className="h-8 w-8 border-2 border-black hover:z-10 transition-transform hover:scale-110"
+            className="h-8 w-8 border-2 border-background hover:z-10 transition-transform hover:scale-110"
             style={{ zIndex: displayMembers.length - index }}
           >
             <AvatarImage src={member.avatar_url || undefined} />
@@ -255,7 +255,7 @@ export function ProjectGrid({
           </Avatar>
         ))}
         {remainingCount > 0 && (
-          <div className="h-8 w-8 rounded-full border-2 border-black bg-white/10 flex items-center justify-center text-xs font-medium text-slate-300">
+          <div className="h-8 w-8 rounded-full border-2 border-background bg-secondary flex items-center justify-center text-xs font-medium text-muted-foreground">
             +{remainingCount}
           </div>
         )}
@@ -266,7 +266,7 @@ export function ProjectGrid({
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {projects.map((project) => (
-        <div key={project.id} className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 flex flex-col">
+        <div key={project.id} className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:scale-105 flex flex-col">
           <div className={`absolute top-0 left-0 right-0 h-1 ${project.type === "cluster" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-violet-500 to-purple-500"}`} />
 
           <div className="p-6 pb-3">
@@ -274,48 +274,48 @@ export function ProjectGrid({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
                   <div className={`h-2 w-2 rounded-full ${getStatusColor(project.status)}`} />
-                  <h3 className="text-lg font-bold text-white truncate group-hover:text-emerald-400 transition-colors duration-200">{project.name}</h3>
+                  <h3 className="text-lg font-bold text-foreground truncate group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors duration-200">{project.name}</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-5 w-5 border border-white/20">
+                  <Avatar className="h-5 w-5 border border-border">
                     <AvatarImage src={project.owner_avatar} />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
                       {project.owner_name?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-slate-400 truncate">{project.owner_name}</span>
+                  <span className="text-xs text-muted-foreground truncate">{project.owner_name}</span>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1">
                 {project.visibility === "private" ? (
-                  <Lock className="h-4 w-4 text-amber-400" />
+                  <Lock className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                 ) : (
-                  <Eye className="h-4 w-4 text-green-400" />
+                  <Eye className="h-4 w-4 text-green-500 dark:text-green-400" />
                 )}
               </div>
             </div>
           </div>
 
           <div className="px-6 flex-1">
-            <p className="text-sm text-slate-300 line-clamp-3 mb-4">
+            <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
               {project.description}
             </p>
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-4">
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.type === "cluster" ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" : "bg-violet-500/20 text-violet-300 border border-violet-500/30"}`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.type === "cluster" ? "bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/30" : "bg-violet-500/20 text-violet-600 dark:text-violet-300 border border-violet-500/30"}`}>
                 {project.type}
               </span>
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                project.status === "active" ? "bg-green-500/20 text-green-300 border border-green-500/30" :
-                project.status === "completed" ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" :
-                project.status === "on_hold" ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" :
-                "bg-gray-500/20 text-gray-300 border border-gray-500/30"
+                project.status === "active" ? "bg-green-500/20 text-green-600 dark:text-green-300 border border-green-500/30" :
+                project.status === "completed" ? "bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/30" :
+                project.status === "on_hold" ? "bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30" :
+                "bg-gray-500/20 text-gray-600 dark:text-gray-300 border border-gray-500/30"
               }`}>
                 {project.status.replace("_", " ")}
               </span>
               {project.cluster_name && (
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30">
                   {project.cluster_name}
                 </span>
               )}
@@ -327,13 +327,13 @@ export function ProjectGrid({
                 {project.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-emerald-300"
+                    className="text-xs bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-emerald-600 dark:text-emerald-300"
                   >
                     {tag}
                   </span>
                 ))}
                 {project.tags.length > 3 && (
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     +{project.tags.length - 3} more
                   </span>
                 )}
@@ -342,13 +342,13 @@ export function ProjectGrid({
 
             {/* Meta info with Member Avatars */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-xs text-slate-400">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <Users className="h-3 w-3 text-emerald-400" />
+                  <Users className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
                   <span>{project.members_count}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3 text-violet-400" />
+                  <Calendar className="h-3 w-3 text-violet-500 dark:text-violet-400" />
                   <span>{new Date(project.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
@@ -356,9 +356,9 @@ export function ProjectGrid({
             </div>
           </div>
 
-          <div className="flex gap-2 p-6 pt-4 border-t border-white/10">
+          <div className="flex gap-2 p-6 pt-4 border-t border-border">
             <Link href={`/dashboard/projects/${project.id}`} className="flex-1">
-              <button className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-200 hover:scale-105 text-sm">
+              <button className="w-full px-4 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300 font-medium transition-all duration-200 hover:scale-105 text-sm">
                 View Details
               </button>
             </Link>
@@ -367,7 +367,7 @@ export function ProjectGrid({
                 href={project.repository_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-300 transition-all duration-200 hover:scale-105"
+                className="p-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-600 dark:text-green-300 transition-all duration-200 hover:scale-105"
               >
                 <GitBranch className="h-4 w-4" />
               </a>
@@ -377,7 +377,7 @@ export function ProjectGrid({
                 href={project.demo_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-300 transition-all duration-200 hover:scale-105"
+                className="p-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-600 dark:text-blue-300 transition-all duration-200 hover:scale-105"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>

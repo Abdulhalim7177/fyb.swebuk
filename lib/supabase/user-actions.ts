@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin-actions";
+import { revalidatePath } from "next/cache";
 
 export interface ProfileUpdateData {
   full_name?: string;
@@ -56,6 +57,11 @@ export async function updateUserProfile(userId: string, data: ProfileUpdateData)
       console.error("Error updating profile:", profileError);
       throw new Error(`Failed to update user profile: ${profileError.message}`);
     }
+
+    // Revalidate the user profile page and admin users list
+    revalidatePath(`/dashboard/admin/users/${userId}`);
+    revalidatePath(`/dashboard/admin/users`);
+    revalidatePath(`/portfolio/${userId}`);
 
     return { success: true };
   } catch (error) {

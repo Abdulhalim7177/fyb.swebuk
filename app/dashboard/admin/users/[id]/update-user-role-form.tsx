@@ -184,7 +184,9 @@ export default function UpdateUserRoleForm({
         research_interests: researchInterests,
       };
 
+      console.log("Submitting profile update for user:", profile.id);
       const result = await updateUserProfile(profile.id, updates);
+      console.log("Update result:", result);
 
       if (result.success) {
         setFeedback({ type: 'success', message: 'Profile updated successfully!' });
@@ -193,10 +195,11 @@ export default function UpdateUserRoleForm({
           router.refresh();
         }, 1500);
       } else {
-        throw new Error(result.error);
+        setFeedback({ type: 'error', message: result.error || 'Failed to update profile' });
       }
     } catch (error: unknown) {
-      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'An error occurred' });
+      console.error("Error updating profile:", error);
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'An error occurred while updating the profile' });
     } finally {
       setLoading(false);
     }

@@ -167,12 +167,12 @@ export default function ModernProfileDisplay({
       className="w-full max-w-5xl mx-auto"
     >
       {/* Profile Header */}
-      <div className="relative mb-8 rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-700/20 to-transparent" />
+      <div className="relative mb-8 rounded-3xl overflow-hidden bg-gradient-to-r from-muted/50 to-muted dark:from-slate-900 dark:to-slate-800 p-8 border border-border">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-background/50 to-transparent dark:from-slate-700/20" />
         
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
           <div className="relative">
-            <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl">
+            <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-background dark:border-white/20 shadow-2xl">
               {profile.avatar_url ? (
                 <img
                   src={profile.avatar_url}
@@ -181,18 +181,18 @@ export default function ModernProfileDisplay({
                 />
               ) : (
                 <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${roleSettings.gradient.split(' ')[0]} ${roleSettings.gradient.split(' ')[1]}`}>
-                  <span className="text-4xl font-bold text-white">{getInitials(profile.full_name || 'User')}</span>
+                  <span className="text-4xl font-bold text-foreground dark:text-white">{getInitials(profile.full_name || 'User')}</span>
                 </div>
               )}
             </div>
             
-            <div className={`absolute -bottom-2 -right-2 p-2 rounded-full bg-black/50 border border-white/10 backdrop-blur-md z-20`}>
-              <roleSettings.icon className="w-5 h-5 text-white" />
+            <div className={`absolute -bottom-2 -right-2 p-2 rounded-full bg-background/80 dark:bg-black/50 border border-border dark:border-white/10 backdrop-blur-md z-20`}>
+              <roleSettings.icon className="w-5 h-5 text-foreground dark:text-white" />
             </div>
           </div>
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground dark:text-white mb-2">
               {profile.full_name}
             </h1>
             
@@ -203,26 +203,26 @@ export default function ModernProfileDisplay({
               </Badge>
               
               {(isStudent || userRole === "lead" || userRole === "deputy") && profile.academic_level && (
-                <Badge variant="outline" className="border-white/20 text-slate-300">
+                <Badge variant="outline" className="border-border text-muted-foreground dark:text-slate-300">
                   {formatAcademicLevel(profile.academic_level)}
                 </Badge>
               )}
               
               {profile.registration_number && (
-                <Badge variant="secondary" className="bg-white/10 text-white hover:bg-white/20 border-0 flex items-center gap-1">
+                <Badge variant="secondary" className="bg-secondary/50 hover:bg-secondary border-0 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   {profile.registration_number}
                 </Badge>
               )}
             </div>
             
-            <p className="text-slate-300 mb-4 max-w-2xl">
+            <p className="text-muted-foreground dark:text-slate-300 mb-4 max-w-2xl">
               {profile.bio || "No bio provided. Add a short description to let others know about your interests and expertise."}
             </p>
             
             <div className="flex flex-wrap justify-center md:justify-start gap-3">
               {profile.linkedin_url && (
-                <Button asChild variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
+                <Button asChild variant="outline" size="sm" className="border-border text-foreground hover:bg-secondary">
                   <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">
                     <Linkedin className="w-4 h-4 mr-2" />
                     LinkedIn
@@ -231,7 +231,7 @@ export default function ModernProfileDisplay({
               )}
               
               {profile.github_url && (
-                <Button asChild variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
+                <Button asChild variant="outline" size="sm" className="border-border text-foreground hover:bg-secondary">
                   <a href={profile.github_url} target="_blank" rel="noopener noreferrer">
                     <Github className="w-4 h-4 mr-2" />
                     GitHub
@@ -254,46 +254,46 @@ export default function ModernProfileDisplay({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <motion.div 
           whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 flex flex-col items-center text-center"
+          className="rounded-2xl border border-border bg-card shadow-sm p-4 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500 mb-2">
             <FolderOpen className="w-6 h-6" />
           </div>
-          <span className="text-2xl font-bold text-white">12</span>
-          <span className="text-sm text-slate-400">Projects</span>
+          <span className="text-2xl font-bold text-foreground">12</span>
+          <span className="text-sm text-muted-foreground">Projects</span>
         </motion.div>
 
         <motion.div 
           whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 flex flex-col items-center text-center"
+          className="rounded-2xl border border-border bg-card shadow-sm p-4 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-violet-500/10 text-violet-500 mb-2">
             <Code2 className="w-6 h-6" />
           </div>
-          <span className="text-2xl font-bold text-white">{profile.skills?.length || 0}</span>
-          <span className="text-sm text-slate-400">Skills</span>
+          <span className="text-2xl font-bold text-foreground">{profile.skills?.length || 0}</span>
+          <span className="text-sm text-muted-foreground">Skills</span>
         </motion.div>
 
         <motion.div 
           whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 flex flex-col items-center text-center"
+          className="rounded-2xl border border-border bg-card shadow-sm p-4 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 mb-2">
             <Users className="w-6 h-6" />
           </div>
-          <span className="text-2xl font-bold text-white">8</span>
-          <span className="text-sm text-slate-400">Collaborations</span>
+          <span className="text-2xl font-bold text-foreground">8</span>
+          <span className="text-sm text-muted-foreground">Collaborations</span>
         </motion.div>
 
         <motion.div 
           whileHover={{ scale: 1.03 }}
-          className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 flex flex-col items-center text-center"
+          className="rounded-2xl border border-border bg-card shadow-sm p-4 flex flex-col items-center text-center"
         >
           <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 mb-2">
             <Calendar className="w-6 h-6" />
           </div>
-          <span className="text-2xl font-bold text-white">{joinDate}</span>
-          <span className="text-sm text-slate-400">Member Since</span>
+          <span className="text-2xl font-bold text-foreground">{joinDate}</span>
+          <span className="text-sm text-muted-foreground">Member Since</span>
         </motion.div>
       </div>
 
@@ -301,9 +301,9 @@ export default function ModernProfileDisplay({
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* About Section */}
-          <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+          <Card className="border border-border bg-card shadow-sm overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <User className="w-5 h-5" />
                 About
               </CardTitle>
@@ -311,46 +311,46 @@ export default function ModernProfileDisplay({
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                     <GraduationCap className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-slate-300">Academic Details</h3>
-                    <p className="text-white">
+                    <h3 className="font-medium text-muted-foreground">Academic Details</h3>
+                    <p className="text-foreground">
                       {(isStudent || userRole === "lead" || userRole === "deputy") ? formatAcademicLevel(profile.academic_level) : "Professional"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                     <Building2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-slate-300">Department</h3>
-                    <p className="text-white">{profile.department || "N/A"}</p>
+                    <h3 className="font-medium text-muted-foreground">Department</h3>
+                    <p className="text-foreground">{profile.department || "N/A"}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                  <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-slate-300">Institution</h3>
-                    <p className="text-white">{profile.institution || "N/A"}</p>
+                    <h3 className="font-medium text-muted-foreground">Institution</h3>
+                    <p className="text-foreground">{profile.institution || "N/A"}</p>
                   </div>
                 </div>
 
                 {profile.email && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Mail className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-slate-300">Email</h3>
+                      <h3 className="font-medium text-muted-foreground">Email</h3>
                       <div className="flex items-center gap-2">
-                        <p className="text-white truncate">{profile.email}</p>
+                        <p className="text-foreground truncate">{profile.email}</p>
                         <Button
                           size="icon"
                           variant="ghost"
@@ -360,7 +360,7 @@ export default function ModernProfileDisplay({
                           {copied ? (
                             <Check className="w-4 h-4 text-emerald-500" />
                           ) : (
-                            <Copy className="w-4 h-4 text-slate-400" />
+                            <Copy className="w-4 h-4 text-muted-foreground" />
                           )}
                         </Button>
                       </div>
@@ -370,13 +370,13 @@ export default function ModernProfileDisplay({
 
                 {profile.registration_number && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <User className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-slate-300">Registration Number</h3>
+                      <h3 className="font-medium text-muted-foreground">Registration Number</h3>
                       <div className="flex items-center gap-2">
-                        <p className="text-white">{profile.registration_number}</p>
+                        <p className="text-foreground">{profile.registration_number}</p>
                         <Button
                           size="icon"
                           variant="ghost"
@@ -386,7 +386,7 @@ export default function ModernProfileDisplay({
                           {copied ? (
                             <Check className="w-4 h-4 text-emerald-500" />
                           ) : (
-                            <Copy className="w-4 h-4 text-slate-400" />
+                            <Copy className="w-4 h-4 text-muted-foreground" />
                           )}
                         </Button>
                       </div>
@@ -398,9 +398,9 @@ export default function ModernProfileDisplay({
           </Card>
 
           {/* Skills Section */}
-          <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+          <Card className="border border-border bg-card shadow-sm overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Code2 className="w-5 h-5" />
                 Skills & Expertise
               </CardTitle>
@@ -416,14 +416,14 @@ export default function ModernProfileDisplay({
                     >
                       <Badge
                         variant="secondary"
-                        className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-slate-200 hover:bg-white/20 transition-all cursor-pointer"
+                        className="px-4 py-2 rounded-full bg-secondary/50 border border-border text-foreground hover:bg-secondary transition-all cursor-pointer"
                       >
                         {skill}
                       </Badge>
                     </motion.div>
                   ))
                 ) : (
-                  <span className="text-slate-500 italic">No skills added yet.</span>
+                  <span className="text-muted-foreground italic">No skills added yet.</span>
                 )}
               </div>
             </CardContent>
@@ -431,9 +431,9 @@ export default function ModernProfileDisplay({
 
           {/* Student-Specific Details */}
           {(userRole === "student" || userRole === "lead" || userRole === "deputy") && (
-            <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+            <Card className="border border-border bg-card shadow-sm overflow-hidden">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <GraduationCap className="w-5 h-5" />
                   Academic Details
                 </CardTitle>
@@ -441,50 +441,50 @@ export default function ModernProfileDisplay({
               <CardContent className="space-y-4">
                 {profile.specialization && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <GraduationCap className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Specialization</h3>
-                      <p className="text-white">{profile.specialization}</p>
+                      <h3 className="font-medium text-muted-foreground">Specialization</h3>
+                      <p className="text-foreground">{profile.specialization}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.gpa && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Star className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">GPA</h3>
-                      <p className="text-white">{profile.gpa.toFixed(2)}</p>
+                      <h3 className="font-medium text-muted-foreground">GPA</h3>
+                      <p className="text-foreground">{profile.gpa.toFixed(2)}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.academic_standing && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Academic Standing</h3>
-                      <p className="text-white">{profile.academic_standing}</p>
+                      <h3 className="font-medium text-muted-foreground">Academic Standing</h3>
+                      <p className="text-foreground">{profile.academic_standing}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.current_courses && profile.current_courses.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Book className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Current Courses</h3>
+                      <h3 className="font-medium text-muted-foreground">Current Courses</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {profile.current_courses.map((course, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                          <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-secondary/50 border border-border text-foreground">
                             {course}
                           </Badge>
                         ))}
@@ -495,14 +495,14 @@ export default function ModernProfileDisplay({
 
                 {profile.achievements && profile.achievements.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Award className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Achievements</h3>
+                      <h3 className="font-medium text-muted-foreground">Achievements</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {profile.achievements.map((achievement, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                          <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-secondary/50 border border-border text-foreground">
                             {achievement}
                           </Badge>
                         ))}
@@ -513,16 +513,16 @@ export default function ModernProfileDisplay({
 
                 {profile.portfolio_items && profile.portfolio_items.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <FolderOpen className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Portfolio</h3>
+                      <h3 className="font-medium text-muted-foreground">Portfolio</h3>
                       <div className="space-y-3 mt-2">
                         {profile.portfolio_items.map((item: any, index: number) => (
-                          <div key={index} className="p-3 bg-white/5 border border-white/10 rounded-lg">
+                          <div key={index} className="p-3 bg-card border border-border rounded-lg shadow-sm">
                             <div className="flex justify-between">
-                              <h4 className="font-medium text-white">{item.title}</h4>
+                              <h4 className="font-medium text-foreground">{item.title}</h4>
                               {item.url && (
                                 <a
                                   href={item.url}
@@ -534,13 +534,13 @@ export default function ModernProfileDisplay({
                                 </a>
                               )}
                             </div>
-                            <p className="text-sm text-slate-400 mt-1">{item.description}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                             <div className="flex gap-2 mt-2">
-                              <Badge variant="outline" className="border-white/10 text-slate-400 bg-white/10 text-xs">
+                              <Badge variant="outline" className="border-border text-muted-foreground bg-secondary/30 text-xs">
                                 {item.type}
                               </Badge>
                               {item.date && (
-                                <Badge variant="outline" className="border-white/10 text-slate-400 bg-white/10 text-xs">
+                                <Badge variant="outline" className="border-border text-muted-foreground bg-secondary/30 text-xs">
                                   {item.date}
                                 </Badge>
                               )}
@@ -557,9 +557,9 @@ export default function ModernProfileDisplay({
 
           {/* Staff-Specific Details */}
           {(userRole === "staff" || userRole === "admin") && (
-            <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+            <Card className="border border-border bg-card shadow-sm overflow-hidden">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Briefcase className="w-5 h-5" />
                   Professional Details
                 </CardTitle>
@@ -567,74 +567,74 @@ export default function ModernProfileDisplay({
               <CardContent className="space-y-4">
                 {profile.position && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Briefcase className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Position</h3>
-                      <p className="text-white">{profile.position}</p>
+                      <h3 className="font-medium text-muted-foreground">Position</h3>
+                      <p className="text-foreground">{profile.position}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.qualifications && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <GraduationCap className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Qualifications</h3>
-                      <p className="text-white">{profile.qualifications}</p>
+                      <h3 className="font-medium text-muted-foreground">Qualifications</h3>
+                      <p className="text-foreground">{profile.qualifications}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.office_location && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Office Location</h3>
-                      <p className="text-white">{profile.office_location}</p>
+                      <h3 className="font-medium text-muted-foreground">Office Location</h3>
+                      <p className="text-foreground">{profile.office_location}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.office_hours && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Office Hours</h3>
-                      <p className="text-white">{profile.office_hours}</p>
+                      <h3 className="font-medium text-muted-foreground">Office Hours</h3>
+                      <p className="text-foreground">{profile.office_hours}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.department_role && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <Users className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Department Role</h3>
-                      <p className="text-white">{profile.department_role}</p>
+                      <h3 className="font-medium text-muted-foreground">Department Role</h3>
+                      <p className="text-foreground">{profile.department_role}</p>
                     </div>
                   </div>
                 )}
 
                 {profile.research_interests && profile.research_interests.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-white/10 text-slate-300">
+                    <div className="p-2 rounded-lg bg-secondary/50 text-muted-foreground">
                       <BookOpen className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-slate-300">Research Interests</h3>
+                      <h3 className="font-medium text-muted-foreground">Research Interests</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {profile.research_interests.map((interest, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-slate-200">
+                          <Badge key={index} variant="secondary" className="px-3 py-1 rounded-full bg-secondary/50 border border-border text-foreground">
                             {interest}
                           </Badge>
                         ))}
@@ -650,9 +650,9 @@ export default function ModernProfileDisplay({
         {/* Right Column */}
         <div className="space-y-6">
           {/* Contact Card */}
-          <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+          <Card className="border border-border bg-card shadow-sm overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <MessageCircle className="w-5 h-5" />
                 Contact
               </CardTitle>
@@ -660,7 +660,7 @@ export default function ModernProfileDisplay({
             <CardContent>
               <div className="space-y-3">
                 {profile.linkedin_url && (
-                  <Button asChild variant="outline" className="w-full justify-start border-white/20 text-white hover:bg-white/10">
+                  <Button asChild variant="outline" className="w-full justify-start border-border text-foreground hover:bg-secondary">
                     <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">
                       <Linkedin className="w-4 h-4 mr-2" />
                       LinkedIn
@@ -669,7 +669,7 @@ export default function ModernProfileDisplay({
                 )}
                 
                 {profile.github_url && (
-                  <Button asChild variant="outline" className="w-full justify-start border-white/20 text-white hover:bg-white/10">
+                  <Button asChild variant="outline" className="w-full justify-start border-border text-foreground hover:bg-secondary">
                     <a href={profile.github_url} target="_blank" rel="noopener noreferrer">
                       <Github className="w-4 h-4 mr-2" />
                       GitHub
@@ -678,7 +678,7 @@ export default function ModernProfileDisplay({
                 )}
                 
                 {profile.email && (
-                  <Button asChild variant="outline" className="w-full justify-start border-white/20 text-white hover:bg-white/10">
+                  <Button asChild variant="outline" className="w-full justify-start border-border text-foreground hover:bg-secondary">
                     <a href={`mailto:${profile.email}`}>
                       <Mail className="w-4 h-4 mr-2" />
                       Email
@@ -692,23 +692,23 @@ export default function ModernProfileDisplay({
           {/* Actions Card */}
           <Card className="border-0 bg-gradient-to-br from-indigo-600/20 to-violet-600/20 backdrop-blur-xl overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Settings className="w-5 h-5" />
                 Profile Actions
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+              <Button variant="outline" className="w-full border-indigo-500/20 text-foreground hover:bg-indigo-500/20">
                 <Download className="w-4 h-4 mr-2" />
                 Download Resume
               </Button>
               
-              <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+              <Button variant="outline" className="w-full border-indigo-500/20 text-foreground hover:bg-indigo-500/20">
                 <Share2 className="w-4 h-4 mr-2" />
                 Share Profile
               </Button>
               
-              <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+              <Button variant="outline" className="w-full border-indigo-500/20 text-foreground hover:bg-indigo-500/20">
                 <Heart className="w-4 h-4 mr-2" />
                 Follow
               </Button>
@@ -716,9 +716,9 @@ export default function ModernProfileDisplay({
           </Card>
 
           {/* Activity Card */}
-          <Card className="border-0 bg-white/5 backdrop-blur-xl overflow-hidden">
+          <Card className="border border-border bg-card shadow-sm overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Eye className="w-5 h-5" />
                 Recent Activity
               </CardTitle>
@@ -730,9 +730,9 @@ export default function ModernProfileDisplay({
                     <FolderOpen className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-slate-300 text-sm">Added new project</p>
-                    <p className="text-white text-sm">Portfolio Website Redesign</p>
-                    <p className="text-slate-500 text-xs">2 days ago</p>
+                    <p className="text-muted-foreground text-sm">Added new project</p>
+                    <p className="text-foreground text-sm">Portfolio Website Redesign</p>
+                    <p className="text-muted-foreground text-xs">2 days ago</p>
                   </div>
                 </div>
                 
@@ -741,9 +741,9 @@ export default function ModernProfileDisplay({
                     <Code2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-slate-300 text-sm">Updated skills</p>
-                    <p className="text-white text-sm">Added React, TypeScript, Next.js</p>
-                    <p className="text-slate-500 text-xs">1 week ago</p>
+                    <p className="text-muted-foreground text-sm">Updated skills</p>
+                    <p className="text-foreground text-sm">Added React, TypeScript, Next.js</p>
+                    <p className="text-muted-foreground text-xs">1 week ago</p>
                   </div>
                 </div>
               </div>

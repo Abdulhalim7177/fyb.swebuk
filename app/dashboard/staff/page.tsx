@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StaffDashboard } from "@/components/dashboard/staff-dashboard";
-import { getStaffDashboardStats } from "@/lib/supabase/fyp-staff-actions";
+import { getComprehensiveStaffStats } from "@/lib/supabase/staff-dashboard-actions";
 
 export default async function StaffDashboardPage() {
   const supabase = await createClient();
@@ -34,8 +34,8 @@ export default async function StaffDashboardPage() {
     redirect(`/dashboard/${userRole.toLowerCase()}`);
   }
 
-  // Fetch FYP stats and pending submissions
-  const fypStats = await getStaffDashboardStats();
+  // Fetch comprehensive stats
+  const stats = await getComprehensiveStaffStats();
 
   // Determine which FYPs to fetch submissions for
   let fypIds: string[] = [];
@@ -47,20 +47,14 @@ export default async function StaffDashboardPage() {
       .from('final_year_projects')
       .select('id');
     fypIds = allFYPs?.map(f => f.id) || [];
-    console.log('Admin user - viewing all FYPs:', fypIds.length);
   } else {
     // Staff can only see their supervised FYPs
-    const { data: supervisedFYPs, error: supervisedError } = await supabase
+    const { data: supervisedFYPs } = await supabase
       .from('final_year_projects')
       .select('id')
       .eq('supervisor_id', user.id);
 
-    if (supervisedError) {
-      console.error('Error fetching supervised FYPs:', supervisedError);
-    }
-
     fypIds = supervisedFYPs?.map(f => f.id) || [];
-    console.log('Staff user - supervised FYP IDs:', fypIds);
   }
 
   // Then fetch recent pending submissions for those FYPs
@@ -87,21 +81,16 @@ export default async function StaffDashboardPage() {
       .order('submitted_at', { ascending: false })
       .limit(5);
 
-    if (submissionsError) {
-      console.error('Error fetching pending submissions:', submissionsError);
+    if (!submissionsError) {
+      pendingSubmissions = data || [];
     }
-
-    console.log('Pending submissions found:', data?.length || 0);
-    pendingSubmissions = data || [];
-  } else {
-    console.log('No FYPs found for this user');
   }
 
   return (
     <StaffDashboard
       user={user}
       fullName={fullName}
-      fypStats={fypStats}
+      stats={stats}
       pendingSubmissions={pendingSubmissions || []}
     />
   );

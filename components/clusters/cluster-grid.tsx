@@ -265,10 +265,10 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
     return (
       <div className="grid gap-6 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 animate-pulse">
-            <div className="h-6 w-3/4 bg-white/10 rounded mb-4" />
-            <div className="h-4 w-full bg-white/10 rounded mb-2" />
-            <div className="h-20 w-full bg-white/10 rounded" />
+          <div key={i} className="rounded-2xl bg-card border border-border p-6 animate-pulse">
+            <div className="h-6 w-3/4 bg-muted rounded mb-4" />
+            <div className="h-4 w-full bg-muted rounded mb-2" />
+            <div className="h-20 w-full bg-muted rounded" />
           </div>
         ))}
       </div>
@@ -277,10 +277,10 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
 
   if (clusters.length === 0) {
     return (
-      <div className="text-center py-16 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
-        <Users className="mx-auto h-16 w-16 text-slate-500 mb-4" />
-        <h3 className="text-xl font-bold text-white">No clusters found</h3>
-        <p className="text-slate-400 mt-2">
+      <div className="text-center py-16 rounded-2xl bg-card border border-border">
+        <Users className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+        <h3 className="text-xl font-bold text-foreground">No clusters found</h3>
+        <p className="text-muted-foreground mt-2">
           {searchTerm ? "Try adjusting your search or filters" : "Create your first cluster to get started"}
         </p>
       </div>
@@ -294,52 +294,52 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
           const canManage = userRole === 'admin' || userRole === 'staff';
           return (
             <Link href={`/dashboard/clusters/${cluster.id}`} key={cluster.id}>
-              <div className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 flex flex-col cursor-pointer">
+              <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:scale-105 flex flex-col cursor-pointer">
                 <div className={`absolute top-0 left-0 right-0 h-1 ${cluster.status === 'active' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`} />
 
                 <div className="p-6 pb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-white truncate group-hover:text-emerald-400 transition-colors duration-200">
+                    <h3 className="text-lg font-bold text-foreground truncate group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors duration-200">
                       {cluster.name}
                     </h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
-                      cluster.status === 'inactive' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
-                      'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                      cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' :
+                      cluster.status === 'inactive' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30' :
+                      'bg-gray-500/20 text-gray-600 dark:text-gray-300 border border-gray-500/30'
                     }`}>
                       {cluster.status}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-300 line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
                     {cluster.description || "No description"}
                   </p>
                 </div>
 
                 <div className="px-6 flex-grow space-y-2 text-sm">
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10">
-                    <Shield className="h-4 w-4 text-sky-400 flex-shrink-0" />
-                    <span className="font-medium text-slate-400">Staff:</span>
-                    <span className="text-slate-300 truncate">{cluster.staff_manager_name || <span className="text-slate-500 text-xs">N/A</span>}</span>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border">
+                    <Shield className="h-4 w-4 text-sky-500 dark:text-sky-400 flex-shrink-0" />
+                    <span className="font-medium text-muted-foreground">Staff:</span>
+                    <span className="text-foreground truncate">{cluster.staff_manager_name || <span className="text-muted-foreground text-xs">N/A</span>}</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10">
-                    <Crown className="h-4 w-4 text-amber-400 flex-shrink-0" />
-                    <span className="font-medium text-slate-400">Lead:</span>
-                    <span className="text-slate-300 truncate">{cluster.lead_name || <span className="text-slate-500 text-xs">N/A</span>}</span>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border">
+                    <Crown className="h-4 w-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
+                    <span className="font-medium text-muted-foreground">Lead:</span>
+                    <span className="text-foreground truncate">{cluster.lead_name || <span className="text-muted-foreground text-xs">N/A</span>}</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10">
-                    <Users className="h-4 w-4 text-indigo-400 flex-shrink-0" />
-                    <span className="font-medium text-slate-400">Deputy:</span>
-                    <span className="text-slate-300 truncate">{cluster.deputy_name || <span className="text-slate-500 text-xs">N/A</span>}</span>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border">
+                    <Users className="h-4 w-4 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                    <span className="font-medium text-muted-foreground">Deputy:</span>
+                    <span className="text-foreground truncate">{cluster.deputy_name || <span className="text-muted-foreground text-xs">N/A</span>}</span>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center p-6 pt-3 border-t border-white/10">
+                <div className="flex justify-between items-center p-6 pt-3 border-t border-border">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
                       <Users className="h-3 w-3" />
                       <span>{cluster.members_count}</span>
                     </div>
-                    <span className="text-slate-400">Members</span>
+                    <span className="text-muted-foreground">Members</span>
                   </div>
                   {showJoinButton && userRole === 'student' ? (
                     // For students, show different buttons based on their cluster status

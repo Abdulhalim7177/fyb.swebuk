@@ -15,6 +15,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface ProjectOverviewProps {
   fyp: {
@@ -101,6 +102,11 @@ export function ProjectOverview({ fyp, submissions }: ProjectOverviewProps) {
   const approvedSubmissions = submissions.filter((s) => s.status === "approved").length;
   const pendingSubmissions = submissions.filter((s) => s.status === "pending").length;
 
+  // Calculate progress based on approved submissions
+  // Total components: proposal + 5 chapters + final thesis = 7
+  const totalComponents = 7;
+  const progressPercentage = Math.min(Math.round((approvedSubmissions / totalComponents) * 100), 100);
+
   return (
     <div className="space-y-6">
       {/* Status Card */}
@@ -116,10 +122,13 @@ export function ProjectOverview({ fyp, submissions }: ProjectOverviewProps) {
             </div>
             <div className="text-right">
               <p className="text-sm font-medium text-muted-foreground">Progress</p>
-              <p className={`text-2xl font-bold ${statusInfo.color}`}>{statusInfo.progress}%</p>
+              <p className={`text-2xl font-bold ${statusInfo.color}`}>{progressPercentage}%</p>
             </div>
           </div>
-          <Progress value={statusInfo.progress} className="h-2" />
+          <Progress value={progressPercentage} className="h-2" />
+          <p className="text-xs text-muted-foreground mt-2">
+            {approvedSubmissions} of {totalComponents} components approved
+          </p>
         </CardContent>
       </Card>
 
@@ -131,12 +140,22 @@ export function ProjectOverview({ fyp, submissions }: ProjectOverviewProps) {
         <CardContent className="space-y-4">
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">Title</p>
-            <p className="font-semibold text-lg">{fyp.title}</p>
+            <p className={cn(
+              "font-semibold text-lg",
+              !fyp.title && "text-muted-foreground italic font-normal"
+            )}>
+              {fyp.title || "Proposal not yet approved"}
+            </p>
           </div>
 
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">Description</p>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{fyp.description}</p>
+            <p className={cn(
+              "text-sm leading-relaxed whitespace-pre-wrap",
+              !fyp.description && "text-muted-foreground italic"
+            )}>
+              {fyp.description || "Project details will appear here once your proposal is approved by your supervisor."}
+            </p>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">

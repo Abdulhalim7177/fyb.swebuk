@@ -169,18 +169,29 @@ export async function reviewFYPSubmission(
 
     if (error) throw error;
 
-    // If it's a proposal approval, update the FYP status
+    // If it's a proposal approval, update the FYP status AND copy the title/description
     const { data: submission } = await supabase
       .from("fyp_submissions")
-      .select("submission_type, fyp_id")
+      .select("submission_type, fyp_id, title, description")
       .eq("id", submissionId)
       .single();
 
-    if (submission?.submission_type === "proposal" && status === "approved") {
-      await supabase
-        .from("final_year_projects")
-        .update({ status: "proposal_approved" })
-        .eq("id", submission.fyp_id);
+    if (submission?.submission_type === "proposal") {
+      if (status === "approved") {
+        await supabase
+          .from("final_year_projects")
+          .update({ 
+            status: "in_progress",
+            title: submission.title,
+            description: submission.description
+          })
+          .eq("id", submission.fyp_id);
+      } else if (status === "rejected") {
+        await supabase
+          .from("final_year_projects")
+          .update({ status: "rejected" })
+          .eq("id", submission.fyp_id);
+      }
     }
 
     revalidatePath("/dashboard/student/fyp");
