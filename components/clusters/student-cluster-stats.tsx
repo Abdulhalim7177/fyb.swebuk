@@ -51,22 +51,22 @@ export function StudentClusterStats({ clusterId }: StudentClusterStatsProps) {
   return (
     <>
       <Card className="hover:shadow-md transition-all duration-300 hover:scale-[1.02] border-border/50">
-        <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
-          <div className="p-2.5 rounded-xl bg-blue-500/10 mb-3">
-            <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+        <CardContent className="p-2 sm:p-6 flex flex-col items-center text-center">
+          <div className="p-1.5 sm:p-2.5 rounded-xl bg-blue-500/10 mb-2 sm:mb-3">
+            <FileText className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{loading ? "—" : stats.projects}</p>
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground">Projects</p>
+          <p className="text-lg sm:text-3xl font-bold text-foreground mb-0.5 sm:mb-1">{loading ? "—" : stats.projects}</p>
+          <p className="text-[10px] sm:text-sm font-medium text-muted-foreground truncate w-full">Projects</p>
         </CardContent>
       </Card>
 
       <Card className="hover:shadow-md transition-all duration-300 hover:scale-[1.02] border-border/50">
-        <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
-          <div className="p-2.5 rounded-xl bg-teal-500/10 mb-3">
-            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-teal-500" />
+        <CardContent className="p-2 sm:p-6 flex flex-col items-center text-center">
+          <div className="p-1.5 sm:p-2.5 rounded-xl bg-teal-500/10 mb-2 sm:mb-3">
+            <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-teal-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{loading ? "—" : stats.events}</p>
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground">Events</p>
+          <p className="text-lg sm:text-3xl font-bold text-foreground mb-0.5 sm:mb-1">{loading ? "—" : stats.events}</p>
+          <p className="text-[10px] sm:text-sm font-medium text-muted-foreground truncate w-full">Events</p>
         </CardContent>
       </Card>
     </>

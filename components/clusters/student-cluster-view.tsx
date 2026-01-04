@@ -148,75 +148,71 @@ export function StudentClusterView({
       </Card>
 
       {/* Stats Cards - Sleek Implementation */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
         <Card className="hover:shadow-md transition-all duration-300 hover:scale-[1.02] border-border/50">
-          <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
-            <div className="p-2.5 rounded-xl bg-purple-500/10 mb-3">
-              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-purple-500" />
+          <CardContent className="p-2 sm:p-6 flex flex-col items-center text-center">
+            <div className="p-1.5 sm:p-2.5 rounded-xl bg-purple-500/10 mb-2 sm:mb-3">
+              <Users className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500" />
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{cluster.members_count}</p>
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground">Members</p>
+            <p className="text-lg sm:text-3xl font-bold text-foreground mb-0.5 sm:mb-1">{cluster.members_count}</p>
+            <p className="text-[10px] sm:text-sm font-medium text-muted-foreground truncate w-full">Members</p>
           </CardContent>
         </Card>
 
         <StudentClusterStats clusterId={cluster.id} />
 
         <Card className={`hover:shadow-md transition-all duration-300 hover:scale-[1.02] ${cluster.status === 'active' ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-border/50'}`}>
-          <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
-            <div className={`p-2.5 rounded-xl mb-3 ${cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
-              <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+          <CardContent className="p-2 sm:p-6 flex flex-col items-center text-center">
+            <div className={`p-1.5 sm:p-2.5 rounded-xl mb-2 sm:mb-3 ${cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
+              <AlertCircle className="h-4 w-4 sm:h-6 sm:w-6" />
             </div>
-            <p className="text-base sm:text-xl font-bold text-foreground mb-1 uppercase">{cluster.status}</p>
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground">Status</p>
+            <p className="text-xs sm:text-xl font-bold text-foreground mb-0.5 sm:mb-1 uppercase">{cluster.status}</p>
+            <p className="text-[10px] sm:text-sm font-medium text-muted-foreground truncate w-full">Status</p>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-all duration-300 hover:scale-[1.02] border-border/50">
-          <CardContent className="p-4 sm:p-6 flex flex-col items-center text-center">
-            <div className="p-2.5 rounded-xl bg-blue-500/10 mb-3">
-              <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+          <CardContent className="p-2 sm:p-6 flex flex-col items-center text-center">
+            <div className="p-1.5 sm:p-2.5 rounded-xl bg-blue-500/10 mb-2 sm:mb-3">
+              <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500" />
             </div>
-            <p className="text-base sm:text-lg font-bold text-foreground mb-1">{new Date(cluster.created_at).toLocaleDateString()}</p>
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground">Created</p>
+            <p className="text-xs sm:text-lg font-bold text-foreground mb-0.5 sm:mb-1">{new Date(cluster.created_at).toLocaleDateString()}</p>
+            <p className="text-[10px] sm:text-sm font-medium text-muted-foreground truncate w-full">Created</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Tabs */}
-      <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-        <CardHeader className="pb-3">
-          <CardTitle>Cluster Activities</CardTitle>
+      {/* Tabs - Sleek Implementation */}
+      <Card className="border-border/50 bg-card overflow-hidden shadow-sm">
+        <CardHeader className="pb-4 px-4 sm:px-6">
+          <CardTitle className="text-lg sm:text-xl">Cluster Activities</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Tabs defaultValue="members" className="w-full">
-            <div className="px-4 sm:px-6">
-              <TabsList className="w-full sm:w-auto grid sm:inline-flex grid-cols-2 sm:h-9 h-auto items-start sm:items-center justify-start bg-muted/50 p-1 rounded-lg overflow-x-auto max-w-full">
-                <TabsTrigger value="members" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
+            <div className="px-4 sm:px-6 border-b border-border/50">
+              <TabsList className="w-full justify-start overflow-x-auto no-scrollbar bg-transparent p-0 h-auto gap-6 sm:gap-8 rounded-none">
+                <TabsTrigger value="members" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-0 pb-3 h-auto gap-2 font-semibold transition-all text-sm sm:text-base whitespace-nowrap">
                   <Users className="h-4 w-4" />
-                  <span className="hidden sm:inline">Members</span>
-                  <span className="sm:hidden">Members</span>
-                  <Badge variant="secondary" className="h-5 px-1.5 text-xs">{cluster.members_count}</Badge>
+                  Members
+                  <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px] bg-muted/50">{cluster.members_count}</Badge>
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
+                <TabsTrigger value="projects" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-0 pb-3 h-auto gap-2 font-semibold transition-all text-sm sm:text-base whitespace-nowrap">
                   <FileText className="h-4 w-4" />
-                  <span className="hidden sm:inline">Projects</span>
-                  <span className="sm:hidden">Projects</span>
+                  Projects
                 </TabsTrigger>
-                <TabsTrigger value="events" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
+                <TabsTrigger value="events" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-0 pb-3 h-auto gap-2 font-semibold transition-all text-sm sm:text-base whitespace-nowrap">
                   <Calendar className="h-4 w-4" />
-                  <span className="hidden sm:inline">Events</span>
-                  <span className="sm:hidden">Events</span>
+                  Events
                 </TabsTrigger>
                 {isMember && (
-                  <TabsTrigger value="requests" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow min-w-max">
+                  <TabsTrigger value="requests" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-0 pb-3 h-auto gap-2 font-semibold transition-all text-sm sm:text-base whitespace-nowrap">
                     <AlertCircle className="h-4 w-4" />
-                    <span className="hidden sm:inline">Requests</span>
-                    <span className="sm:hidden">Requests</span>
+                    Requests
                   </TabsTrigger>
                 )}
               </TabsList>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <TabsContent value="members" className="mt-0">
                 <ClusterMembersList clusterId={cluster.id} userRole={user.role} canManage={false} />
               </TabsContent>
@@ -248,42 +244,44 @@ export function StudentClusterView({
         </CardContent>
       </Card>
 
-      {/* Leadership Info */}
-      <div className="rounded-2xl bg-card/30 border border-border backdrop-blur-xl p-4">
-        <div className="mb-4">
-          <h2 className="text-lg font-bold text-foreground">Leadership Team</h2>
-          <p className="text-muted-foreground text-xs mt-0.5">People leading this cluster</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-border/50">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
-              {cluster.lead_name?.charAt(0) || "?"}
+      {/* Leadership Info - Sleek Implementation */}
+      <Card className="border-border/50 bg-card">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-bold">Leadership Team</CardTitle>
+          <CardDescription className="text-xs">People leading this cluster</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
+                {cluster.lead_name?.charAt(0) || "?"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-foreground truncate text-sm">{cluster.lead_name || "Not assigned"}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Lead Student</p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-foreground truncate text-sm">{cluster.lead_name || "Not assigned"}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Lead Student</p>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
+                {cluster.deputy_name?.charAt(0) || "?"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-foreground truncate text-sm">{cluster.deputy_name || "Not assigned"}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Deputy Lead</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
+                {cluster.staff_manager_name?.charAt(0) || "?"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-foreground truncate text-sm">{cluster.staff_manager_name || "Not assigned"}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Staff Manager</p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-border/50">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
-              {cluster.deputy_name?.charAt(0) || "?"}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-foreground truncate text-sm">{cluster.deputy_name || "Not assigned"}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Deputy Lead</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-border/50">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
-              {cluster.staff_manager_name?.charAt(0) || "?"}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-foreground truncate text-sm">{cluster.staff_manager_name || "Not assigned"}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Staff Manager</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Join Dialog */}
       <AlertDialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen}>
