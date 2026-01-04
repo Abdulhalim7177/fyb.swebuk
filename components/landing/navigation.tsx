@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AuthButtonClient } from "@/components/auth-button-client";
 
 export function Navigation() {
@@ -52,7 +53,15 @@ export function Navigation() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container">
           <Link href="/" className="logo">
-            <div className="logo-icon">S</div>
+            <div className="logo-icon">
+              <Image
+                src="/buk-logo.png"
+                alt="Swebuk Logo"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
+            </div>
             <span>Swebuk</span>
           </Link>
 

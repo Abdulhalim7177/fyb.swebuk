@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Twitter, Github, Linkedin, Disc as Discord, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -34,7 +35,15 @@ export function Footer() {
           <div className="footer-grid">
             <div className="footer-brand">
               <Link href="/" className="logo">
-                <div className="logo-icon">S</div>
+                <div className="logo-icon">
+                  <Image
+                    src="/buk-logo.png"
+                    alt="Swebuk Logo"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
                 <span>Swebuk</span>
               </Link>
               <p>The ultimate online tech community for software engineering students. Connect, collaborate, and build together.</p>

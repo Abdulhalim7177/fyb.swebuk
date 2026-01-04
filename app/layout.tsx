@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Swebuk",
   description: "Swebuk - Software Engineering Student Club",
+  icons: {
+    icon: "/buk-logo.png",
+    apple: "/buk-logo.png",
+  },
 };
 
 const inter = Inter({
