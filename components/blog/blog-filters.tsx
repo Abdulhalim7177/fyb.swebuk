@@ -77,21 +77,21 @@ export function BlogFilters({
   const hasActiveFilters = search || category || cluster;
 
   return (
-    <Card className="p-4 border-0 bg-muted/30">
+    <Card className="p-4 border border-border bg-card">
       <div className="space-y-4">
         {/* Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
+        <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
             <Input
               type="search"
               placeholder="Search articles, tutorials, and more..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-11 h-12 bg-background border-0 shadow-sm text-base"
+              className="pl-11 h-12 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 w-full"
             />
           </div>
-          <Button type="submit" size="lg" className="px-6">
+          <Button type="submit" size="lg" className="px-6 bg-emerald-600 hover:bg-emerald-700 text-white">
             <Search className="h-4 w-4 mr-2" />
             Search
           </Button>
@@ -99,18 +99,18 @@ export function BlogFilters({
 
         {/* Category Pills */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Filter className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <Filter className="h-4 w-4 text-emerald-400" />
             <span>Filter by category</span>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleCategoryChange(undefined)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border",
                 category === undefined
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                  ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-lg shadow-emerald-500/10"
+                  : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
               )}
             >
               All Posts
@@ -120,10 +120,10 @@ export function BlogFilters({
                 key={cat.value}
                 onClick={() => handleCategoryChange(cat.value as BlogCategory)}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border",
                   category === cat.value
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : categoryColors[cat.value] || "bg-muted text-muted-foreground"
+                    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-lg shadow-emerald-500/10"
+                    : cn("bg-white/5 border-white/10 text-slate-400 hover:bg-white/10", categoryColors[cat.value] && "hover:" + categoryColors[cat.value].split(" ")[0])
                 )}
               >
                 {cat.label}
@@ -133,17 +133,17 @@ export function BlogFilters({
         </div>
 
         {/* Additional Filters Row */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
           <div className="flex flex-wrap items-center gap-3">
             {/* Cluster Filter */}
             {clusters.length > 0 && (
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                <SlidersHorizontal className="h-4 w-4 text-emerald-400" />
                 <Select value={cluster || "all"} onValueChange={handleClusterChange}>
-                  <SelectTrigger className="w-[200px] bg-background border-0 shadow-sm">
+                  <SelectTrigger className="w-full sm:w-[200px] bg-white/5 border-white/10 text-white focus:border-emerald-500/50 focus:ring-emerald-500/20">
                     <SelectValue placeholder="Filter by cluster" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-slate-900 border-white/10">
                     <SelectItem value="all">All Clusters</SelectItem>
                     {clusters.map((c) => (
                       <SelectItem key={c.id} value={c.id}>

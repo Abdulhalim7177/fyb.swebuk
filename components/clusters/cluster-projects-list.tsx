@@ -176,15 +176,17 @@ export function ClusterProjectsList({ clusterId, userRole, userId, isMember = fa
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <Badge variant="secondary">{project.status}</Badge>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <User className="h-3 w-3" />
-                          <span>{project.members_count} members</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <GitBranch className="h-3 w-3" />
-                          <span>Owner: {project.owner_name}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+                        <Badge variant="secondary" className="w-fit">{project.status}</Badge>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <User className="h-3 w-3" />
+                            <span>{project.members_count} members</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <GitBranch className="h-3 w-3" />
+                            <span className="truncate">Owner: {project.owner_name}</span>
+                          </div>
                         </div>
                       </div>
                       {!canAccessProject && (

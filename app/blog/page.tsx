@@ -7,7 +7,7 @@ import { BlogFiltersClient } from "./blog-filters-client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, BookOpen, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, LayoutDashboard, Sparkles, TrendingUp } from "lucide-react";
 import type { BlogCategory, DetailedBlog } from "@/lib/constants/blog";
 
 export const metadata = {
@@ -43,38 +43,38 @@ function BlogGridSkeleton() {
 
 function HeroSection({ featuredBlog, isAuthenticated }: { featuredBlog?: DetailedBlog; isAuthenticated?: boolean }) {
   return (
-    <section className="relative overflow-hidden bg-black border-b border-white/10">
+    <section className="relative overflow-hidden bg-white dark:bg-black border-b border-gray-200 dark:border-white/10">
       {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-40 h-40 sm:w-80 sm:h-80 bg-emerald-500/10 rounded-full blur-2xl sm:blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 sm:-bottom-40 sm:-left-40 w-40 h-40 sm:w-80 sm:h-80 bg-teal-500/10 rounded-full blur-2xl sm:blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left - Text Content */}
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 dark:border-emerald-500/30 text-sm font-medium">
               <Sparkles className="w-4 h-4" />
               Community Blog
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-900 via-emerald-800 to-teal-800 dark:from-white dark:via-emerald-100 dark:to-teal-100 bg-clip-text text-transparent">
                 Stories, Insights & Knowledge
               </span>
             </h1>
-            <p className="text-lg text-slate-300 max-w-lg">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-lg">
               Discover tutorials, project showcases, career tips, and community stories from software engineering students.
             </p>
             <div className="flex flex-wrap gap-4">
               <a href="#posts">
-                <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105 shadow-lg shadow-emerald-500/10">
+                <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-medium transition-all duration-300 hover:scale-105 shadow-lg shadow-emerald-500/10">
                   Explore Posts
                   <ArrowRight className="ml-2 w-4 h-4 inline" />
                 </button>
               </a>
               <Link href={isAuthenticated ? "/dashboard/blog/new" : "/auth/login"}>
-                <button className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium transition-all duration-300 hover:scale-105">
+                <button className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white font-medium transition-all duration-300 hover:scale-105">
                   Write a Post
                 </button>
               </Link>
@@ -142,7 +142,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar */}
-      <BlogNavBar isAuthenticated={!!currentUser} />
+      <BlogNavBar isAuthenticated={!!currentUser} showBack={true} />
 
       {/* Hero Section - only show when no filters */}
       {!hasFilters && <HeroSection featuredBlog={heroFeatured} isAuthenticated={!!currentUser} />}
@@ -178,8 +178,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         {!hasFilters && (
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <BookOpen className="w-5 h-5 text-primary" />
+              <div className="p-2 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20">
+                <LayoutDashboard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Latest Posts</h2>
@@ -195,8 +195,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         {/* Blog Grid */}
         <Suspense fallback={<BlogGridSkeleton />}>
           {blogs.length === 0 ? (
-            <Card className="p-12 text-center border-dashed">
-              <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+            <Card className="p-12 text-center border-dashed bg-card border-border">
+              <LayoutDashboard className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-semibold mb-2">No posts found</h3>
               <p className="text-muted-foreground mb-6">
                 {hasFilters

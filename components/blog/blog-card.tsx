@@ -56,7 +56,8 @@ export function BlogCard({
   if (variant === "featured") {
     return (
       <Link href={`/blog/${blog.slug}`} className="group block h-full">
-        <div className="h-full rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-[1.02] overflow-hidden">
+        <div className="h-full relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-lg hover:border-emerald-500/50 transition-all duration-300 hover:scale-[1.02] flex flex-col cursor-pointer">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="p-0 h-full flex flex-col">
             {/* Image or Gradient Placeholder */}
             {hasImage ? (
@@ -130,7 +131,8 @@ export function BlogCard({
   // Default variant - shows image if available
   return (
     <Link href={`/blog/${blog.slug}`} className="group block h-full">
-      <Card className="h-full bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border-border/50 hover:border-primary/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 overflow-hidden">
+      <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-md hover:border-emerald-500/50 transition-all duration-300 hover:scale-[1.02] flex flex-col cursor-pointer">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardContent className="p-0 h-full flex flex-col">
           {/* Image area - show if image exists */}
           {hasImage && (
@@ -174,7 +176,7 @@ export function BlogCard({
               {blog.excerpt}
             </p>
 
-            <div className="flex items-center justify-between text-sm pt-3 border-t border-border/50">
+            <div className="flex items-center justify-between text-sm pt-3 border-t border-border">
               <div className="flex items-center space-x-2">
                 {showAuthor ? (
                   <>
@@ -214,7 +216,7 @@ export function BlogCard({
             </div>
           </div>
         </CardContent>
-      </Card>
+      </div>
     </Link>
   );
 }

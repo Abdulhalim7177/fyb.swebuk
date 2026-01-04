@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar */}
-      <BlogNavBar isAuthenticated={!!currentUser} />
+      <BlogNavBar isAuthenticated={!!currentUser} showBack={true} backHref="/blog" />
 
       {/* Hero Header */}
       <header className="relative">

@@ -74,27 +74,27 @@ export default function AllClustersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">All Clusters</h1>
-          <p className="text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">All Clusters</h1>
+          <p className="text-slate-400 mt-1 text-sm sm:base">
             Browse and join clusters to get involved in the community.
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
           <Input
-            placeholder="Search clusters by name, staff, or leaders..."
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+            placeholder="Search clusters..."
+            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[200px] bg-white/5 border-white/10 text-white focus:border-emerald-500/50 focus:ring-emerald-500/20">
+          <SelectTrigger className="w-full md:w-[200px] bg-white/5 border-white/10 text-white focus:border-emerald-500/50 focus:ring-emerald-500/20">
             <SelectValue placeholder="Filter by Status" />
           </SelectTrigger>
           <SelectContent>
