@@ -1,171 +1,95 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  opacity: number;
-  color: string;
-  sparkle: number;
-}
+import { useEffect } from 'react';
 
 export function ParticleBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | null>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0 });
-
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // Ambient Background Orbs - matching the design mockup
+    const createOrb = (className: string, width: number, height: number, color: string) => {
+      const orb = document.createElement('div');
+      orb.className = `ambient-orb ${className}`;
+      orb.style.cssText = `
+        width: ${width}px;
+        height: ${height}px;
+        background: ${color};
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.12;
+        position: fixed;
+        z-index: -1;
+        pointer-events: none;
+        animation: ambientFloat 60s ease-in-out infinite;
+      `;
+      return orb;
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    // Create ambient background container
+    const ambientBg = document.createElement('div');
+    ambientBg.className = 'ambient-bg';
+    ambientBg.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    `;
 
-    // Mouse move handler
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener('mousemove', handleMouseMove);
+    // Create ambient orbs
+    const orb1 = createOrb('ambient-orb-1', 500, 500, '#8b5cf6');
+    orb1.style.cssText += `
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    `;
 
-    // Initialize particles with enhanced properties
-    const particleCount = 150;
-    const particles: Particle[] = [];
-    const colors = ['#ffffff'];
+    const orb2 = createOrb('ambient-orb-2', 400, 400, '#3b82f6');
+    orb2.style.cssText += `
+      bottom: -50px;
+      right: -50px;
+      animation-delay: -10s;
+    `;
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        radius: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.2 + 0.05,
-        color: colors[0],
-        sparkle: Math.random(),
-      });
-    }
+    const orb3 = createOrb('ambient-orb-3', 300, 300, '#06b6d4');
+    orb3.style.cssText += `
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -20s;
+    `;
 
-    particlesRef.current = particles;
+    ambientBg.appendChild(orb1);
+    ambientBg.appendChild(orb2);
+    ambientBg.appendChild(orb3);
+    document.body.appendChild(ambientBg);
 
-    const animate = () => {
-      // Create trail effect
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.1)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Update and draw particles
-      particlesRef.current.forEach((particle, index) => {
-        // Add random acceleration for more dynamic movement
-        particle.vx += (Math.random() - 0.5) * 0.02;
-        particle.vy += (Math.random() - 0.5) * 0.02;
-
-        // Mouse interaction - particles are attracted/repelled by mouse
-        const dx = mouseRef.current.x - particle.x;
-        const dy = mouseRef.current.y - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < 100) {
-          // Repel particles when mouse is close
-          const force = (1 - distance / 100) * 0.05;
-          particle.vx -= (dx / distance) * force;
-          particle.vy -= (dy / distance) * force;
+    // Add animation keyframes
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ambientFloat {
+        0%, 100% {
+          transform: translate(0, 0) scale(1);
         }
-
-        // Update position
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        // Apply some friction
-        particle.vx *= 0.99;
-        particle.vy *= 0.99;
-
-        // Bounce off walls
-        if (particle.x < particle.radius || particle.x > canvas.width - particle.radius) {
-          particle.vx *= -0.9;
-          particle.x = Math.max(particle.radius, Math.min(canvas.width - particle.radius, particle.x));
+        25% {
+          transform: translate(50px, 50px) scale(1.1);
         }
-        if (particle.y < particle.radius || particle.y > canvas.height - particle.radius) {
-          particle.vy *= -0.9;
-          particle.y = Math.max(particle.radius, Math.min(canvas.height - particle.radius, particle.y));
+        50% {
+          transform: translate(-30px, 30px) scale(0.95);
         }
-
-        // Update sparkle
-        particle.sparkle += 0.01;
-        if (particle.sparkle > 1) {
-          particle.sparkle = Math.random();
+        75% {
+          transform: translate(-50px, -30px) scale(1.05);
         }
-
-        // Draw particle with glow effect
-        const gradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.radius * 3
-        );
-        gradient.addColorStop(0, particle.color + 'ff');
-        gradient.addColorStop(0.5, particle.color + '40');
-        gradient.addColorStop(1, particle.color + '00');
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius * 3, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        // Draw core particle
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color + Math.floor(particle.opacity * particle.sparkle * 255).toString(16);
-        ctx.fill();
-
-        // Draw strategic connections with nearby particles
-        particlesRef.current.slice(index + 1).forEach(otherParticle => {
-          const dx = particle.x - otherParticle.x;
-          const dy = particle.y - otherParticle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          // Only connect particles that are very close for strategic effect
-          if (distance < 80) {
-            const opacity = (1 - distance / 80) * 0.15;
-            ctx.beginPath();
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(otherParticle.x, otherParticle.y);
-            ctx.strokeStyle = particle.color + Math.floor(opacity * 255).toString(16);
-            ctx.lineWidth = 0.8 * (1 - distance / 80);
-            ctx.stroke();
-          }
-        });
-
-      });
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
+      }
+    `;
+    document.head.appendChild(style);
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      ambientBg.remove();
+      style.remove();
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ background: 'transparent' }}
-    />
-  );
+  return null;
 }

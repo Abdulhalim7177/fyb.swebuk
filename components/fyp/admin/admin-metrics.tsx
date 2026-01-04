@@ -65,20 +65,20 @@ export function AdminMetrics({ stats }: AdminMetricsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+    <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-4">
       {metrics.map((metric) => {
         const Icon = metric.icon;
         return (
-          <Card key={metric.title}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">
+          <Card key={metric.title} className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+              <CardTitle className="text-[10px] sm:text-xs font-semibold text-muted-foreground line-clamp-1">
                 {metric.title}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{metric.value}</div>
-                <div className={`p-2 rounded-lg ${metric.bgColor}`}>
+                <div className="text-xl sm:text-2xl font-extrabold sm:font-bold">{metric.value}</div>
+                <div className={`p-2 rounded-lg ${metric.bgColor} hidden sm:block`}>
                   <Icon className={`h-4 w-4 ${metric.color}`} />
                 </div>
               </div>

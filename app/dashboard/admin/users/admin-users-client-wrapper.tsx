@@ -129,64 +129,77 @@ export default function AdminUsersClientWrapper({
       </div>
 
       {/* Stat Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-blue-500" />
+      <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+        <Card className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-4 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Total Users</CardTitle>
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 hidden xs:block" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
+          <CardContent className="p-2 pt-0 sm:p-4 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{stats.totalUsers}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <UserCheck className="h-4 w-4 text-green-500" />
+        <Card className="bg-green-50/50 dark:bg-green-950/20 border-green-100 dark:border-green-900 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-4 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Active</CardTitle>
+            <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 hidden xs:block" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeUsers}</div>
+          <CardContent className="p-2 pt-0 sm:p-4 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{stats.activeUsers}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Users</CardTitle>
-            <UserX className="h-4 w-4 text-orange-500" />
+        <Card className="bg-orange-50/50 dark:bg-orange-950/20 border-orange-100 dark:border-orange-900 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-4 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Pending</CardTitle>
+            <UserX className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 hidden xs:block" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingUsers}</div>
+          <CardContent className="p-2 pt-0 sm:p-4 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{stats.pendingUsers}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Roles</CardTitle>
-            <ShieldCheck className="h-4 w-4 text-purple-500" />
+        <Card className="bg-purple-50/50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900 shadow-sm hover:shadow-md transition-shadow col-span-3 lg:col-span-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-4 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold">Role Distribution</CardTitle>
+            <ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500 hidden xs:block" />
           </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">
-            {Object.entries(stats.roleCounts).map(([role, count]) => (
-              <div key={role} className="flex justify-between">
-                <span>{role.charAt(0).toUpperCase() + role.slice(1)}:</span>
-                <span className="font-bold">{count}</span>
-              </div>
-            ))}
+          <CardContent className="p-2 pt-0 sm:p-4 sm:pt-0">
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {Object.entries(stats.roleCounts).map(([role, count]) => (
+                <div key={role} className="flex items-center gap-1.5 text-[10px] sm:text-xs">
+                  <span className="text-muted-foreground capitalize">{role}:</span>
+                  <span className="font-extrabold">{count}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filter and Action Bar */}
-      <div className="flex flex-col md:flex-row items-center gap-2">
-        <div className="flex-1 w-full">
-          <Input
-            placeholder="Filter by name or email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
-          />
+      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md py-4 space-y-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full group">
+            <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 w-full shadow-sm border-muted-foreground/20 focus-visible:ring-primary/30"
+            />
+          </div>
+          <div className="flex w-full sm:w-auto gap-2">
+            <CreateUserDialog
+              onCreate={handleUpdate}
+              currentUserRole={currentUserRole}
+            />
+            <Button variant="outline" className="sm:hidden" onClick={handleResetFilters}>Reset</Button>
+          </div>
         </div>
-        <div className="flex gap-2 w-full md:w-auto flex-wrap">
+
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full md:w-[160px]">
-              <SelectValue placeholder="Filter by role" />
+            <SelectTrigger className="h-9 w-full sm:w-[140px] text-xs">
+              <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
@@ -195,9 +208,10 @@ export default function AdminUsersClientWrapper({
               ))}
             </SelectContent>
           </Select>
+
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-[160px]">
-              <SelectValue placeholder="Filter by status" />
+            <SelectTrigger className="h-9 w-full sm:w-[140px] text-xs">
+              <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
@@ -205,10 +219,11 @@ export default function AdminUsersClientWrapper({
               <SelectItem value="pending">Pending</SelectItem>
             </SelectContent>
           </Select>
+
           {uniqueDepartments.length > 0 && (
             <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="All Departments" />
+              <SelectTrigger className="h-9 w-full sm:w-[160px] text-xs">
+                <SelectValue placeholder="All Depts" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
@@ -218,9 +233,10 @@ export default function AdminUsersClientWrapper({
               </SelectContent>
             </Select>
           )}
+
           {uniqueAcademicLevels.length > 0 && (
             <Select value={levelFilter} onValueChange={setLevelFilter}>
-              <SelectTrigger className="w-full md:w-[160px]">
+              <SelectTrigger className="h-9 w-full sm:w-[140px] text-xs">
                 <SelectValue placeholder="All Levels" />
               </SelectTrigger>
               <SelectContent>
@@ -233,12 +249,10 @@ export default function AdminUsersClientWrapper({
               </SelectContent>
             </Select>
           )}
-          <Button variant="outline" onClick={handleResetFilters}>Reset</Button>
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex text-xs h-9 hover:bg-destructive/10 hover:text-destructive" onClick={handleResetFilters}>
+            Reset Filters
+          </Button>
         </div>
-        <CreateUserDialog
-          onCreate={handleUpdate}
-          currentUserRole={currentUserRole}
-        />
       </div>
 
       {/* User Table */}

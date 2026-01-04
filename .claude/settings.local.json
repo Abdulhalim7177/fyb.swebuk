@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(cat:*)",
+      "Bash(dir \"C:\\\\Users\\\\abdul\\\\Herd\\\\fyb.swebuk\\\\public\")",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
+    ]
+  }
+}

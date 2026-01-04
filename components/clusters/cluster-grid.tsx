@@ -263,9 +263,9 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
 
   if (loading) {
     return (
-      <div className="grid gap-6 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-2xl bg-card border border-border p-6 animate-pulse">
+          <div key={i} className="rounded-2xl bg-card border border-border p-4 sm:p-6 animate-pulse">
             <div className="h-6 w-3/4 bg-muted rounded mb-4" />
             <div className="h-4 w-full bg-muted rounded mb-2" />
             <div className="h-20 w-full bg-muted rounded" />
@@ -289,20 +289,18 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
 
   return (
     <>
-      <div className="grid gap-6 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {clusters.map((cluster) => {
           const canManage = userRole === 'admin' || userRole === 'staff';
           return (
             <Link href={`/dashboard/clusters/${cluster.id}`} key={cluster.id}>
-              <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:scale-105 flex flex-col cursor-pointer">
-                <div className={`absolute top-0 left-0 right-0 h-1 ${cluster.status === 'active' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`} />
-
-                <div className="p-6 pb-3">
+              <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] sm:hover:scale-105 flex flex-col cursor-pointer">
+                <div className="p-4 sm:p-6 pb-2 sm:pb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-foreground truncate group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors duration-200">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground truncate group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors duration-200">
                       {cluster.name}
                     </h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                       cluster.status === 'active' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' :
                       cluster.status === 'inactive' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30' :
                       'bg-gray-500/20 text-gray-600 dark:text-gray-300 border border-gray-500/30'
@@ -310,36 +308,36 @@ export function ClusterGrid({ userRole, userId, searchTerm, filterStatus, showJo
                       {cluster.status}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                     {cluster.description || "No description"}
                   </p>
                 </div>
 
-                <div className="px-6 flex-grow space-y-2 text-sm">
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border">
-                    <Shield className="h-4 w-4 text-sky-500 dark:text-sky-400 flex-shrink-0" />
+                <div className="px-4 sm:px-6 flex-grow space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                  <div className="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg bg-secondary/50 border border-border text-xs sm:text-sm">
+                    <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-sky-500 dark:text-sky-400 flex-shrink-0" />
                     <span className="font-medium text-muted-foreground">Staff:</span>
                     <span className="text-foreground truncate">{cluster.staff_manager_name || <span className="text-muted-foreground text-xs">N/A</span>}</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border">
-                    <Crown className="h-4 w-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
+                  <div className="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg bg-secondary/50 border border-border text-xs sm:text-sm">
+                    <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
                     <span className="font-medium text-muted-foreground">Lead:</span>
                     <span className="text-foreground truncate">{cluster.lead_name || <span className="text-muted-foreground text-xs">N/A</span>}</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border">
-                    <Users className="h-4 w-4 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                  <div className="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg bg-secondary/50 border border-border text-xs sm:text-sm">
+                    <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
                     <span className="font-medium text-muted-foreground">Deputy:</span>
                     <span className="text-foreground truncate">{cluster.deputy_name || <span className="text-muted-foreground text-xs">N/A</span>}</span>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center p-6 pt-3 border-t border-border">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
+                <div className="flex justify-between items-center p-4 sm:p-6 pt-2 sm:pt-3 border-t border-border mt-3">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+                    <div className="flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
                       <Users className="h-3 w-3" />
                       <span>{cluster.members_count}</span>
                     </div>
-                    <span className="text-muted-foreground">Members</span>
+                    <span className="text-muted-foreground hidden xs:inline">Members</span>
                   </div>
                   {showJoinButton && userRole === 'student' ? (
                     // For students, show different buttons based on their cluster status

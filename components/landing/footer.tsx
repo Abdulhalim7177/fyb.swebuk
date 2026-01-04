@@ -1,57 +1,117 @@
-import { ThemeToggle } from "@/components/theme-toggle";
+"use client";
+
 import Link from "next/link";
-import { Code2 } from "lucide-react";
+import Image from "next/image";
+import { Twitter, Github, Linkedin, Disc as Discord, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function Footer() {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
-    <footer className="relative bg-slate-900 border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <Code2 className="w-6 h-6 text-white" />
+    <>
+      <footer className="footer" id="contact">
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <Link href="/" className="logo">
+                <div className="logo-icon">
+                  <Image
+                    src="/buk-logo.png"
+                    alt="Swebuk Logo"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <span>Swebuk</span>
+              </Link>
+              <p>The ultimate online tech community for software engineering students. Connect, collaborate, and build together.</p>
+              <div className="footer-social">
+                <a href="#" className="social-link" aria-label="Twitter">
+                  <Twitter size={18} />
+                </a>
+                <a href="#" className="social-link" aria-label="GitHub">
+                  <Github size={18} />
+                </a>
+                <a href="#" className="social-link" aria-label="LinkedIn">
+                  <Linkedin size={18} />
+                </a>
+                <a href="#" className="social-link" aria-label="Discord">
+                  <Discord size={18} />
+                </a>
               </div>
-              <span className="text-xl font-bold text-white">SWEBUK</span>
             </div>
-            <p className="text-gray-400 mb-4 max-w-md">
-              Building next generation of software engineers through collaboration, innovation, and community-driven learning.
-            </p>
-            <div className="flex space-x-4">
-              <ThemeToggle />
+
+            <div className="footer-column">
+              <h5>Platform</h5>
+              <ul>
+                <li><Link href="#features">Features</Link></li>
+                <li><Link href="#">Clusters</Link></li>
+                <li><Link href="#">Projects</Link></li>
+                <li><Link href="#">Events</Link></li>
+                <li><Link href="/blog">Blog</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-column">
+              <h5>Resources</h5>
+              <ul>
+                <li><Link href="#">Documentation</Link></li>
+                <li><Link href="#">Help Center</Link></li>
+                <li><Link href="#">Community Guidelines</Link></li>
+                <li><Link href="#">API</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-column">
+              <h5>Company</h5>
+              <ul>
+                <li><Link href="#">About Us</Link></li>
+                <li><Link href="#">Careers</Link></li>
+                <li><Link href="#">Privacy Policy</Link></li>
+                <li><Link href="#">Terms of Service</Link></li>
+              </ul>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Platform</h3>
-            <ul className="space-y-2">
-              <li><Link href="#features" className="text-gray-400 hover:text-white transition-colors">Features</Link></li>
-              <li><Link href="#blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/auth/sign-up" className="text-gray-400 hover:text-white transition-colors">Get Started</Link></li>
-              <li><Link href="/auth/login" className="text-gray-400 hover:text-white transition-colors">Sign In</Link></li>
-            </ul>
-          </div>
-
-          {/* Community */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Community</h3>
-            <ul className="space-y-2">
-              <li><span className="text-gray-400">Clusters</span></li>
-              <li><span className="text-gray-400">Projects</span></li>
-              <li><span className="text-gray-400">Events</span></li>
-              <li><span className="text-gray-400">FYP Portal</span></li>
-            </ul>
+          <div className="footer-bottom">
+            <p>&copy; 2024 Swebuk. All rights reserved.</p>
+            <p>Made with ❤️ for software engineering students</p>
           </div>
         </div>
+      </footer>
 
-        <div className="border-t border-white/10 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            © 2024 SWEBUK. Software Engineering Student Community. Built with ❤️ for students, by students.
-          </p>
-        </div>
-      </div>
-    </footer>
+      {/* Back to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="back-to-top-btn"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
+    </>
   );
 }

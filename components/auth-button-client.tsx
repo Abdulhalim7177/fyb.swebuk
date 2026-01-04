@@ -46,8 +46,8 @@ export function AuthButtonClient() {
   if (loading) {
     return (
       <div className="flex items-center space-x-2">
-        <div className="w-20 h-8 bg-gray-600 animate-pulse rounded"></div>
-        <div className="w-20 h-8 bg-gray-600 animate-pulse rounded"></div>
+        <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
+        <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
       </div>
     );
   }
@@ -57,7 +57,7 @@ export function AuthButtonClient() {
       <>
         <div className="hidden md:flex items-center space-x-2">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard" className="text-gray-300 hover:text-white">
+            <Link href="/dashboard" className="text-foreground/80 hover:text-primary font-medium">
               <LayoutDashboard className="w-4 h-4 mr-2" />
               Dashboard
             </Link>
@@ -67,7 +67,7 @@ export function AuthButtonClient() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-gray-300 border-gray-600 hover:text-white hover:bg-gray-700"
+                className="text-foreground/80 hover:text-primary"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -93,7 +93,7 @@ export function AuthButtonClient() {
         {/* Show only dashboard link on mobile - logout is in the mobile menu */}
         <div className="md:hidden">
           <Button variant="ghost" size="sm" asChild className="h-8 px-2 text-xs">
-            <Link href="/dashboard" className="text-gray-300 hover:text-white">
+            <Link href="/dashboard" className="text-foreground/80 hover:text-primary">
               <LayoutDashboard className="w-4 h-4 mr-2" />
               Dashboard
             </Link>
@@ -107,13 +107,13 @@ export function AuthButtonClient() {
     <>
       <div className="hidden md:flex items-center space-x-2">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/auth/login" className="text-gray-300 hover:text-white">
+          <Link href="/auth/login" className="text-foreground/80 hover:text-primary font-medium">
             <LogIn className="w-4 h-4 mr-2" />
             Sign In
           </Link>
         </Button>
         <Button size="sm" asChild>
-          <Link href="/auth/sign-up" className="bg-indigo-600 hover:bg-indigo-700">
+          <Link href="/auth/sign-up">
             <User className="w-4 h-4 mr-2" />
             Get Started
           </Link>
@@ -121,12 +121,12 @@ export function AuthButtonClient() {
       </div>
       <div className="md:hidden flex space-x-1">
         <Button variant="ghost" size="sm" asChild className="h-8 px-2 text-xs">
-          <Link href="/auth/login" className="text-gray-300 hover:text-white">
+          <Link href="/auth/login" className="text-foreground/80 hover:text-primary">
             <LogIn className="w-4 h-4" />
           </Link>
         </Button>
         <Button size="sm" asChild className="h-8 px-2 text-xs">
-          <Link href="/auth/sign-up" className="bg-indigo-600 hover:bg-indigo-700">
+          <Link href="/auth/sign-up">
             <User className="w-4 h-4" />
           </Link>
         </Button>

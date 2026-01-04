@@ -1,138 +1,72 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-
 import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
-
 import { Plus, Search } from "lucide-react";
-
 import { CreateClusterDialog } from "@/components/clusters/create-cluster-dialog";
-
 import { createClient } from "@/lib/supabase/client";
-
 import { Input } from "@/components/ui/input";
-
 import {
-
   Select,
-
   SelectContent,
-
   SelectItem,
-
   SelectTrigger,
-
   SelectValue,
-
 } from "@/components/ui/select";
-
-import { ClusterGrid } from "@/components/clusters/cluster-grid"; // Will create this component
-
-
+import { Card, CardContent } from "@/components/ui/card";
+import { ClusterGrid } from "@/components/clusters/cluster-grid";
 
 async function getUserRole() {
-
   const supabase = createClient();
-
   const { data: { user }, error: userError } = await (supabase.auth as any).getUser();
 
-
-
   if (userError || !user) {
-
     throw new Error("User not authenticated");
-
   }
-
-
 
   const { data: profileData, error: profileError } = await supabase
-
     .from('profiles')
-
     .select('role')
-
     .eq('id', user.id)
-
     .single();
 
-
-
   if (profileError || !profileData) {
-
     console.error('Error fetching profile or profile not found:', profileError);
-
     return user.user_metadata?.role || "student";
-
   }
 
-
-
   return profileData.role || 'student';
-
 }
 
-
-
 export default function AdminClustersPage() {
-
   const router = useRouter();
-
   const [userRole, setUserRole] = useState<string | null>(null);
-
   const [loading, setLoading] = useState(true);
-
   const [authorized, setAuthorized] = useState(false);
-
   const [searchTerm, setSearchTerm] = useState("");
-
   const [filterStatus, setFilterStatus] = useState("all");
 
-
-
   useEffect(() => {
-
     const checkAuth = async () => {
-
       try {
-
         const role = await getUserRole();
-
         setUserRole(role);
-
         if (role === "admin" || role === "staff") {
-
           setAuthorized(true);
-
         } else {
-
           router.push("/dashboard");
-
         }
-
       } catch (error) {
-
         console.error("Auth error:", error);
-
         router.push("/auth/login");
-
       } finally {
-
         setLoading(false);
-
       }
-
     };
 
-
-
     checkAuth();
-
   }, [router]);
-
-
 
   if (loading) {
     return (
@@ -157,24 +91,24 @@ export default function AdminClustersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500/20 via-purple-500/20 to-blue-500/20 border border-white/10 backdrop-blur-xl p-8">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div className="relative text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-red-100 to-purple-100 bg-clip-text text-transparent">Cluster Management</h1>
-          <p className="text-slate-300 mt-2">
-            Manage clusters, assign leaders, and oversee student participation.
+      {/* Hero Header - Reimplemented in Sleek Supabase Style */}
+      <Card className="relative overflow-hidden border-border bg-gradient-to-br from-card to-muted/40 shadow-sm">
+        <div className="absolute top-0 right-0 -mt-24 -mr-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+        <CardContent className="relative p-8 sm:p-12 text-center">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Cluster Management</h1>
+          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto text-base sm:text-lg">
+            Manage clusters, assign leaders, and oversee student participation across the institution.
           </p>
-          <div className="mt-6">
+          <div className="mt-8">
             <CreateClusterDialog onClusterCreated={() => window.location.reload()}>
-              <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 font-medium transition-all duration-300 hover:scale-105 mx-auto">
-                <Plus className="h-4 w-4" />
+              <Button size="lg" className="rounded-xl px-8 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+                <Plus className="h-5 w-5 mr-2" />
                 Create Cluster
-              </button>
+              </Button>
             </CreateClusterDialog>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Search and Filter Section */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
@@ -220,37 +154,13 @@ export default function AdminClustersPage() {
         </Select>
       </div>
 
-
-
-            <Suspense fallback="Loading clusters...">
-
-
-
-              <ClusterGrid
-
-
-
-                userRole={userRole || "admin"}
-
-
-
-                searchTerm={searchTerm}
-
-
-
-                filterStatus={filterStatus}
-
-
-
-              />
-
-
-
-            </Suspense>
-
+      <Suspense fallback={<div className="text-center py-20">Loading clusters...</div>}>
+        <ClusterGrid
+          userRole={userRole || "admin"}
+          searchTerm={searchTerm}
+          filterStatus={filterStatus}
+        />
+      </Suspense>
     </div>
-
   );
-
 }
-

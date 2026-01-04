@@ -33,7 +33,7 @@ export const metadata = {
 
 function StatsSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       {[...Array(4)].map((_, i) => (
         <div key={i} className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 animate-pulse h-24" />
       ))}
@@ -59,22 +59,22 @@ async function EventStats() {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
-      <div className="rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-        <p className="text-sm font-medium text-slate-400 mb-2">Total Registrations</p>
-        <p className="text-4xl font-bold text-white">{stats.total_registrations}</p>
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="rounded-2xl bg-card/50 border border-emerald-500/30 backdrop-blur-xl p-4 hover:scale-105 hover:border-emerald-500/60 hover:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all duration-300 shadow-sm group">
+        <p className="text-xs font-medium text-muted-foreground mb-1 group-hover:text-emerald-500 transition-colors text-center sm:text-left">Total Registrations</p>
+        <p className="text-2xl sm:text-3xl font-bold text-foreground text-center sm:text-left">{stats.total_registrations}</p>
       </div>
-      <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-        <p className="text-sm font-medium text-slate-400 mb-2">Upcoming Events</p>
-        <p className="text-4xl font-bold text-white">{stats.upcoming}</p>
+      <div className="rounded-2xl bg-card/50 border border-blue-500/30 backdrop-blur-xl p-4 hover:scale-105 hover:border-blue-500/60 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-300 shadow-sm group">
+        <p className="text-xs font-medium text-muted-foreground mb-1 group-hover:text-blue-500 transition-colors text-center sm:text-left">Upcoming Events</p>
+        <p className="text-2xl sm:text-3xl font-bold text-foreground text-center sm:text-left">{stats.upcoming}</p>
       </div>
-      <div className="rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-        <p className="text-sm font-medium text-slate-400 mb-2">Events Attended</p>
-        <p className="text-4xl font-bold text-white">{stats.attended}</p>
+      <div className="rounded-2xl bg-card/50 border border-violet-500/30 backdrop-blur-xl p-4 hover:scale-105 hover:border-violet-500/60 hover:shadow-[0_0_15px_rgba(139,92,246,0.1)] transition-all duration-300 shadow-sm group">
+        <p className="text-xs font-medium text-muted-foreground mb-1 group-hover:text-violet-500 transition-colors text-center sm:text-left">Events Attended</p>
+        <p className="text-2xl sm:text-3xl font-bold text-foreground text-center sm:text-left">{stats.attended}</p>
       </div>
-      <div className="rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-white/10 backdrop-blur-xl p-6 hover:scale-105 transition-all duration-300">
-        <p className="text-sm font-medium text-slate-400 mb-2">Certificates Earned</p>
-        <p className="text-4xl font-bold text-white">{stats.certificates_earned}</p>
+      <div className="rounded-2xl bg-card/50 border border-amber-500/30 backdrop-blur-xl p-4 hover:scale-105 hover:border-amber-500/60 hover:shadow-[0_0_15px_rgba(245,158,11,0.1)] transition-all duration-300 shadow-sm group">
+        <p className="text-xs font-medium text-muted-foreground mb-1 group-hover:text-amber-500 transition-colors text-center sm:text-left">Certificates Earned</p>
+        <p className="text-2xl sm:text-3xl font-bold text-foreground text-center sm:text-left">{stats.certificates_earned}</p>
       </div>
     </div>
   );

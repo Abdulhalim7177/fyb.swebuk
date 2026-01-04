@@ -75,14 +75,20 @@ export function AdminDashboard({ user, fullName, metrics }: AdminDashboardProps)
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white rounded-xl shadow-lg p-6 sm:p-8 overflow-hidden relative">
+        <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+          <Shield className="w-32 h-32" />
+        </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
           <div>
-            <h1 className="text-3xl font-bold">Administrator Dashboard</h1>
-            <p className="text-purple-100">System Administration Panel • {user.email}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Administrator Dashboard</h1>
+            <p className="text-purple-100 flex items-center gap-2 mt-1">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              System Administration Panel • {user.email}
+            </p>
           </div>
-          <div className="flex space-x-2">
-            <Button variant="secondary" size="sm">
+          <div className="flex w-full sm:w-auto">
+            <Button variant="secondary" size="sm" className="w-full sm:w-auto bg-white/20 hover:bg-white/30 border-0 text-white backdrop-blur-sm">
               <Settings className="w-4 h-4 mr-2" />
               Admin Settings
             </Button>
@@ -91,100 +97,112 @@ export function AdminDashboard({ user, fullName, metrics }: AdminDashboardProps)
       </div>
 
       {/* System Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-blue-600" />
+      <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-4">
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Total Students</CardTitle>
+            <div className="p-1 sm:p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg hidden xs:block">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.totalStudents}</div>
-            <p className="text-xs text-gray-600">Registered students</p>
+          <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{systemMetrics.totalStudents}</div>
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">Registered</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Staff</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Total Staff</CardTitle>
+            <div className="p-1 sm:p-2 bg-green-50 dark:bg-green-950/30 rounded-lg hidden xs:block">
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.totalStaff}</div>
-            <p className="text-xs text-gray-600">Registered staff</p>
+          <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{systemMetrics.totalStaff}</div>
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">Staff</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Clusters</CardTitle>
-            <Globe className="h-4 w-4 text-purple-600" />
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Clusters</CardTitle>
+            <div className="p-1 sm:p-2 bg-purple-50 dark:bg-purple-950/30 rounded-lg hidden xs:block">
+              <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.totalClusters}</div>
-            <p className="text-xs text-gray-600">Active clusters</p>
+          <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{systemMetrics.totalClusters}</div>
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">Active</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Projects</CardTitle>
-            <FileText className="h-4 w-4 text-orange-600" />
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Projects</CardTitle>
+            <div className="p-1 sm:p-2 bg-orange-50 dark:bg-orange-950/30 rounded-lg hidden xs:block">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.activeProjects}</div>
-            <p className="text-xs text-gray-600">Active projects</p>
+          <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{systemMetrics.activeProjects}</div>
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">Active</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Pending</CardTitle>
+            <div className="p-1 sm:p-2 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg hidden xs:block">
+              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.pendingApprovals}</div>
-            <p className="text-xs text-gray-600">Need approval</p>
+          <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{systemMetrics.pendingApprovals}</div>
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">Pending</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">System Health</CardTitle>
-            <Shield className="h-4 w-4 text-green-600" />
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:pb-2">
+            <CardTitle className="text-[10px] sm:text-sm font-semibold line-clamp-1">Health</CardTitle>
+            <div className="p-1 sm:p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg hidden xs:block">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemMetrics.systemHealth}%</div>
-            <p className="text-xs text-gray-600">Operational</p>
+          <CardContent className="p-2 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{systemMetrics.systemHealth}%</div>
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">System</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Administrative Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
+      {/* Administrative Actions & Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Administrative Actions</CardTitle>
+            <CardTitle className="text-xl">Administrative Actions</CardTitle>
             <CardDescription>
               System administration and management tools
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 overflow-auto">
             {adminActions.map((action, index) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={index}
                   variant="outline"
-                  className="w-full justify-start h-auto p-4"
+                  className="w-full justify-start h-auto p-4 hover:bg-muted/50 transition-colors group relative overflow-hidden"
                   asChild
                 >
                   <Link href={action.href}>
-                    <div className={`w-10 h-10 rounded-lg ${action.color} flex items-center justify-center mr-4`}>
+                    <div className={`w-10 h-10 rounded-lg ${action.color} flex items-center justify-center mr-3 shrink-0`}>
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <div className="text-left">
-                      <div className="font-medium">{action.title}</div>
-                      <div className="text-sm text-gray-600">{action.description}</div>
+                      <div className="font-semibold text-sm group-hover:text-primary transition-colors">{action.title}</div>
+                      <div className="text-xs text-muted-foreground line-clamp-1">{action.description}</div>
                     </div>
                   </Link>
                 </Button>
@@ -196,24 +214,24 @@ export function AdminDashboard({ user, fullName, metrics }: AdminDashboardProps)
         {/* System Alerts */}
         <Card>
           <CardHeader>
-            <CardTitle>System Alerts</CardTitle>
+            <CardTitle className="text-xl">System Alerts</CardTitle>
             <CardDescription>
               Recent system notifications and alerts
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {systemAlerts.map((alert, index) => (
-                <div key={index} className="flex items-center space-x-3 p-3 border rounded-lg">
-                  <div className={`w-2 h-2 rounded-full ${
-                    alert.type === 'error' ? 'bg-red-500' :
-                    alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                <div key={index} className="flex items-center space-x-3 p-3 border rounded-xl hover:bg-muted/30 transition-colors">
+                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                    alert.type === 'error' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' :
+                    alert.type === 'warning' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]'
                   }`} />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{alert.message}</p>
-                    <p className="text-xs text-gray-500">{alert.time}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium leading-none mb-1">{alert.message}</p>
+                    <p className="text-xs text-muted-foreground">{alert.time}</p>
                   </div>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="ghost" className="h-8 text-xs">
                     View
                   </Button>
                 </div>
@@ -223,31 +241,31 @@ export function AdminDashboard({ user, fullName, metrics }: AdminDashboardProps)
         </Card>
       </div>
 
-      {/* User Activity & Analytics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Analytics & History */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>User Activity</CardTitle>
+            <CardTitle className="text-xl">User Activity</CardTitle>
             <CardDescription>
               Recent user registrations and activity trends
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30">
                 <span className="text-sm">New registrations this week</span>
-                <span className="font-medium text-green-600">+12</span>
+                <span className="font-bold text-green-600 dark:text-green-500">+12</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30">
                 <span className="text-sm">Daily active users</span>
-                <span className="font-medium">89</span>
+                <span className="font-bold">89</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30">
                 <span className="text-sm">User retention rate</span>
-                <span className="font-medium">87%</span>
+                <span className="font-bold">87%</span>
               </div>
-              <div className="mt-4">
-                <Button variant="outline" className="w-full">
+              <div className="pt-2">
+                <Button variant="outline" className="w-full shadow-sm">
                   <BarChart className="w-4 h-4 mr-2" />
                   View Detailed Analytics
                 </Button>
@@ -259,64 +277,56 @@ export function AdminDashboard({ user, fullName, metrics }: AdminDashboardProps)
         {/* Recent Administrative Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Admin Actions</CardTitle>
+            <CardTitle className="text-xl">Recent Admin Actions</CardTitle>
             <CardDescription>
               Latest administrative activities and changes
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-sm">
-                <UserCheck className="w-4 h-4 text-blue-500" />
-                <span>Promoted John Doe to Lead Student</span>
-                <span className="text-gray-500 ml-auto">2h ago</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <Settings className="w-4 h-4 text-green-500" />
-                <span>Updated system permissions</span>
-                <span className="text-gray-500 ml-auto">4h ago</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <Award className="w-4 h-4 text-purple-500" />
-                <span>Created new AI/ML Cluster</span>
-                <span className="text-gray-500 ml-auto">6h ago</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <Database className="w-4 h-4 text-orange-500" />
-                <span>Performed database backup</span>
-                <span className="text-gray-500 ml-auto">1d ago</span>
-              </div>
+            <div className="space-y-4">
+              {[
+                { icon: UserCheck, color: "text-blue-500", text: "Promoted John Doe to Lead Student", time: "2h ago" },
+                { icon: Settings, color: "text-green-500", text: "Updated system permissions", time: "4h ago" },
+                { icon: Award, color: "text-purple-500", text: "Created new AI/ML Cluster", time: "6h ago" },
+                { icon: Database, color: "text-orange-500", text: "Performed database backup", time: "1d ago" }
+              ].map((action, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm">
+                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0`}>
+                    <action.icon className={`w-4 h-4 ${action.color}`} />
+                  </div>
+                  <span className="flex-1 truncate">{action.text}</span>
+                  <span className="text-xs text-muted-foreground font-mono">{action.time}</span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* System Maintenance */}
-      <Card>
+      <Card className="border-t-4 border-t-orange-500/50">
         <CardHeader>
-          <CardTitle>System Maintenance</CardTitle>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Database className="w-5 h-5 text-orange-500" />
+            System Maintenance
+          </CardTitle>
           <CardDescription>
-            System maintenance tasks and scheduled operations
+            Core maintenance tasks and scheduled operations
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="justify-start">
-              <Database className="w-4 h-4 mr-2" />
-              Backup Database
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <Users className="w-4 h-4 mr-2" />
-              User Cleanup
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <FileText className="w-4 h-4 mr-2" />
-              Log Analysis
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <BarChart className="w-4 h-4 mr-2" />
-              Performance Report
-            </Button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { icon: Database, label: "Backup Database" },
+              { icon: Users, label: "User Cleanup" },
+              { icon: FileText, label: "Log Analysis" },
+              { icon: BarChart, label: "Performance Report" }
+            ].map((btn, i) => (
+              <Button key={i} variant="outline" className="justify-start h-12 hover:border-primary/50 transition-colors">
+                <btn.icon className="w-4 h-4 mr-2 text-primary" />
+                {btn.label}
+              </Button>
+            ))}
           </div>
         </CardContent>
       </Card>

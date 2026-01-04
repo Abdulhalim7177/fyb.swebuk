@@ -186,7 +186,7 @@ export function ProjectGrid({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="rounded-2xl bg-card border border-border p-6 animate-pulse">
             <div className="h-6 w-3/4 bg-muted rounded mb-4" />
@@ -221,7 +221,7 @@ export function ProjectGrid({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-500";
+        return "bg-teal-500";
       case "completed":
         return "bg-blue-500";
       case "on_hold":
@@ -249,7 +249,7 @@ export function ProjectGrid({
             style={{ zIndex: displayMembers.length - index }}
           >
             <AvatarImage src={member.avatar_url || undefined} />
-            <AvatarFallback className="text-xs bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+            <AvatarFallback className="text-xs bg-gradient-to-br from-cyan-500 to-blue-500 text-white">
               {member.full_name?.charAt(0).toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
@@ -264,7 +264,7 @@ export function ProjectGrid({
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {projects.map((project) => (
         <div key={project.id} className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-md hover:border-primary/50 transition-all duration-300 hover:scale-105 flex flex-col">
           <div className={`absolute top-0 left-0 right-0 h-1 ${project.type === "cluster" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-violet-500 to-purple-500"}`} />
@@ -327,7 +327,7 @@ export function ProjectGrid({
                 {project.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-emerald-600 dark:text-emerald-300"
+                    className="text-xs bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded text-indigo-600 dark:text-indigo-300"
                   >
                     {tag}
                   </span>
@@ -344,7 +344,7 @@ export function ProjectGrid({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <Users className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
+                  <Users className="h-3 w-3 text-cyan-500 dark:text-cyan-400" />
                   <span>{project.members_count}</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -358,7 +358,7 @@ export function ProjectGrid({
 
           <div className="flex gap-2 p-6 pt-4 border-t border-border">
             <Link href={`/dashboard/projects/${project.id}`} className="flex-1">
-              <button className="w-full px-4 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300 font-medium transition-all duration-200 hover:scale-105 text-sm">
+              <button className="w-full px-4 py-2 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-600 dark:text-violet-300 font-medium transition-all duration-200 hover:scale-105 text-sm">
                 View Details
               </button>
             </Link>

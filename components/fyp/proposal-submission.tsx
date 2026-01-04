@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 interface ProposalSubmissionProps {
-  proposalStatus?: "none" | "pending" | "approved" | "rejected";
+  proposalStatus?: "none" | "pending" | "approved" | "rejected" | "proposal_submitted";
   existingTitle?: string;
   existingDescription?: string;
   existingFeedback?: string;

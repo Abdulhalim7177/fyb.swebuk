@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/login-form";
+import Image from "next/image";
 
 export default function Page() {
   return (
@@ -7,10 +8,14 @@ export default function Page() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8">
           <div className="mb-8 text-center">
             <div className="inline-flex items-center justify-center mb-6">
-              <div className="p-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1a4 4 0v-1M21 12a9 9 9 0v1a4 4 0 9-9M23 19a2 2 2 0v-1" />
-                </svg>
+              <div className="p-1 rounded-full bg-transparent transition-transform hover:scale-105">
+                <Image
+                  src="/buk-logo.png"
+                  alt="Swebuk Logo"
+                  width={64}
+                  height={64}
+                  className="object-contain"
+                />
               </div>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>

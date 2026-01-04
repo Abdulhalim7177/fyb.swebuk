@@ -101,7 +101,7 @@ export default function AllProjectsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-emerald-500"></div>
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-cyan-500"></div>
           <p className="text-slate-400">Loading projects...</p>
         </div>
       </div>
@@ -127,16 +127,16 @@ export default function AllProjectsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
-          <TabsTrigger value="personal" className="flex items-center gap-2">
+        <TabsList className="grid w-full max-w-2xl grid-cols-1 sm:grid-cols-3 h-auto gap-2">
+          <TabsTrigger value="personal" className="flex items-center gap-2 justify-center">
             <User className="h-4 w-4" />
             Personal Projects
           </TabsTrigger>
-          <TabsTrigger value="cluster" className="flex items-center gap-2">
+          <TabsTrigger value="cluster" className="flex items-center gap-2 justify-center">
             <User className="h-4 w-4" />
             Cluster Projects
           </TabsTrigger>
-          <TabsTrigger value="all" className="flex items-center gap-2">
+          <TabsTrigger value="all" className="flex items-center gap-2 justify-center">
             <FolderGit2 className="h-4 w-4" />
             All Projects
           </TabsTrigger>
@@ -145,17 +145,17 @@ export default function AllProjectsPage() {
         {/* Personal Projects Tab */}
         <TabsContent value="personal" className="space-y-4 mt-6">
           <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+        <div className="relative flex-1 min-w-full sm:min-w-[250px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-400" />
           <Input
             placeholder="Search by name, description, user, email, or level..."
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-cyan-500/50 focus:ring-cyan-500/20"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-violet-500/20">
+          <SelectTrigger className="w-full sm:w-[160px] bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-violet-500/20">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -175,7 +175,7 @@ export default function AllProjectsPage() {
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white focus:border-green-500/50 focus:ring-green-500/20">
+          <SelectTrigger className="w-full sm:w-[160px] bg-white/5 border-white/10 text-white focus:border-green-500/50 focus:ring-green-500/20">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -207,7 +207,7 @@ export default function AllProjectsPage() {
           </SelectContent>
         </Select>
         <Select value={filterCluster} onValueChange={setFilterCluster}>
-          <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-cyan-500/20">
+          <SelectTrigger className="w-full sm:w-[180px] bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-cyan-500/20">
             <SelectValue placeholder="Cluster" />
           </SelectTrigger>
           <SelectContent>
@@ -220,7 +220,7 @@ export default function AllProjectsPage() {
           </SelectContent>
         </Select>
         <Select value={filterVisibility} onValueChange={setFilterVisibility}>
-          <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white focus:border-amber-500/50 focus:ring-amber-500/20">
+          <SelectTrigger className="w-full sm:w-[160px] bg-white/5 border-white/10 text-white focus:border-amber-500/50 focus:ring-amber-500/20">
             <SelectValue placeholder="Visibility" />
           </SelectTrigger>
           <SelectContent>
@@ -258,17 +258,17 @@ export default function AllProjectsPage() {
         {/* Cluster Projects Tab */}
         <TabsContent value="cluster" className="space-y-4 mt-6">
           <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+        <div className="relative flex-1 min-w-full sm:min-w-[250px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-400" />
           <Input
             placeholder="Search by name, description, user, email, or level..."
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-cyan-500/50 focus:ring-cyan-500/20"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white focus:border-green-500/50 focus:ring-green-500/20">
+          <SelectTrigger className="w-full sm:w-[160px] bg-white/5 border-white/10 text-white focus:border-green-500/50 focus:ring-green-500/20">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -300,7 +300,7 @@ export default function AllProjectsPage() {
           </SelectContent>
         </Select>
         <Select value={filterCluster} onValueChange={setFilterCluster}>
-          <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-cyan-500/20">
+          <SelectTrigger className="w-full sm:w-[180px] bg-white/5 border-white/10 text-white focus:border-cyan-500/50 focus:ring-cyan-500/20">
             <SelectValue placeholder="Cluster" />
           </SelectTrigger>
           <SelectContent>
@@ -313,7 +313,7 @@ export default function AllProjectsPage() {
           </SelectContent>
         </Select>
         <Select value={filterVisibility} onValueChange={setFilterVisibility}>
-          <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white focus:border-amber-500/50 focus:ring-amber-500/20">
+          <SelectTrigger className="w-full sm:w-[160px] bg-white/5 border-white/10 text-white focus:border-amber-500/50 focus:ring-amber-500/20">
             <SelectValue placeholder="Visibility" />
           </SelectTrigger>
           <SelectContent>
@@ -351,7 +351,7 @@ export default function AllProjectsPage() {
         {/* All Projects Tab */}
         <TabsContent value="all" className="space-y-4 mt-6">
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="relative flex-1 min-w-[250px]">
+            <div className="relative flex-1 min-w-full sm:min-w-[250px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-600" />
               <Input
                 placeholder="Search by name, description, user, email, or level..."
@@ -361,7 +361,7 @@ export default function AllProjectsPage() {
               />
             </div>
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-violet-500/20">
+              <SelectTrigger className="w-full sm:w-[160px] bg-white/5 border-white/10 text-white focus:border-violet-500/50 focus:ring-violet-500/20">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -381,7 +381,7 @@ export default function AllProjectsPage() {
               </SelectContent>
             </Select>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[160px] border-green-200 focus:border-green-500 focus:ring-green-100">
+              <SelectTrigger className="w-full sm:w-[160px] border-green-200 focus:border-green-500 focus:ring-green-100">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -413,7 +413,7 @@ export default function AllProjectsPage() {
               </SelectContent>
             </Select>
             <Select value={filterCluster} onValueChange={setFilterCluster}>
-              <SelectTrigger className="w-[180px] border-cyan-200 focus:border-cyan-500 focus:ring-cyan-100">
+              <SelectTrigger className="w-full sm:w-[180px] border-cyan-200 focus:border-cyan-500 focus:ring-cyan-100">
                 <SelectValue placeholder="Cluster" />
               </SelectTrigger>
               <SelectContent>
@@ -426,7 +426,7 @@ export default function AllProjectsPage() {
               </SelectContent>
             </Select>
             <Select value={filterVisibility} onValueChange={setFilterVisibility}>
-              <SelectTrigger className="w-[160px] border-amber-200 focus:border-amber-500 focus:ring-amber-100">
+              <SelectTrigger className="w-full sm:w-[160px] border-amber-200 focus:border-amber-500 focus:ring-amber-100">
                 <SelectValue placeholder="Visibility" />
               </SelectTrigger>
               <SelectContent>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -221,8 +222,14 @@ export function DashboardNav({
       {/* Header */}
       <div className="h-16 flex items-center px-6 border-b border-border/10">
         <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20 transition-transform group-hover:scale-105">
-            <ShieldCheck className="h-5 w-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-transparent transition-transform group-hover:scale-110">
+            <Image
+              src="/buk-logo.png"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
           </div>
           <span className="font-semibold text-foreground tracking-tight">{getDashboardTitle()}</span>
         </Link>
