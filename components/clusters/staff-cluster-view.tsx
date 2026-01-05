@@ -31,6 +31,7 @@ import {
   Edit,
   LogOut,
   UserPlus,
+  TrendingUp,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClusterMembersList } from "./cluster-members-list";
