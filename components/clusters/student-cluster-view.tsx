@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users, Calendar, FileText, AlertCircle, Clock, Plus } from "lucide-react";
+import { Users, Calendar, FileText, AlertCircle, Clock, Plus, LogOut } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClusterMembersList } from "./cluster-members-list";
 import { ClusterProjectsList } from "./cluster-projects-list";
