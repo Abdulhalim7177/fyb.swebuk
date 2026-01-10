@@ -29,30 +29,34 @@ export default async function AdminProfilePage() {
   // Generate URL for avatar server-side
   let avatarPublicUrl = null;
   if (profileData.avatar_url) {
-    try {
-      const { data: urlData, error: urlError } = await supabase.storage
-        .from("avatars")
-        .createSignedUrl(profileData.avatar_url, 3600);
-
-      if (urlError) {
-        console.error("Error creating signed URL:", urlError);
-        const { data: publicData } = await supabase.storage
-          .from("avatars")
-          .getPublicUrl(profileData.avatar_url);
-        avatarPublicUrl = publicData?.publicUrl || null;
-      } else {
-        avatarPublicUrl = urlData?.signedUrl || null;
-      }
-    } catch (err: any) {
-      console.error("Unexpected error creating signed URL:", err);
+    if (profileData.avatar_url.startsWith('http')) {
+      avatarPublicUrl = profileData.avatar_url;
+    } else {
       try {
-        const { data: publicData } = await supabase.storage
+        const { data: urlData, error: urlError } = await supabase.storage
           .from("avatars")
-          .getPublicUrl(profileData.avatar_url);
-        avatarPublicUrl = publicData?.publicUrl || null;
-      } catch (publicUrlError: any) {
-        console.error("Error getting public URL:", publicUrlError);
-        avatarPublicUrl = null;
+          .createSignedUrl(profileData.avatar_url, 3600);
+
+        if (urlError) {
+          console.error("Error creating signed URL:", urlError);
+          const { data: publicData } = await supabase.storage
+            .from("avatars")
+            .getPublicUrl(profileData.avatar_url);
+          avatarPublicUrl = publicData?.publicUrl || null;
+        } else {
+          avatarPublicUrl = urlData?.signedUrl || null;
+        }
+      } catch (err: any) {
+        console.error("Unexpected error creating signed URL:", err);
+        try {
+          const { data: publicData } = await supabase.storage
+            .from("avatars")
+            .getPublicUrl(profileData.avatar_url);
+          avatarPublicUrl = publicData?.publicUrl || null;
+        } catch (publicUrlError: any) {
+          console.error("Error getting public URL:", publicUrlError);
+          avatarPublicUrl = null;
+        }
       }
     }
   }

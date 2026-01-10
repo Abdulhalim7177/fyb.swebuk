@@ -109,7 +109,10 @@ export async function GET() {
         email: u.email,
         password: u.password,
         email_confirm: true,
-        user_metadata: { full_name: u.name }
+        user_metadata: { 
+          full_name: u.name,
+          avatar_url: `https://i.pravatar.cc/150?u=${u.email}` 
+        }
       });
 
       if (error) {
@@ -124,11 +127,14 @@ export async function GET() {
       const updateData: any = {
         role: u.role,
         full_name: u.name,
+        avatar_url: `https://i.pravatar.cc/150?u=${u.email}`,
         department: 'Software Engineering',
         faculty: 'Faculty of Computing',
         institution: 'Bayero University',
         skills: ['React', 'TypeScript', 'JavaScript', 'Python'],
-        bio: `${u.name} is a ${u.role === 'student' ? 'passionate student' : 'dedicated staff member'} in the Software Engineering department.`
+        bio: `${u.name} is a ${u.role === 'student' ? 'passionate student' : 'dedicated staff member'} in the Software Engineering department.`,
+        linkedin_url: `https://linkedin.com/in/${u.name.toLowerCase().replace(/\s+/g, '')}`,
+        github_url: `https://github.com/${u.name.toLowerCase().replace(/\s+/g, '')}`
       };
 
       // Only set academic_level and registration_number for students
@@ -222,11 +228,14 @@ export async function GET() {
         const basicUpdateData: Record<string, any> = {
           role: updateData.role,
           full_name: updateData.full_name,
+          avatar_url: updateData.avatar_url,
           department: updateData.department,
           faculty: updateData.faculty,
           institution: updateData.institution,
           skills: updateData.skills,
           bio: updateData.bio,
+          linkedin_url: updateData.linkedin_url,
+          github_url: updateData.github_url,
         };
 
         if (u.academic_level) basicUpdateData.academic_level = u.academic_level;
