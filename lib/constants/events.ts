@@ -169,6 +169,7 @@ export interface DetailedEvent extends Event {
   tags: string[] | null;
   available_spots: number | null;
   is_full: boolean;
+  attendees?: Array<{ id: string; avatar_url: string | null; full_name: string | null }>;
 }
 
 export interface EventRegistration {

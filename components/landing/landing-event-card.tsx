@@ -1,63 +1,91 @@
 import Link from "next/link";
-import { Calendar, MapPin, Users, Clock, Star, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import { Calendar, MapPin, Users, Clock } from "lucide-react";
 import type { DetailedEvent } from "@/lib/constants/events";
+import { getEventTypeLabel, getEventTypeColorClass, getEventTimeStatus, formatEventDateRange } from "@/lib/constants/events";
+import { RegisteredUsersAvatars } from "@/components/events/registered-users-avatars";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 interface LandingEventCardProps {
   event: DetailedEvent;
-  variant?: "default" | "compact" | "featured";
-  showOrganizer?: boolean;
 }
 
-export function LandingEventCard({
-  event,
-  variant = "default",
-  showOrganizer = true
-}: LandingEventCardProps) {
-  const getEventTimeStatus = (startDate: string, endDate: string) => {
-    const now = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    if (now < start) {
-      // Upcoming
-      return { status: "upcoming", label: "Upcoming" };
-    } else if (now >= start && now <= end) {
-      // Ongoing
-      return { status: "ongoing", label: "Ongoing" };
-    } else {
-      // Completed
-      return { status: "completed", label: "Completed" };
-    }
-  };
-
+export function LandingEventCard({ event }: LandingEventCardProps) {
+  const eventTypeLabel = getEventTypeLabel(event.event_type);
+  const eventTypeColor = getEventTypeColorClass(event.event_type);
   const timeStatus = getEventTimeStatus(event.start_date, event.end_date);
+  
+  const formattedDate = new Date(event.start_date).toLocaleDateString("en-US", {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+  
+  const formattedTime = new Date(event.start_date).toLocaleTimeString("en-US", {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 
   return (
-    <Link href={`/events/${event.slug}`}>
-      <div className="glass-card feature-card animate-on-scroll">
-        <div className="feature-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
+    <Link href={`/events/${event.slug}`} className="group block h-full">
+      <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden">
+        {event.banner_image_url && (
+          <div className="relative w-full h-40">
+            <Image
+              src={event.banner_image_url}
+              alt={event.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          </div>
+        )}
+        
+        <div className="p-6 flex-grow flex flex-col">
+          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
+            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${eventTypeColor}`}>
+              {eventTypeLabel}
+            </span>
+            <span className={`font-semibold ${timeStatus.status === 'upcoming' ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+              {timeStatus.label}
+            </span>
+          </div>
+          
+          <h4 className="font-bold text-lg text-slate-800 dark:text-white group-hover:text-gradient transition-colors duration-300 flex-grow mt-2">
+            {event.title}
+          </h4>
+          
+          <p className="text-slate-600 dark:text-slate-300 text-sm mt-2 flex-grow">{event.short_description}</p>
+          
+          <div className="text-sm text-slate-600 dark:text-slate-300 mt-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+              <span>{formattedDate} at {formattedTime}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+              <span>{event.location_type === 'online' ? 'Online' : event.venue_name || event.location}</span>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={event.organizer_avatar || undefined} alt={event.organizer_name || ""} />
+              <AvatarFallback>{event.organizer_name?.charAt(0) || "O"}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-sm font-semibold text-slate-800 dark:text-white">{event.organizer_name}</p>
+            </div>
+          </div>
         </div>
-        <h4 className="font-bold text-white">{event.title}</h4>
-        <p className="text-slate-300">{event.short_description}</p>
-        <div className="flex items-center justify-between text-xs text-slate-400 mt-2">
-          <span>{new Date(event.start_date).toLocaleDateString()}</span>
-          <span className={`px-2 py-0.5 rounded-full ${
-            timeStatus.status === "upcoming"
-              ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-              : timeStatus.status === "ongoing"
-              ? "bg-green-500/20 text-green-400 border border-green-500/30"
-              : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-          }`}>
-            {timeStatus.label}
-          </span>
+
+        <div className="px-6 py-3 bg-slate-100 dark:bg-white/5 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+          <RegisteredUsersAvatars
+            users={event.attendees || []}
+            totalCount={event.registrations_count}
+            size="sm"
+            maxDisplay={3}
+          />
         </div>
       </div>
     </Link>

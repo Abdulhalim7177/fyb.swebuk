@@ -76,7 +76,30 @@ export async function getUpcomingEvents(limit = 3) {
       return [];
     }
 
-    return (data as DetailedEvent[]) || [];
+    const events = data as DetailedEvent[];
+
+    // For each event, fetch the first 3 attendees
+    for (const event of events) {
+      const { data: attendees, error: attendeesError } = await supabase
+        .from("detailed_event_registrations")
+        .select("user_id, user_name, user_avatar")
+        .eq("event_id", event.id)
+        .in("registration_status", ["registered", "attended"])
+        .limit(3);
+
+      if (attendeesError) {
+        console.error(`Error fetching attendees for event ${event.id}:`, attendeesError);
+        event.attendees = [];
+      } else {
+        event.attendees = attendees.map(a => ({
+          id: a.user_id,
+          full_name: a.user_name,
+          avatar_url: a.user_avatar
+        }));
+      }
+    }
+
+    return events;
   } catch (error) {
     console.error("Unexpected error fetching upcoming events:", error);
     return [];
