@@ -1307,26 +1307,17 @@ aside nav a {
 
 /* Enhanced hero stats with glass effect */
 .hero-stats {
-  display: grid; /* Use grid for better mobile stacking */
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Auto-fit columns for responsiveness */
-  gap: var(--space-md); /* Smaller gap for mobile */
-  margin-top: var(--space-2xl); /* Smaller margin for mobile */
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3xl);
+  margin-top: var(--space-4xl);
   position: relative;
   z-index: 1;
 }
 
-@media (min-width: 768px) { /* Apply flex and larger gap on medium screens and up */
-  .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-3xl);
-    margin-top: var(--space-4xl);
-  }
-}
-
 .stat-item {
   text-align: center;
-  padding: var(--space-md); /* Smaller padding for mobile */
+  padding: var(--space-xl);
   background:
     var(--bg-glass),
     var(--glass-reflection);

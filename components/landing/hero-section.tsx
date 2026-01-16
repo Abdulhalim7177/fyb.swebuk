@@ -47,18 +47,18 @@ export function HeroSection() {
             <Link href="#features" className="btn btn-secondary">Learn More</Link>
           </div>
 
-          <div className="hero-stats animate-on-scroll delay-4" ref={statsRef}>
-            <div className="stat-item">
-              <div className="stat-number">500+</div>
-              <div className="stat-label">Active Students</div>
+          <div className="mt-12 grid grid-cols-3 gap-2 md:flex md:justify-center md:gap-8" ref={statsRef}>
+            <div className="stat-item aspect-square flex flex-col justify-center items-center p-1 md:p-2">
+              <div className="stat-number text-2xl md:text-3xl">500+</div>
+              <div className="stat-label text-xs md:text-xs">Active Students</div>
             </div>
-            <div className="stat-item">
-              <div className="stat-number">20+</div>
-              <div className="stat-label">Tech Clusters</div>
+            <div className="stat-item aspect-square flex flex-col justify-center items-center p-1 md:p-2">
+              <div className="stat-number text-2xl md:text-3xl">20+</div>
+              <div className="stat-label text-xs md:text-xs">Tech Clusters</div>
             </div>
-            <div className="stat-item">
-              <div className="stat-number">100+</div>
-              <div className="stat-label">Projects Built</div>
+            <div className="stat-item aspect-square flex flex-col justify-center items-center p-1 md:p-2">
+              <div className="stat-number text-2xl md:text-3xl">100+</div>
+              <div className="stat-label text-xs md:text-xs">Projects Built</div>
             </div>
           </div>
         </div>
