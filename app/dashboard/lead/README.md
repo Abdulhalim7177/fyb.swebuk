@@ -6,48 +6,60 @@ The Lead Student Dashboard allows cluster leads to manage their assigned student
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default'}}%%
-graph TB
-    subgraph "Lead Student Use Cases"
-        UC17[Approve Cluster Members]
-        UC18[Approve Projects]
-        UC19[Approve Blog Posts]
-        UC6[Create Personal Projects]
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#90EE90', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+graph LR
+    %% Styles
+    classDef actor fill:#32CD32,stroke:#333,stroke-width:2px,color:white,font-size:16px;
+    classDef usecase fill:#90EE90,stroke:#228B22,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef lead fill:#FFD700,stroke:#DAA520,stroke-width:2px,color:black,rx:10,ry:10;
 
-        subgraph "Standard Student Use Cases"
-            UC3[View Dashboard]
-            UC4[Browse Clusters]
-            UC5[Join Clusters]
-            UC7[Browse Projects]
-            UC8[Request to Join Projects]
-            UC9[Create Blog Posts]
-            UC10[View Blog Posts]
-            UC11[View Events]
-            UC12[Register for Events]
-            UC13[Access Portfolio]
-            UC14[Update Profile]
-            UC15[Upload Profile Picture]
-            UC16[Access FYP Module]
-        end
+    %% Actor
+    LeadStudent(("⭐ Lead Student")):::actor
+
+    %% Use Cases
+    subgraph LeadDuties ["👔 Leadership Duties"]
+        direction TB
+        UC17(["Approve Members"]):::lead
+        UC18(["Approve Projects"]):::lead
+        UC19(["Approve Blogs"]):::lead
     end
 
-    LeadStudent -- "Cluster Management" --> UC17
-    LeadStudent -- "Project Management" --> UC18
-    LeadStudent -- "Content Moderation" --> UC19
-    LeadStudent -- "Project Creation" --> UC6
-    LeadStudent -- "Dashboard Access" --> UC3
-    LeadStudent -- "Cluster Activities" --> UC4
-    LeadStudent -- "Cluster Activities" --> UC5
-    LeadStudent -- "Project Activities" --> UC7
-    LeadStudent -- "Project Activities" --> UC8
-    LeadStudent -- "Content Creation" --> UC9
-    LeadStudent -- "Content Consumption" --> UC10
-    LeadStudent -- "Event Participation" --> UC11
-    LeadStudent -- "Event Participation" --> UC12
-    LeadStudent -- "Portfolio Access" --> UC13
-    LeadStudent -- "Profile Management" --> UC14
-    LeadStudent -- "Profile Management" --> UC15
-    LeadStudent -- "Level 400 Only" --> UC16
+    subgraph Standard ["🎒 Student Activities"]
+        direction TB
+        UC6(["Create Projects"]):::usecase
+        UC3(["View Dashboard"]):::usecase
+        UC4(["Browse Clusters"]):::usecase
+        UC5(["Join Clusters"]):::usecase
+        UC7(["Browse Projects"]):::usecase
+        UC8(["Join Projects"]):::usecase
+        UC9(["Create Blog"]):::usecase
+        UC10(["View Blogs"]):::usecase
+        UC11(["View Events"]):::usecase
+        UC12(["Join Events"]):::usecase
+        UC13(["Access Portfolio"]):::usecase
+        UC14(["Update Profile"]):::usecase
+        UC15(["Upload Picture"]):::usecase
+        UC16(["Access FYP (L400)"]):::usecase
+    end
+
+    %% Connections
+    LeadStudent --> UC17
+    LeadStudent --> UC18
+    LeadStudent --> UC19
+    LeadStudent --> UC3
+    LeadStudent --> UC4
+    LeadStudent --> UC5
+    LeadStudent --> UC6
+    LeadStudent --> UC7
+    LeadStudent --> UC8
+    LeadStudent --> UC9
+    LeadStudent --> UC10
+    LeadStudent --> UC11
+    LeadStudent --> UC12
+    LeadStudent --> UC13
+    LeadStudent --> UC14
+    LeadStudent --> UC15
+    LeadStudent --> UC16
 ```
 
 ## Use Case Descriptions

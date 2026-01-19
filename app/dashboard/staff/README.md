@@ -6,33 +6,52 @@ The Staff Dashboard empowers faculty and staff members to manage student cluster
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default'}}%%
-graph TB
-    subgraph "Staff Use Cases"
-        UC3[View Dashboard]
-        UC10[View Blog Posts]
-        UC11[View Events]
-        UC13[Access Portfolio]
-        UC14[Update Profile]
-        UC15[Upload Profile Picture]
-        UC18[Approve Projects]
-        UC19[Approve Blog Posts]
-        UC20[Manage Clusters]
-        UC21[Manage Events]
-        UC22[Supervise FYP]
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ADD8E6', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+graph LR
+    %% Styles
+    classDef actor fill:#FF4500,stroke:#333,stroke-width:2px,color:white,font-size:16px;
+    classDef usecase fill:#ADD8E6,stroke:#4682B4,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef manage fill:#98FB98,stroke:#2E8B57,stroke-width:2px,color:black,rx:10,ry:10;
+
+    %% Actor
+    Staff(("👨‍🏫 Staff")):::actor
+
+    %% Use Cases
+    subgraph Personal ["👤 Personal Management"]
+        direction TB
+        UC3(["View Dashboard"]):::usecase
+        UC13(["Access Portfolio"]):::usecase
+        UC14(["Update Profile"]):::usecase
+        UC15(["Upload Picture"]):::usecase
+        UC10(["View Blogs"]):::usecase
+        UC11(["View Events"]):::usecase
     end
 
-    Staff -- "Dashboard Access" --> UC3
-    Staff -- "Content Consumption" --> UC10
-    Staff -- "Event Participation" --> UC11
-    Staff -- "Portfolio Access" --> UC13
-    Staff -- "Profile Management" --> UC14
-    Staff -- "Profile Management" --> UC15
-    Staff -- "Project Management" --> UC18
-    Staff -- "Content Moderation" --> UC19
-    Staff -- "Cluster Management" --> UC20
-    Staff -- "Event Management" --> UC21
-    Staff -- "FYP Supervision" --> UC22
+    subgraph Management ["🛠️ Management"]
+        direction TB
+        UC20(["Manage Clusters"]):::manage
+        UC21(["Manage Events"]):::manage
+        UC22(["Supervise FYP"]):::manage
+    end
+
+    subgraph Approvals ["✅ Approvals"]
+        direction TB
+        UC18(["Approve Projects"]):::manage
+        UC19(["Approve Blogs"]):::manage
+    end
+
+    %% Connections
+    Staff --> UC3
+    Staff --> UC10
+    Staff --> UC11
+    Staff --> UC13
+    Staff --> UC14
+    Staff --> UC15
+    Staff --> UC18
+    Staff --> UC19
+    Staff --> UC20
+    Staff --> UC21
+    Staff --> UC22
 ```
 
 ## Use Case Descriptions

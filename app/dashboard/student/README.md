@@ -6,43 +6,66 @@ The Student Dashboard is the central hub for all student activities on the Swebu
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default'}}%%
-graph TB
-    subgraph "Student Use Cases"
-        UC1[Register Account]
-        UC2[Complete Academic Profile]
-        UC3[View Dashboard]
-        UC4[Browse Clusters]
-        UC5[Join Clusters]
-        UC6[Create Personal Projects]
-        UC7[Browse Projects]
-        UC8[Request to Join Projects]
-        UC9[Create Blog Posts]
-        UC10[View Blog Posts]
-        UC11[View Events]
-        UC12[Register for Events]
-        UC13[Access Portfolio]
-        UC14[Update Profile]
-        UC15[Upload Profile Picture]
-        UC16[Access FYP Module]
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#E6E6FA', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+graph LR
+    %% Styles
+    classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black,font-size:16px;
+    classDef usecase fill:#E6E6FA,stroke:#9370DB,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef fyp fill:#FFB6C1,stroke:#FF69B4,stroke-width:2px,color:black,rx:10,ry:10;
+
+    %% Actor
+    Student(("🎓 Student")):::actor
+
+    %% Use Cases
+    subgraph Account ["🔐 Account & Profile"]
+        direction TB
+        UC1(["Register Account"]):::usecase
+        UC2(["Complete Profile"]):::usecase
+        UC14(["Update Profile"]):::usecase
+        UC15(["Upload Picture"]):::usecase
+        UC13(["Access Portfolio"]):::usecase
     end
 
-    Student -- "Account Management" --> UC1
-    Student -- "Profile Management" --> UC2
-    Student -- "Dashboard Access" --> UC3
-    Student -- "Cluster Activities" --> UC4
-    Student -- "Cluster Activities" --> UC5
-    Student -- "Project Activities" --> UC6
-    Student -- "Project Activities" --> UC7
-    Student -- "Project Activities" --> UC8
-    Student -- "Content Creation" --> UC9
-    Student -- "Content Consumption" --> UC10
-    Student -- "Event Participation" --> UC11
-    Student -- "Event Participation" --> UC12
-    Student -- "Portfolio Access" --> UC13
-    Student -- "Profile Management" --> UC14
-    Student -- "Profile Management" --> UC15
-    Student -- "Level 400 Only" --> UC16
+    subgraph Core ["💻 Dashboard & Clusters"]
+        direction TB
+        UC3(["View Dashboard"]):::usecase
+        UC4(["Browse Clusters"]):::usecase
+        UC5(["Join Clusters"]):::usecase
+    end
+
+    subgraph Projects ["🚀 Projects & Content"]
+        direction TB
+        UC6(["Create Projects"]):::usecase
+        UC7(["Browse Projects"]):::usecase
+        UC8(["Join Projects"]):::usecase
+        UC9(["Create Blog"]):::usecase
+        UC10(["View Blogs"]):::usecase
+        UC11(["View Events"]):::usecase
+        UC12(["Join Events"]):::usecase
+    end
+
+    subgraph Level400 ["🎓 FYP Module"]
+        direction TB
+        UC16(["Access FYP"]):::fyp
+    end
+
+    %% Connections
+    Student --> UC1
+    Student --> UC2
+    Student --> UC3
+    Student --> UC4
+    Student --> UC5
+    Student --> UC6
+    Student --> UC7
+    Student --> UC8
+    Student --> UC9
+    Student --> UC10
+    Student --> UC11
+    Student --> UC12
+    Student --> UC13
+    Student --> UC14
+    Student --> UC15
+    Student --> UC16
 ```
 
 ## Use Case Descriptions

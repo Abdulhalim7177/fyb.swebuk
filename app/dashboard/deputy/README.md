@@ -6,46 +6,58 @@ The Deputy Lead Student Dashboard allows students appointed as deputies to assis
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default'}}%%
-graph TB
-    subgraph "Deputy Lead Student Use Cases"
-        UC17[Approve Cluster Members]
-        UC19[Approve Blog Posts]
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFDAB9', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+graph LR
+    %% Styles
+    classDef actor fill:#FF8C00,stroke:#333,stroke-width:2px,color:white,font-size:16px;
+    classDef usecase fill:#FFDAB9,stroke:#CD853F,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef deputy fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:black,rx:10,ry:10;
 
-        subgraph "Standard Student Use Cases"
-            UC3[View Dashboard]
-            UC4[Browse Clusters]
-            UC5[Join Clusters]
-            UC6[Create Personal Projects]
-            UC7[Browse Projects]
-            UC8[Request to Join Projects]
-            UC9[Create Blog Posts]
-            UC10[View Blog Posts]
-            UC11[View Events]
-            UC12[Register for Events]
-            UC13[Access Portfolio]
-            UC14[Update Profile]
-            UC15[Upload Profile Picture]
-            UC16[Access FYP Module]
-        end
+    %% Actor
+    DeputyLeadStudent(("🎖️ Deputy Lead")):::actor
+
+    %% Use Cases
+    subgraph DeputyDuties ["🤝 Deputy Duties"]
+        direction TB
+        UC17(["Approve Members"]):::deputy
+        UC19(["Approve Blogs"]):::deputy
     end
 
-    DeputyLeadStudent -- "Cluster Management" --> UC17
-    DeputyLeadStudent -- "Content Moderation" --> UC19
-    DeputyLeadStudent -- "Dashboard Access" --> UC3
-    DeputyLeadStudent -- "Cluster Activities" --> UC4
-    DeputyLeadStudent -- "Cluster Activities" --> UC5
-    DeputyLeadStudent -- "Project Activities" --> UC6
-    DeputyLeadStudent -- "Project Activities" --> UC7
-    DeputyLeadStudent -- "Project Activities" --> UC8
-    DeputyLeadStudent -- "Content Creation" --> UC9
-    DeputyLeadStudent -- "Content Consumption" --> UC10
-    DeputyLeadStudent -- "Event Participation" --> UC11
-    DeputyLeadStudent -- "Event Participation" --> UC12
-    DeputyLeadStudent -- "Portfolio Access" --> UC13
-    DeputyLeadStudent -- "Profile Management" --> UC14
-    DeputyLeadStudent -- "Profile Management" --> UC15
-    DeputyLeadStudent -- "Level 400 Only" --> UC16
+    subgraph Standard ["🎒 Student Activities"]
+        direction TB
+        UC3(["View Dashboard"]):::usecase
+        UC4(["Browse Clusters"]):::usecase
+        UC5(["Join Clusters"]):::usecase
+        UC6(["Create Projects"]):::usecase
+        UC7(["Browse Projects"]):::usecase
+        UC8(["Join Projects"]):::usecase
+        UC9(["Create Blog"]):::usecase
+        UC10(["View Blogs"]):::usecase
+        UC11(["View Events"]):::usecase
+        UC12(["Join Events"]):::usecase
+        UC13(["Access Portfolio"]):::usecase
+        UC14(["Update Profile"]):::usecase
+        UC15(["Upload Picture"]):::usecase
+        UC16(["Access FYP (L400)"]):::usecase
+    end
+
+    %% Connections
+    DeputyLeadStudent --> UC17
+    DeputyLeadStudent --> UC19
+    DeputyLeadStudent --> UC3
+    DeputyLeadStudent --> UC4
+    DeputyLeadStudent --> UC5
+    DeputyLeadStudent --> UC6
+    DeputyLeadStudent --> UC7
+    DeputyLeadStudent --> UC8
+    DeputyLeadStudent --> UC9
+    DeputyLeadStudent --> UC10
+    DeputyLeadStudent --> UC11
+    DeputyLeadStudent --> UC12
+    DeputyLeadStudent --> UC13
+    DeputyLeadStudent --> UC14
+    DeputyLeadStudent --> UC15
+    DeputyLeadStudent --> UC16
 ```
 
 ## Use Case Descriptions

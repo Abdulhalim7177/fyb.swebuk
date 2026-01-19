@@ -6,43 +6,62 @@ The Admin Dashboard provides full control over the Swebuk platform, allowing adm
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default'}}%%
-graph TB
-    subgraph "Administrative Use Cases"
-        UC3[View Dashboard]
-        UC10[View Blog Posts]
-        UC11[View Events]
-        UC13[Access Portfolio]
-        UC14[Update Profile]
-        UC15[Upload Profile Picture]
-        UC18[Approve Projects]
-        UC19[Approve Blog Posts]
-        UC20[Manage Clusters]
-        UC21[Manage Events]
-        UC23[Manage Users]
-        UC24[Manage Academic Sessions]
-        UC25[Manage System Settings]
-        UC26[Override Decisions]
-        UC27[Promote Students]
-        UC28[Assign Staff Roles]
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FF6347', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+graph LR
+    %% Styles
+    classDef actor fill:#800080,stroke:#333,stroke-width:2px,color:white,font-size:16px;
+    classDef usecase fill:#FFA07A,stroke:#CD5C5C,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef sys fill:#D8BFD8,stroke:#8B008B,stroke-width:2px,color:black,rx:10,ry:10;
+
+    %% Actor
+    Administrator(("🛡️ Admin")):::actor
+
+    %% Use Cases
+    subgraph Personal ["👤 Personal"]
+        direction TB
+        UC3(["View Dashboard"]):::usecase
+        UC13(["Access Portfolio"]):::usecase
+        UC14(["Update Profile"]):::usecase
+        UC15(["Upload Picture"]):::usecase
+        UC10(["View Blogs"]):::usecase
+        UC11(["View Events"]):::usecase
     end
 
-    Administrator -- "Dashboard Access" --> UC3
-    Administrator -- "Content Consumption" --> UC10
-    Administrator -- "Event Participation" --> UC11
-    Administrator -- "Portfolio Access" --> UC13
-    Administrator -- "Profile Management" --> UC14
-    Administrator -- "Profile Management" --> UC15
-    Administrator -- "Project Management" --> UC18
-    Administrator -- "Content Moderation" --> UC19
-    Administrator -- "Cluster Management" --> UC20
-    Administrator -- "Event Management" --> UC21
-    Administrator -- "User Management" --> UC23
-    Administrator -- "Academic Management" --> UC24
-    Administrator -- "System Configuration" --> UC25
-    Administrator -- "System Control" --> UC26
-    Administrator -- "Role Management" --> UC27
-    Administrator -- "Role Management" --> UC28
+    subgraph SystemMgmt ["⚙️ System Management"]
+        direction TB
+        UC23(["Manage Users"]):::sys
+        UC24(["Manage Sessions"]):::sys
+        UC25(["System Settings"]):::sys
+        UC26(["Override Actions"]):::sys
+        UC27(["Promote Students"]):::sys
+        UC28(["Assign Roles"]):::sys
+    end
+
+    subgraph ContentMgmt ["📝 Content Management"]
+        direction TB
+        UC18(["Approve Projects"]):::sys
+        UC19(["Approve Blogs"]):::sys
+        UC20(["Manage Clusters"]):::sys
+        UC21(["Manage Events"]):::sys
+    end
+
+    %% Connections
+    Administrator --> UC3
+    Administrator --> UC10
+    Administrator --> UC11
+    Administrator --> UC13
+    Administrator --> UC14
+    Administrator --> UC15
+    Administrator --> UC18
+    Administrator --> UC19
+    Administrator --> UC20
+    Administrator --> UC21
+    Administrator --> UC23
+    Administrator --> UC24
+    Administrator --> UC25
+    Administrator --> UC26
+    Administrator --> UC27
+    Administrator --> UC28
 ```
 
 ## Use Case Descriptions
