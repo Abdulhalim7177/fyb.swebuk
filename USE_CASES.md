@@ -5,29 +5,42 @@ This document visualizes the interactions and system flows for key operations wi
 ## 1. Overall Use Case Diagram
 
 ```mermaid
-useCaseDiagram
-    actor "Student (Level 400)" as Student
-    actor "Lead / Deputy Lead" as Lead
-    actor "Staff (Supervisor)" as Supervisor
-    actor "Administrator" as Admin
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+graph LR
+    %% Actors
+    Student["👤 Student<br/>(Level 400)"]
+    Lead["👤 Lead /<br/>Deputy Lead"]
+    Supervisor["👤 Staff<br/>(Supervisor)"]
+    Admin["👤 Administrator"]
 
-    package "FYP Module" {
-        usecase "Submit FYP Proposal" as UC_SubmitFYP
-        usecase "Provide FYP Feedback" as UC_Feedback
-    }
+    %% Group: FYP Module
+    subgraph FYP_Module [FYP Module]
+        direction TB
+        UC_SubmitFYP(["Submit FYP Proposal"])
+        UC_Feedback(["Provide FYP Feedback"])
+    end
 
-    package "Cluster Management" {
-        usecase "Approve Cluster Membership" as UC_ApproveMember
-    }
+    %% Group: Cluster Management
+    subgraph Cluster_Management [Cluster Management]
+        direction TB
+        UC_ApproveMember(["Approve Cluster Membership"])
+    end
 
-    package "User Management" {
-        usecase "Promote Student to Leadership" as UC_Promote
-    }
+    %% Group: User Management
+    subgraph User_Management [User Management]
+        direction TB
+        UC_Promote(["Promote Student to Leadership"])
+    end
 
+    %% Relationships
     Student --> UC_SubmitFYP
     Lead --> UC_ApproveMember
     Supervisor --> UC_Feedback
     Admin --> UC_Promote
+
+    %% Styling
+    classDef default fill:#fff,stroke:#333,stroke-width:1px;
+    classDef cluster fill:#fafafa,stroke:#ccc,stroke-width:1px,color:#333;
 ```
 
 ---
@@ -38,6 +51,7 @@ useCaseDiagram
 **Actor:** Student (Level 400)
 
 ```mermaid
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff'}}}%%
 sequenceDiagram
     participant Student
     participant Portal as FYP Portal
@@ -64,6 +78,7 @@ sequenceDiagram
 **Actor:** Lead Student / Deputy Lead
 
 ```mermaid
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff'}}}%%
 sequenceDiagram
     participant Lead as Lead / Deputy Lead
     participant Dash as Cluster Dashboard
@@ -92,6 +107,7 @@ sequenceDiagram
 **Actor:** Staff (Supervisor)
 
 ```mermaid
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff'}}}%%
 sequenceDiagram
     participant Supervisor
     participant System
@@ -118,6 +134,7 @@ sequenceDiagram
 **Actor:** Administrator
 
 ```mermaid
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff'}}}%%
 sequenceDiagram
     participant Admin
     participant Dash as User Management Dashboard

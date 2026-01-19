@@ -5,7 +5,9 @@
       "Bash(cat:*)",
       "Bash(dir \"C:\\\\Users\\\\abdul\\\\Herd\\\\fyb.swebuk\\\\public\")",
       "Bash(mkdir:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(Get-Content C:UsersabdulHerdfyb.swebukREADME.md)",
+      "Bash(Select-Object -First 100)"
     ]
   }
 }
