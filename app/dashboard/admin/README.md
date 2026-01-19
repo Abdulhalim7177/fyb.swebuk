@@ -6,7 +6,7 @@ The Admin Dashboard provides full control over the Swebuk platform, allowing adm
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FF6347', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
 graph LR
     %% Styles
     classDef actor fill:#800080,stroke:#333,stroke-width:2px,color:white,font-size:16px;

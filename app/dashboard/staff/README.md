@@ -6,7 +6,7 @@ The Staff Dashboard empowers faculty and staff members to manage student cluster
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ADD8E6', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
 graph LR
     %% Styles
     classDef actor fill:#FF4500,stroke:#333,stroke-width:2px,color:white,font-size:16px;

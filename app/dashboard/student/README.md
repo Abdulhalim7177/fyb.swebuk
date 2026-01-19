@@ -6,7 +6,7 @@ The Student Dashboard is the central hub for all student activities on the Swebu
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#E6E6FA', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
 graph LR
     %% Styles
     classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black,font-size:16px;

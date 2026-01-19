@@ -6,7 +6,7 @@ The Deputy Lead Student Dashboard allows students appointed as deputies to assis
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFDAB9', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
 graph LR
     %% Styles
     classDef actor fill:#FF8C00,stroke:#333,stroke-width:2px,color:white,font-size:16px;

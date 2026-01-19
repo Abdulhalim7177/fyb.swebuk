@@ -6,7 +6,7 @@ The Lead Student Dashboard allows cluster leads to manage their assigned student
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#90EE90', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
 graph LR
     %% Styles
     classDef actor fill:#32CD32,stroke:#333,stroke-width:2px,color:white,font-size:16px;
