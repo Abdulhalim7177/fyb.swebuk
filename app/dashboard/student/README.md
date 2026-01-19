@@ -6,12 +6,12 @@ The Student Dashboard is the central hub for all student activities on the Swebu
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'tertiaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'clusterBkg': '#ffffff', 'clusterBorder': '#000000'}}}%%
 graph LR
     %% Styles
-    classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black,font-size:16px;
-    classDef usecase fill:#E6E6FA,stroke:#9370DB,stroke-width:2px,color:black,shape:rect;
-    classDef fyp fill:#FFB6C1,stroke:#FF69B4,stroke-width:2px,color:black,shape:rect;
+    classDef actor fill:#ffffff,stroke:#000,stroke-width:2px,color:#000,font-size:16px;
+    classDef usecase fill:#ffffff,stroke:#000,stroke-width:2px,color:#000,shape:rect;
+    classDef fyp fill:#ffffff,stroke:#000,stroke-width:2px,color:#000,shape:rect;
 
     %% Actor
     Student([🎓 Student]):::actor
@@ -88,7 +88,7 @@ graph LR
 ## Activity Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'tertiaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'tertiaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'clusterBkg': '#ffffff', 'clusterBorder': '#000000'}}}%%
 flowchart TD
     Start((Start)) --> Login[Log In]
     Login --> Profile{Profile Complete?}

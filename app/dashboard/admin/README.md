@@ -6,12 +6,12 @@ The Admin Dashboard provides full control over the Swebuk platform, allowing adm
 ## Use Case Diagram
 
 ```mermaid
-%%{init: {'theme': 'default', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f4f4f4'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'tertiaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'clusterBkg': '#ffffff', 'clusterBorder': '#000000'}}}%%
 graph LR
     %% Styles
-    classDef actor fill:#800080,stroke:#333,stroke-width:2px,color:white,font-size:16px;
-    classDef usecase fill:#FFA07A,stroke:#CD5C5C,stroke-width:2px,color:black,shape:rect;
-    classDef sys fill:#D8BFD8,stroke:#8B008B,stroke-width:2px,color:black,shape:rect;
+    classDef actor fill:#ffffff,stroke:#000,stroke-width:2px,color:#000,font-size:16px;
+    classDef usecase fill:#ffffff,stroke:#000,stroke-width:2px,color:#000,shape:rect;
+    classDef sys fill:#ffffff,stroke:#000,stroke-width:2px,color:#000,shape:rect;
 
     %% Actor
     Administrator([🛡️ Admin]):::actor
@@ -80,7 +80,7 @@ graph LR
 ## Activity Diagram
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'tertiaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'mainBkg': '#ffffff', 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'tertiaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'clusterBkg': '#ffffff', 'clusterBorder': '#000000'}}}%%
 flowchart TD
     Start((Start)) --> Login[Log In]
     Login --> Dash{View Dashboard}
