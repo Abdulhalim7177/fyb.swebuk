@@ -10,56 +10,45 @@ The Lead Student Dashboard allows cluster leads to manage their assigned student
 graph LR
     %% Styles
     classDef actor fill:#32CD32,stroke:#333,stroke-width:2px,color:white,font-size:16px;
-    classDef usecase fill:#90EE90,stroke:#228B22,stroke-width:2px,color:black,rx:10,ry:10;
-    classDef lead fill:#FFD700,stroke:#DAA520,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef usecase fill:#90EE90,stroke:#228B22,stroke-width:2px,color:black,shape:rect;
+    classDef lead fill:#FFD700,stroke:#DAA520,stroke-width:2px,color:black,shape:rect;
 
     %% Actor
-    LeadStudent(("⭐ Lead Student")):::actor
+    LeadStudent([⭐ Lead Student]):::actor
 
     %% Use Cases
     subgraph LeadDuties ["👔 Leadership Duties"]
         direction TB
-        UC17(["Approve Members"]):::lead
-        UC18(["Approve Projects"]):::lead
-        UC19(["Approve Blogs"]):::lead
+        UC17[Approve Members]:::lead
+        UC18[Approve Projects]:::lead
+        UC19[Approve Blogs]:::lead
     end
 
     subgraph Standard ["🎒 Student Activities"]
         direction TB
-        UC6(["Create Projects"]):::usecase
-        UC3(["View Dashboard"]):::usecase
-        UC4(["Browse Clusters"]):::usecase
-        UC5(["Join Clusters"]):::usecase
-        UC7(["Browse Projects"]):::usecase
-        UC8(["Join Projects"]):::usecase
-        UC9(["Create Blog"]):::usecase
-        UC10(["View Blogs"]):::usecase
-        UC11(["View Events"]):::usecase
-        UC12(["Join Events"]):::usecase
-        UC13(["Access Portfolio"]):::usecase
-        UC14(["Update Profile"]):::usecase
-        UC15(["Upload Picture"]):::usecase
-        UC16(["Access FYP (L400)"]):::usecase
+        UC6[Create Projects]:::usecase
+        UC3[View Dashboard]:::usecase
+        UC4[Browse Clusters]:::usecase
+        UC5[Join Clusters]:::usecase
+        UC7[Browse Projects]:::usecase
+        UC8[Join Projects]:::usecase
+        UC9[Create Blog]:::usecase
+        UC10[View Blogs]:::usecase
+        UC11[View Events]:::usecase
+        UC12[Join Events]:::usecase
+        UC13[Access Portfolio]:::usecase
+        UC14[Update Profile]:::usecase
+        UC15[Upload Picture]:::usecase
+        UC16[Access FYP (L400)]:::usecase
     end
 
     %% Connections
+    LeadStudent --> LeadDuties
+    LeadStudent --> Standard
+
+    %% Direct links
     LeadStudent --> UC17
-    LeadStudent --> UC18
-    LeadStudent --> UC19
-    LeadStudent --> UC3
-    LeadStudent --> UC4
-    LeadStudent --> UC5
     LeadStudent --> UC6
-    LeadStudent --> UC7
-    LeadStudent --> UC8
-    LeadStudent --> UC9
-    LeadStudent --> UC10
-    LeadStudent --> UC11
-    LeadStudent --> UC12
-    LeadStudent --> UC13
-    LeadStudent --> UC14
-    LeadStudent --> UC15
-    LeadStudent --> UC16
 ```
 
 ## Use Case Descriptions

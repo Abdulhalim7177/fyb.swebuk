@@ -10,54 +10,44 @@ The Deputy Lead Student Dashboard allows students appointed as deputies to assis
 graph LR
     %% Styles
     classDef actor fill:#FF8C00,stroke:#333,stroke-width:2px,color:white,font-size:16px;
-    classDef usecase fill:#FFDAB9,stroke:#CD853F,stroke-width:2px,color:black,rx:10,ry:10;
-    classDef deputy fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef usecase fill:#FFDAB9,stroke:#CD853F,stroke-width:2px,color:black,shape:rect;
+    classDef deputy fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:black,shape:rect;
 
     %% Actor
-    DeputyLeadStudent(("🎖️ Deputy Lead")):::actor
+    DeputyLeadStudent([🎖️ Deputy Lead]):::actor
 
     %% Use Cases
     subgraph DeputyDuties ["🤝 Deputy Duties"]
         direction TB
-        UC17(["Approve Members"]):::deputy
-        UC19(["Approve Blogs"]):::deputy
+        UC17[Approve Members]:::deputy
+        UC19[Approve Blogs]:::deputy
     end
 
     subgraph Standard ["🎒 Student Activities"]
         direction TB
-        UC3(["View Dashboard"]):::usecase
-        UC4(["Browse Clusters"]):::usecase
-        UC5(["Join Clusters"]):::usecase
-        UC6(["Create Projects"]):::usecase
-        UC7(["Browse Projects"]):::usecase
-        UC8(["Join Projects"]):::usecase
-        UC9(["Create Blog"]):::usecase
-        UC10(["View Blogs"]):::usecase
-        UC11(["View Events"]):::usecase
-        UC12(["Join Events"]):::usecase
-        UC13(["Access Portfolio"]):::usecase
-        UC14(["Update Profile"]):::usecase
-        UC15(["Upload Picture"]):::usecase
-        UC16(["Access FYP (L400)"]):::usecase
+        UC3[View Dashboard]:::usecase
+        UC4[Browse Clusters]:::usecase
+        UC5[Join Clusters]:::usecase
+        UC6[Create Projects]:::usecase
+        UC7[Browse Projects]:::usecase
+        UC8[Join Projects]:::usecase
+        UC9[Create Blog]:::usecase
+        UC10[View Blogs]:::usecase
+        UC11[View Events]:::usecase
+        UC12[Join Events]:::usecase
+        UC13[Access Portfolio]:::usecase
+        UC14[Update Profile]:::usecase
+        UC15[Upload Picture]:::usecase
+        UC16[Access FYP (L400)]:::usecase
     end
 
     %% Connections
+    DeputyLeadStudent --> DeputyDuties
+    DeputyLeadStudent --> Standard
+
+    %% Direct links
     DeputyLeadStudent --> UC17
-    DeputyLeadStudent --> UC19
     DeputyLeadStudent --> UC3
-    DeputyLeadStudent --> UC4
-    DeputyLeadStudent --> UC5
-    DeputyLeadStudent --> UC6
-    DeputyLeadStudent --> UC7
-    DeputyLeadStudent --> UC8
-    DeputyLeadStudent --> UC9
-    DeputyLeadStudent --> UC10
-    DeputyLeadStudent --> UC11
-    DeputyLeadStudent --> UC12
-    DeputyLeadStudent --> UC13
-    DeputyLeadStudent --> UC14
-    DeputyLeadStudent --> UC15
-    DeputyLeadStudent --> UC16
 ```
 
 ## Use Case Descriptions

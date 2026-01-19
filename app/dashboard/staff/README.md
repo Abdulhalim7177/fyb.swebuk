@@ -10,48 +10,45 @@ The Staff Dashboard empowers faculty and staff members to manage student cluster
 graph LR
     %% Styles
     classDef actor fill:#FF4500,stroke:#333,stroke-width:2px,color:white,font-size:16px;
-    classDef usecase fill:#ADD8E6,stroke:#4682B4,stroke-width:2px,color:black,rx:10,ry:10;
-    classDef manage fill:#98FB98,stroke:#2E8B57,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef usecase fill:#ADD8E6,stroke:#4682B4,stroke-width:2px,color:black,shape:rect;
+    classDef manage fill:#98FB98,stroke:#2E8B57,stroke-width:2px,color:black,shape:rect;
 
     %% Actor
-    Staff(("👨‍🏫 Staff")):::actor
+    Staff([👨‍🏫 Staff]):::actor
 
     %% Use Cases
     subgraph Personal ["👤 Personal Management"]
         direction TB
-        UC3(["View Dashboard"]):::usecase
-        UC13(["Access Portfolio"]):::usecase
-        UC14(["Update Profile"]):::usecase
-        UC15(["Upload Picture"]):::usecase
-        UC10(["View Blogs"]):::usecase
-        UC11(["View Events"]):::usecase
+        UC3[View Dashboard]:::usecase
+        UC13[Access Portfolio]:::usecase
+        UC14[Update Profile]:::usecase
+        UC15[Upload Picture]:::usecase
+        UC10[View Blogs]:::usecase
+        UC11[View Events]:::usecase
     end
 
     subgraph Management ["🛠️ Management"]
         direction TB
-        UC20(["Manage Clusters"]):::manage
-        UC21(["Manage Events"]):::manage
-        UC22(["Supervise FYP"]):::manage
+        UC20[Manage Clusters]:::manage
+        UC21[Manage Events]:::manage
+        UC22[Supervise FYP]:::manage
     end
 
     subgraph Approvals ["✅ Approvals"]
         direction TB
-        UC18(["Approve Projects"]):::manage
-        UC19(["Approve Blogs"]):::manage
+        UC18[Approve Projects]:::manage
+        UC19[Approve Blogs]:::manage
     end
 
     %% Connections
+    Staff --> Personal
+    Staff --> Management
+    Staff --> Approvals
+
+    %% Direct links for clarity
     Staff --> UC3
-    Staff --> UC10
-    Staff --> UC11
-    Staff --> UC13
-    Staff --> UC14
-    Staff --> UC15
-    Staff --> UC18
-    Staff --> UC19
     Staff --> UC20
-    Staff --> UC21
-    Staff --> UC22
+    Staff --> UC18
 ```
 
 ## Use Case Descriptions

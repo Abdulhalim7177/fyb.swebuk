@@ -10,58 +10,50 @@ The Admin Dashboard provides full control over the Swebuk platform, allowing adm
 graph LR
     %% Styles
     classDef actor fill:#800080,stroke:#333,stroke-width:2px,color:white,font-size:16px;
-    classDef usecase fill:#FFA07A,stroke:#CD5C5C,stroke-width:2px,color:black,rx:10,ry:10;
-    classDef sys fill:#D8BFD8,stroke:#8B008B,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef usecase fill:#FFA07A,stroke:#CD5C5C,stroke-width:2px,color:black,shape:rect;
+    classDef sys fill:#D8BFD8,stroke:#8B008B,stroke-width:2px,color:black,shape:rect;
 
     %% Actor
-    Administrator(("🛡️ Admin")):::actor
+    Administrator([🛡️ Admin]):::actor
 
     %% Use Cases
     subgraph Personal ["👤 Personal"]
         direction TB
-        UC3(["View Dashboard"]):::usecase
-        UC13(["Access Portfolio"]):::usecase
-        UC14(["Update Profile"]):::usecase
-        UC15(["Upload Picture"]):::usecase
-        UC10(["View Blogs"]):::usecase
-        UC11(["View Events"]):::usecase
+        UC3[View Dashboard]:::usecase
+        UC13[Access Portfolio]:::usecase
+        UC14[Update Profile]:::usecase
+        UC15[Upload Picture]:::usecase
+        UC10[View Blogs]:::usecase
+        UC11[View Events]:::usecase
     end
 
     subgraph SystemMgmt ["⚙️ System Management"]
         direction TB
-        UC23(["Manage Users"]):::sys
-        UC24(["Manage Sessions"]):::sys
-        UC25(["System Settings"]):::sys
-        UC26(["Override Actions"]):::sys
-        UC27(["Promote Students"]):::sys
-        UC28(["Assign Roles"]):::sys
+        UC23[Manage Users]:::sys
+        UC24[Manage Sessions]:::sys
+        UC25[System Settings]:::sys
+        UC26[Override Actions]:::sys
+        UC27[Promote Students]:::sys
+        UC28[Assign Roles]:::sys
     end
 
     subgraph ContentMgmt ["📝 Content Management"]
         direction TB
-        UC18(["Approve Projects"]):::sys
-        UC19(["Approve Blogs"]):::sys
-        UC20(["Manage Clusters"]):::sys
-        UC21(["Manage Events"]):::sys
+        UC18[Approve Projects]:::sys
+        UC19[Approve Blogs]:::sys
+        UC20[Manage Clusters]:::sys
+        UC21[Manage Events]:::sys
     end
 
     %% Connections
+    Administrator --> Personal
+    Administrator --> SystemMgmt
+    Administrator --> ContentMgmt
+
+    %% Direct links
     Administrator --> UC3
-    Administrator --> UC10
-    Administrator --> UC11
-    Administrator --> UC13
-    Administrator --> UC14
-    Administrator --> UC15
-    Administrator --> UC18
-    Administrator --> UC19
-    Administrator --> UC20
-    Administrator --> UC21
     Administrator --> UC23
-    Administrator --> UC24
-    Administrator --> UC25
-    Administrator --> UC26
-    Administrator --> UC27
-    Administrator --> UC28
+    Administrator --> UC18
 ```
 
 ## Use Case Descriptions

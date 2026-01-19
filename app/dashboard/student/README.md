@@ -10,61 +10,57 @@ The Student Dashboard is the central hub for all student activities on the Swebu
 graph LR
     %% Styles
     classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black,font-size:16px;
-    classDef usecase fill:#E6E6FA,stroke:#9370DB,stroke-width:2px,color:black,rx:10,ry:10;
-    classDef fyp fill:#FFB6C1,stroke:#FF69B4,stroke-width:2px,color:black,rx:10,ry:10;
+    classDef usecase fill:#E6E6FA,stroke:#9370DB,stroke-width:2px,color:black,shape:rect;
+    classDef fyp fill:#FFB6C1,stroke:#FF69B4,stroke-width:2px,color:black,shape:rect;
 
     %% Actor
-    Student(("🎓 Student")):::actor
+    Student([🎓 Student]):::actor
 
     %% Use Cases
     subgraph Account ["🔐 Account & Profile"]
         direction TB
-        UC1(["Register Account"]):::usecase
-        UC2(["Complete Profile"]):::usecase
-        UC14(["Update Profile"]):::usecase
-        UC15(["Upload Picture"]):::usecase
-        UC13(["Access Portfolio"]):::usecase
+        UC1[Register Account]:::usecase
+        UC2[Complete Profile]:::usecase
+        UC14[Update Profile]:::usecase
+        UC15[Upload Picture]:::usecase
+        UC13[Access Portfolio]:::usecase
     end
 
     subgraph Core ["💻 Dashboard & Clusters"]
         direction TB
-        UC3(["View Dashboard"]):::usecase
-        UC4(["Browse Clusters"]):::usecase
-        UC5(["Join Clusters"]):::usecase
+        UC3[View Dashboard]:::usecase
+        UC4[Browse Clusters]:::usecase
+        UC5[Join Clusters]:::usecase
     end
 
     subgraph Projects ["🚀 Projects & Content"]
         direction TB
-        UC6(["Create Projects"]):::usecase
-        UC7(["Browse Projects"]):::usecase
-        UC8(["Join Projects"]):::usecase
-        UC9(["Create Blog"]):::usecase
-        UC10(["View Blogs"]):::usecase
-        UC11(["View Events"]):::usecase
-        UC12(["Join Events"]):::usecase
+        UC6[Create Projects]:::usecase
+        UC7[Browse Projects]:::usecase
+        UC8[Join Projects]:::usecase
+        UC9[Create Blog]:::usecase
+        UC10[View Blogs]:::usecase
+        UC11[View Events]:::usecase
+        UC12[Join Events]:::usecase
     end
 
     subgraph Level400 ["🎓 FYP Module"]
         direction TB
-        UC16(["Access FYP"]):::fyp
+        UC16[Access FYP]:::fyp
     end
 
     %% Connections
+    Student --> Account
+    Student --> Core
+    Student --> Projects
+    Student --> Level400
+
+    %% Implicit connections to internal nodes for layout if needed,
+    %% but connecting to subgraph usually links to first node.
+    %% To ensure flow lines are visible to specific tasks:
     Student --> UC1
-    Student --> UC2
     Student --> UC3
-    Student --> UC4
-    Student --> UC5
     Student --> UC6
-    Student --> UC7
-    Student --> UC8
-    Student --> UC9
-    Student --> UC10
-    Student --> UC11
-    Student --> UC12
-    Student --> UC13
-    Student --> UC14
-    Student --> UC15
     Student --> UC16
 ```
 
