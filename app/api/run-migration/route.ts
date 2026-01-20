@@ -30,13 +30,26 @@ export async function GET() {
       "utf-8"
     );
 
-    // Execute blog tables migration
-    const { error: tablesError } = await supabase.rpc("exec_sql", {
-      sql: blogTablesMigration,
-    });
+    const recursionFixMigration = readFileSync(
+      join(migrationsPath, "20260119000000_fix_infinite_recursion.sql"),
+      "utf-8"
+    );
 
-    if (tablesError) {
-      // Try direct SQL execution via REST API
+    const comprehensiveFixMigration = readFileSync(
+      join(migrationsPath, "20260119000001_comprehensive_recursion_fix.sql"),
+      "utf-8"
+    );
+
+    // Execute migrations
+    const migrationsToRun = [
+      { name: "Blog Tables", sql: blogTablesMigration },
+      { name: "Blog Storage", sql: blogStorageMigration },
+      { name: "Recursion Fix", sql: recursionFixMigration },
+      { name: "Comprehensive Recursion Fix", sql: comprehensiveFixMigration }
+    ];
+
+    const results = [];
+    for (const m of migrationsToRun) {
       const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
         method: "POST",
         headers: {
@@ -44,31 +57,15 @@ export async function GET() {
           apikey: serviceRoleKey,
           Authorization: `Bearer ${serviceRoleKey}`,
         },
-        body: JSON.stringify({ sql: blogTablesMigration }),
+        body: JSON.stringify({ sql: m.sql }),
       });
-
-      if (!response.ok) {
-        console.log("RPC not available, will return SQL for manual execution");
-        return NextResponse.json({
-          message: "Please run these SQL migrations manually in Supabase Studio",
-          note: "Go to http://localhost:54323 > SQL Editor and run the migrations",
-          migrations: [
-            {
-              name: "20251212000000_create_blog_tables.sql",
-              sql: blogTablesMigration,
-            },
-            {
-              name: "20251212000001_create_blog_storage.sql",
-              sql: blogStorageMigration,
-            },
-          ],
-        });
-      }
+      results.push({ name: m.name, success: response.ok });
     }
 
     return NextResponse.json({
       success: true,
-      message: "Migrations executed successfully"
+      message: "Migrations process completed",
+      results
     });
   } catch (error: any) {
     console.error("Migration error:", error);
