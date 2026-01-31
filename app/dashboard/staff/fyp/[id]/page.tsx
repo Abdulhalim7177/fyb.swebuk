@@ -8,6 +8,7 @@ import { StaffFYPActions } from "@/components/fyp/staff-fyp-actions";
 import { SubmissionList } from "@/components/fyp/staff/submission-list";
 import { ChapterProgressTracker } from "@/components/fyp/chapter-progress-tracker";
 import { ProjectOverview } from "@/components/fyp/student/project-overview";
+import { FYPChatButton } from "@/components/fyp/fyp-chat-button";
 import { Calendar, User, FileText, Clock } from "lucide-react";
 import { getStaffFYPDetails } from "@/lib/supabase/fyp-staff-actions";
 import { getFYPComments } from "@/lib/supabase/fyp-actions";
@@ -66,7 +67,7 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
   // Check user role
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, full_name, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -139,7 +140,16 @@ export default async function StaffFYPDetailPage({ params }: { params: Promise<{
             )}
           </div>
         </div>
-        {getStatusBadge(fypData.status)}
+        <div className="flex items-center gap-2">
+          <FYPChatButton
+            fypId={fypData.id}
+            currentUserId={user.id}
+            currentUserName={profile?.full_name || "Staff"}
+            currentUserAvatar={profile?.avatar_url || null}
+            supervisorName={fypData.student?.full_name || "Student"}
+          />
+          {getStatusBadge(fypData.status)}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
