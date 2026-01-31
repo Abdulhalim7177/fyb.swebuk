@@ -7,6 +7,7 @@ import { SubmissionHistory } from "@/components/fyp/student/submission-history";
 import { ProjectOverview } from "@/components/fyp/student/project-overview";
 import { FYPComments } from "@/components/fyp/fyp-comments";
 import { ChapterProgressTracker } from "@/components/fyp/chapter-progress-tracker";
+import { FYPChatButton } from "@/components/fyp/fyp-chat-button";
 import { Lock, MessageSquare, User, Clock, AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ export default async function StudentFYPPage() {
   // Check user academic level
   const { data: profile } = await supabase
     .from("profiles")
-    .select("academic_level, full_name")
+    .select("academic_level, full_name, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -240,10 +241,13 @@ export default async function StudentFYPPage() {
             </p>
           </div>
           {fypData.supervisor && (
-            <Button variant="default">
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Project Chatroom
-            </Button>
+            <FYPChatButton
+              fypId={fypData.id}
+              currentUserId={user.id}
+              currentUserName={profile?.full_name || "Student"}
+              currentUserAvatar={profile?.avatar_url || null}
+              supervisorName={fypData.supervisor.full_name}
+            />
           )}
         </div>
 

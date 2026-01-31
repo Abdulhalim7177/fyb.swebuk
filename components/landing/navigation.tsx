@@ -21,10 +21,11 @@ export function Navigation() {
   }, []);
 
   const navLinks = [
-    { href: "#features", label: "Features" },
-    { href: "#how-it-works", label: "How It Works" },
-    { href: "#testimonials", label: "Testimonials" },
-    { href: "#contact", label: "Contact" },
+    { href: "/about", label: "About" },
+    { href: "/academics", label: "Academics" },
+    { href: "/projects", label: "Projects" },
+    { href: "/events", label: "Events" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (

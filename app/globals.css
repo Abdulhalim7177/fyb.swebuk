@@ -185,16 +185,16 @@
   --space-6xl: 12rem;     /* 192px */
   
   /* Refined Color Tokens */
-  --color-primary-50: #f5f3ff;
-  --color-primary-100: #ede9fe;
-  --color-primary-200: #ddd6fe;
-  --color-primary-300: #c4b5fd;
-  --color-primary-400: #a78bfa;
-  --color-primary-500: #8b5cf6;
-  --color-primary-600: #7c3aed;
-  --color-primary-700: #6d28d9;
-  --color-primary-800: #5b21b6;
-  --color-primary-900: #4c1d95;
+  --color-primary-50: #e0f2fe;
+  --color-primary-100: #bae6fd;
+  --color-primary-200: #7dd3fc;
+  --color-primary-300: #38bdf8;
+  --color-primary-400: #0ea5e9;
+  --color-primary-500: #0284c7;
+  --color-primary-600: #0092DB;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
   
   --color-secondary-50: #eff6ff;
   --color-secondary-100: #dbeafe;
@@ -281,8 +281,8 @@
   
   /* Sophisticated Multi-Stop Gradients */
   --gradient-primary: linear-gradient(135deg, 
-    #8b5cf6 0%, 
-    #7c3aed 25%, 
+    #0092DB 0%, 
+    #0ea5e9 25%, 
     #3b82f6 50%, 
     #2563eb 75%, 
     #06b6d4 100%);
@@ -1194,16 +1194,7 @@ aside nav a {
   padding-top: 100px;
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse at 50% 0%,
-      rgba(139, 92, 246, 0.1) 0%,
-      transparent 70%),
-    radial-gradient(ellipse at 100% 100%,
-      rgba(59, 130, 246, 0.1) 0%,
-      transparent 70%),
-    radial-gradient(ellipse at 0% 100%,
-      rgba(6, 182, 212, 0.1) 0%,
-      transparent 70%);
+  background: transparent;
 }
 
 .hero-bg {
@@ -1376,16 +1367,7 @@ aside nav a {
 
 /* Dark theme hero section */
 .dark .hero {
-  background:
-    radial-gradient(ellipse at 50% 0%,
-      rgba(139, 92, 246, 0.05) 0%,
-      transparent 70%),
-    radial-gradient(ellipse at 100% 100%,
-      rgba(59, 130, 246, 0.05) 0%,
-      transparent 70%),
-    radial-gradient(ellipse at 0% 100%,
-      rgba(6, 182, 212, 0.05) 0%,
-      transparent 70%);
+  background: transparent;
 }
 
 .dark .hero-badge {

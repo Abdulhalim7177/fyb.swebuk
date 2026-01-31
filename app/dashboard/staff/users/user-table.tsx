@@ -64,6 +64,9 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [changingLevelUser, setChangingLevelUser] = useState<UserProfile | null>(null);
+  const [newAcademicLevel, setNewAcademicLevel] = useState<string>("");
+
   const handleEdit = (user: UserProfile) => {
     setEditingUser(user);
     setEditFormData({
@@ -76,6 +79,39 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
       linkedinUrl: user.linkedin_url || "",
       githubUrl: user.github_url || "",
     });
+  };
+
+  const handleChangeLevel = (user: UserProfile) => {
+    setChangingLevelUser(user);
+    setNewAcademicLevel(user.academic_level || "student");
+  };
+
+  const handleSaveLevelChange = async () => {
+    if (!changingLevelUser) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // We need to pass required fields (fullName, role) along with the updated academicLevel
+      const result = await updateUserProfile(
+        changingLevelUser.id,
+        changingLevelUser.full_name || "",
+        changingLevelUser.role || "student",
+        newAcademicLevel
+      );
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setChangingLevelUser(null);
+      onUpdate(); // Trigger refresh
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to update academic level");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDelete = (user: UserProfile) => {
@@ -235,6 +271,7 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem onClick={() => handleView(profile)}>View</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleEdit(profile)}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleChangeLevel(profile)}>Change Level</DropdownMenuItem>
                       {(currentUserRole === "admin" || profile.role !== "admin") && (
                         <DropdownMenuItem
                           onClick={() => handleDelete(profile)}
@@ -251,6 +288,55 @@ export function UserTable({ profiles, currentUserRole, onUpdate }: UserTableProp
           </TableBody>
         </Table>
       </div>
+
+      {/* Change Level Dialog */}
+      <Dialog open={!!changingLevelUser} onOpenChange={(open) => !open && setChangingLevelUser(null)}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Change Academic Level</DialogTitle>
+            <DialogDescription>
+              Update the academic level for {changingLevelUser?.full_name}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="changeLevelSelect">Select New Level</Label>
+              <Select
+                value={newAcademicLevel}
+                onValueChange={setNewAcademicLevel}
+              >
+                <SelectTrigger id="changeLevelSelect">
+                  <SelectValue placeholder="Select academic level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="level_100">Level 100</SelectItem>
+                  <SelectItem value="level_200">Level 200</SelectItem>
+                  <SelectItem value="level_300">Level 300</SelectItem>
+                  <SelectItem value="level_400">Level 400</SelectItem>
+                  <SelectItem value="alumni">Alumni</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setChangingLevelUser(null)}
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveLevelChange}
+                disabled={isLoading}
+              >
+                {isLoading ? "Updating..." : "Update Level"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* View User Dialog */}
       <Dialog open={!!viewingUser} onOpenChange={(open) => {

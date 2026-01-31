@@ -29,6 +29,17 @@ export async function processAcademicSessionEnd() {
       throw new Error('Only admins and staff can process academic session end');
     }
 
+    // Update level_400 students to alumni
+    // IMPORTANT: This must be done FIRST to prevent students promoting from 300->400 getting immediately moved to alumni
+    const { error: update400toAlumniError } = await supabase
+      .from('profiles')
+      .update({ academic_level: 'alumni' })
+      .eq('academic_level', 'level_400');
+
+    if (update400toAlumniError) {
+      throw new Error(`Error updating level_400 to alumni: ${update400toAlumniError.message}`);
+    }
+
     // Update level_300 students to level_400
     const { error: update300to400Error } = await supabase
       .from('profiles')
@@ -57,16 +68,6 @@ export async function processAcademicSessionEnd() {
 
     if (update100to200Error) {
       throw new Error(`Error updating level_100 to level_200: ${update100to200Error.message}`);
-    }
-
-    // Update level_400 students to alumni
-    const { error: update400toAlumniError } = await supabase
-      .from('profiles')
-      .update({ academic_level: 'alumni' })
-      .eq('academic_level', 'level_400');
-
-    if (update400toAlumniError) {
-      throw new Error(`Error updating level_400 to alumni: ${update400toAlumniError.message}`);
     }
 
     // Deactivate the current academic session

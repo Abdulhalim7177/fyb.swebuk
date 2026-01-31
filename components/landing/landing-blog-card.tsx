@@ -33,7 +33,7 @@ export function LandingBlogCard({ blog }: LandingBlogCardProps) {
 
   return (
     <Link href={`/blog/${blog.slug}`} className="group block h-full">
-      <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden">
+      <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden" suppressHydrationWarning>
         {blog.featured_image_url && (
           <div className="relative w-full" style={{ flexBasis: '50%' }}>
             <Image

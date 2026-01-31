@@ -12,28 +12,32 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="hero" id="hero">
-      <div className="hero-bg">
-        <div className="hero-orb hero-orb-1"></div>
-        <div className="hero-orb hero-orb-2"></div>
-        <div className="hero-orb hero-orb-3"></div>
+    <section className="hero relative overflow-hidden min-h-screen flex items-center" id="hero">
+      <div className="absolute inset-0 z-0">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url('/fci.jpg')` 
+          }}
+        />
+        <div className="absolute inset-0 bg-black/40 z-0" />
       </div>
       
-      <div className="container">
+      <div className="container relative z-10">
         <div className="hero-content">
-          <div className="hero-badge animate-on-scroll">
+          <div className="hero-badge animate-on-scroll !text-white border-white/30 bg-white/20 shadow-lg">
             <span className="hero-badge-dot"></span>
-            <span>Now open for all levels</span>
+            <span className="font-semibold">Now open for all levels</span>
           </div>
 
-          <h1 className="animate-on-scroll delay-1">
-            Connect. Collaborate.<br />
-            <span className="text-gradient">Build Together.</span>
+          <h1 className="animate-on-scroll delay-1 !text-white">
+            Empowering the Future of<br />
+            <span className="text-gradient">Software Innovation.</span>
           </h1>
 
-          <p className="hero-subtitle animate-on-scroll delay-2">
-            Swebuk is the ultimate online tech community for software engineering students.
-            Join clusters, work on real projects, and build your professional portfolio.
+          <p className="hero-subtitle animate-on-scroll delay-2 !text-white font-medium drop-shadow-sm">
+            Department of Software Engineering, Bayero University Kano.
+            Nurturing the next generation of software engineering leaders from study to mastery.
           </p>
 
           <div className="hero-ctas animate-on-scroll delay-3">

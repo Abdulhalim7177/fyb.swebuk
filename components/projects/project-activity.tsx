@@ -242,29 +242,43 @@ export function ProjectActivity({ projectId, projectName, currentUserId, isOwner
       setSubmitting(true);
       const supabase = createClient();
 
-      const dataToSubmit = {
-        project_id: projectId,
-        title: formData.title,
-        description: formData.description || null,
-        status: "pending",
-        progress_percentage: 0,
-        created_by: currentUserId,
-      };
+      // Get current user to ensure RLS compliance
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        throw new Error("You must be logged in to perform this action");
+      }
 
       if (editingMilestone) {
         const { error } = await supabase
           .from("project_progress")
-          .update(dataToSubmit)
+          .update({
+            title: formData.title,
+            description: formData.description || null,
+          })
           .eq("id", editingMilestone.id);
 
         if (error) throw error;
         toast.success("Milestone updated successfully");
       } else {
+        const dataToSubmit = {
+          project_id: projectId,
+          title: formData.title,
+          description: formData.description || null,
+          status: "pending",
+          progress_percentage: 0,
+          created_by: user.id, // Use authenticated user ID
+        };
+
+        console.log("Submitting milestone:", dataToSubmit);
+
         const { error } = await supabase
           .from("project_progress")
           .insert(dataToSubmit);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase insert error details:", JSON.stringify(error, null, 2));
+          throw error;
+        }
         toast.success("Milestone created successfully");
       }
 
@@ -272,8 +286,12 @@ export function ProjectActivity({ projectId, projectName, currentUserId, isOwner
       resetForm();
       fetchAllActivities();
     } catch (error: any) {
-      console.error("Error saving milestone:", error);
-      toast.error("Failed to save milestone");
+      console.error("Error saving milestone full object:", JSON.stringify(error, null, 2));
+      console.error("Error saving milestone message:", error.message);
+      console.error("Error saving milestone code:", error.code);
+      console.error("Error saving milestone details:", error.details);
+      
+      toast.error(error.message || "Failed to save milestone");
     } finally {
       setSubmitting(false);
     }

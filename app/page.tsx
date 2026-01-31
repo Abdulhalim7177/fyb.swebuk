@@ -32,7 +32,7 @@ function LandingPageClient({ children }: { children: React.ReactNode }) {
 // Loading skeletons
 function BlogSkeleton() {
   return (
-    <div className="glass-card feature-card animate-on-scroll">
+    <div className="glass-card feature-card animate-on-scroll" suppressHydrationWarning>
       <div className="feature-icon">
         <div className="w-8 h-8 bg-white/10 rounded animate-pulse" />
       </div>
@@ -45,7 +45,7 @@ function BlogSkeleton() {
 
 function EventSkeleton() {
   return (
-    <div className="glass-card feature-card animate-on-scroll">
+    <div className="glass-card feature-card animate-on-scroll" suppressHydrationWarning>
       <div className="feature-icon">
         <div className="w-8 h-8 bg-white/10 rounded animate-pulse" />
       </div>
@@ -58,7 +58,7 @@ function EventSkeleton() {
 
 function ClusterSkeleton() {
   return (
-    <div className="glass-card feature-card animate-on-scroll">
+    <div className="glass-card feature-card animate-on-scroll" suppressHydrationWarning>
       <div className="feature-icon">
         <div className="w-8 h-8 bg-white/10 rounded animate-pulse" />
       </div>
@@ -218,7 +218,7 @@ async function PopularClustersSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {clusters.map((cluster) => (
             <Link key={cluster.id} href={`/dashboard/clusters/${cluster.id}`} className="group block h-full">
-              <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden">
+              <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden" suppressHydrationWarning>
                 <div className="p-6 flex-grow flex flex-col">
                   <div className="feature-icon mb-4 bg-primary/10 dark:bg-white/5">
                     <Users className="w-8 h-8 text-primary dark:text-white" />

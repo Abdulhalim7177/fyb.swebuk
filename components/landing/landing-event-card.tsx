@@ -28,7 +28,7 @@ export function LandingEventCard({ event }: LandingEventCardProps) {
 
   return (
     <Link href={`/events/${event.slug}`} className="group block h-full">
-      <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden">
+      <div className="glass-card animate-on-scroll h-full flex flex-col overflow-hidden" suppressHydrationWarning>
         {event.banner_image_url && (
           <div className="relative w-full h-40">
             <Image
