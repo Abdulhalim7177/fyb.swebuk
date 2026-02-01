@@ -62,6 +62,8 @@ interface DetailedCluster {
 interface User {
   id: string;
   role: string;
+  full_name?: string;
+  avatar_url?: string | null;
 }
 
 interface StaffClusterViewProps {
