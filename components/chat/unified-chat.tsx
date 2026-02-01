@@ -151,11 +151,21 @@ export function UnifiedChat({
 
   const checkActiveCalls = async () => {
     console.log("Checking active calls for context:", id, contextType);
+
+    type CallLogWithInitiator = {
+      id: string;
+      status: string;
+      initiator: {
+        full_name: any;
+        avatar_url: any;
+      } | null;
+    };
+
     const { data, error } = await supabase
       .from("call_logs")
       .select(`
-        id, 
-        status, 
+        id,
+        status,
         initiator:initiator_id(full_name, avatar_url)
       `)
       .eq("context_id", id)
@@ -163,7 +173,7 @@ export function UnifiedChat({
       .in("status", ["waiting", "active"])
       .order("started_at", { ascending: false })
       .limit(1)
-      .single();
+      .single<CallLogWithInitiator>();
 
     if (error && error.code !== 'PGRST116') {
       console.error("Error checking active calls:", error);
@@ -171,7 +181,7 @@ export function UnifiedChat({
 
     if (data) {
       console.log("Found active call:", data);
-      
+
       // Check if we are already a participant (Persistence)
       const { data: participation } = await supabase
         .from("call_participants")

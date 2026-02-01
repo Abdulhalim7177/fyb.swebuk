@@ -48,6 +48,24 @@ export function CallHistory({ contextId, contextType }: CallHistoryProps) {
     const supabase = createClient();
     try {
       // Fetch logs
+      type CallLogWithParticipants = {
+        id: string;
+        started_at: string;
+        ended_at: string | null;
+        status: 'waiting' | 'active' | 'ended' | 'missed';
+        initiator: {
+          full_name: string;
+          avatar_url: string | null;
+        } | null;
+        call_participants: {
+          user_id: string;
+          profile: {
+            full_name: string;
+            avatar_url: string | null;
+          } | null;
+        }[];
+      };
+
       const { data: logs, error } = await supabase
         .from("call_logs")
         .select(`
@@ -60,7 +78,8 @@ export function CallHistory({ contextId, contextType }: CallHistoryProps) {
         `)
         .eq("context_id", contextId)
         .eq("context_type", contextType)
-        .order("started_at", { ascending: false });
+        .order("started_at", { ascending: false })
+        .returns<CallLogWithParticipants[]>();
 
       if (error) throw error;
 
