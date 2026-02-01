@@ -52,21 +52,26 @@ export function TopNav({ user, userRole, onMenuClick }: TopNavProps) {
         }
 
         if (profileData?.avatar_url) {
-          try {
-            const { data, error } = await supabase.storage
-              .from('avatars')
-              .createSignedUrl(profileData.avatar_url, 3600);
-
-            if (error) {
-              const { data: publicData } = await supabase.storage
+          // If it's an external URL (e.g. Google auth or placeholder), use it directly
+          if (profileData.avatar_url.startsWith('http')) {
+            setAvatarUrl(profileData.avatar_url);
+          } else {
+            try {
+              const { data, error } = await supabase.storage
                 .from('avatars')
-                .getPublicUrl(profileData.avatar_url);
-              setAvatarUrl(publicData?.publicUrl || null);
-            } else {
-              setAvatarUrl(data?.signedUrl || null);
+                .createSignedUrl(profileData.avatar_url, 3600);
+
+              if (error) {
+                const { data: publicData } = await supabase.storage
+                  .from('avatars')
+                  .getPublicUrl(profileData.avatar_url);
+                setAvatarUrl(publicData?.publicUrl || null);
+              } else {
+                setAvatarUrl(data?.signedUrl || null);
+              }
+            } catch (err) {
+              setAvatarUrl(null);
             }
-          } catch (err) {
-            setAvatarUrl(null);
           }
         } else {
           setAvatarUrl(null);

@@ -107,7 +107,7 @@
 - [ ] Bulk user management tools
 - [ ] User activity and engagement tracking
 
-### 9. Event Management System
+### 9. Event Management System~
 - [x] Create and manage events (Staff/Admins)
 - [x] Event registration for students
 - [x] Event attendance tracking
@@ -182,3 +182,28 @@
 - Feature adoption rates
 
 what is the problem
+
+
+
+  Recommendations (Aligned with Roadmap)
+
+   1. Immediate Priority: Notification System
+       * The roadmap correctly identifies this as "High Priority". Currently, there is no mechanism to
+         alert users of requests, approvals, or messages.
+       * Action: Create a NotificationContext, a notifications table in Supabase, and a UI component for
+         the top navigation bar.
+
+   2. Standardize Chat
+       * Chat is currently implemented separately for Projects (components/projects/project-chat.tsx) and
+         FYP (components/fyp/fyp-chat.tsx).
+       * Action: Refactor this into a reusable ChatSystem component that can be easily plugged into
+         Clusters (which is currently missing chat) and Direct Messaging.
+
+   3. Enhance Portfolio
+       * The current ModernPortfolioPage is a great foundation.
+       * Action: Implement the "Skill Endorsement" feature and a "Project Showcase" builder to fulfill
+         the "Enhanced" requirement.
+
+   4. Admin Analytics
+       * While dashboards exist, a centralized "System Analytics" page (user growth, activity retention)
+         described in Phase 4 is not yet evident in the codebase.

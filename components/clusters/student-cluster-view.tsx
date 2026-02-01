@@ -15,13 +15,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users, Calendar, FileText, AlertCircle, Clock, Plus, LogOut } from "lucide-react";
+import { Users, Calendar, FileText, AlertCircle, Clock, Plus, LogOut, MessageSquare } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClusterMembersList } from "./cluster-members-list";
 import { ClusterProjectsList } from "./cluster-projects-list";
 import { ClusterEventsList } from "./cluster-events-list";
 import { ClusterRequestsList } from "./cluster-requests-list";
 import { StudentClusterStats } from "./student-cluster-stats";
+import { UnifiedChat } from "@/components/chat/unified-chat";
 
 interface DetailedCluster {
   id: string;
@@ -44,6 +45,8 @@ interface DetailedCluster {
 interface User {
   id: string;
   role: string;
+  full_name?: string;
+  avatar_url?: string | null;
 }
 
 interface StudentClusterViewProps {
@@ -205,6 +208,12 @@ export function StudentClusterView({
                   Events
                 </TabsTrigger>
                 {isMember && (
+                  <TabsTrigger value="chat" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-0 pb-3 h-auto gap-2 font-semibold transition-all text-sm sm:text-base whitespace-nowrap">
+                    <MessageSquare className="h-4 w-4" />
+                    Chat
+                  </TabsTrigger>
+                )}
+                {isMember && (
                   <TabsTrigger value="requests" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-0 pb-3 h-auto gap-2 font-semibold transition-all text-sm sm:text-base whitespace-nowrap">
                     <AlertCircle className="h-4 w-4" />
                     Requests
@@ -228,6 +237,19 @@ export function StudentClusterView({
                   canManage={false}
                 />
               </TabsContent>
+              {isMember && (
+                <TabsContent value="chat" className="mt-0">
+                  <UnifiedChat
+                    id={cluster.id}
+                    table="cluster_chat"
+                    idColumn="cluster_id"
+                    title="Cluster Chat"
+                    currentUserId={user.id}
+                    currentUserName={user.full_name || "Unknown"}
+                    currentUserAvatar={user.avatar_url || null}
+                  />
+                </TabsContent>
+              )}
               {isMember && (
                 <TabsContent value="requests" className="mt-0">
                   <ClusterRequestsList

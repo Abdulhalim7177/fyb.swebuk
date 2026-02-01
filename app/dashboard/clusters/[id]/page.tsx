@@ -31,6 +31,8 @@ interface DetailedCluster {
 interface User {
   id: string;
   role: string;
+  full_name?: string;
+  avatar_url?: string | null;
 }
 
 async function getUser() {
@@ -43,16 +45,26 @@ async function getUser() {
 
   const { data: profileData, error: profileError } = await supabase
     .from('profiles')
-    .select('role, full_name')
+    .select('role, full_name, avatar_url')
     .eq('id', user.id)
     .single();
 
   if (profileError || !profileData) {
     console.error('Error fetching profile or profile not found:', profileError);
-    return { user, role: user.user_metadata?.role || "student", fullName: user.user_metadata?.full_name || user.email };
+    return { 
+      user, 
+      role: user.user_metadata?.role || "student", 
+      fullName: user.user_metadata?.full_name || user.email,
+      avatarUrl: user.user_metadata?.avatar_url 
+    };
   }
 
-  return { user, role: profileData.role || 'student', fullName: profileData.full_name || user.user_metadata?.full_name || user.email };
+  return { 
+    user, 
+    role: profileData.role || 'student', 
+    fullName: profileData.full_name || user.user_metadata?.full_name || user.email,
+    avatarUrl: profileData.avatar_url
+  };
 }
 
 export default function ClusterInfoPage({ params }: { params: Promise<{ id: string }> }) {
@@ -73,8 +85,13 @@ export default function ClusterInfoPage({ params }: { params: Promise<{ id: stri
         setLoading(true);
 
         // Get user info
-        const { user, role } = await getUser();
-        setUser({ id: user.id, role: role });
+        const { user, role, fullName, avatarUrl } = await getUser();
+        setUser({ 
+          id: user.id, 
+          role: role, 
+          full_name: fullName, 
+          avatar_url: avatarUrl 
+        });
         setUserRole(role);
 
         // Get cluster ID from URL params
